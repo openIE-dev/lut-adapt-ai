@@ -1,0 +1,11 @@
+model_id,method,total_params_b,lossless_token_exact_pct,active_expert_pct,mean_tokens_per_nvme_sweep,mean_code_chars_per_nvme_sweep,nvme_gb_read_per_token,nvme_io_reduction_vs_airllm_4bit,peak_active_weight_ram_mb,pct_of_fp16_model_in_ram,measured_tok_per_sec,measured_code_chars_per_sec,est_joules_per_token
+LiquidAI/LFM2.5-8B-A1B,A_AirLLM_LFM2.5_8B_A1B_Dense4Bit_T1,8.47,100.0,100.0,1.0,1.62,4.574,1.0,1408.29,8.719,0.28,0.5,368.8
+LiquidAI/LFM2.5-8B-A1B,B_ExpertAirLLM_LFM2.5_8B_A1B_RouterSparse_T1,8.47,100.0,16.93,1.0,1.62,1.2,3.81,1408.29,8.719,0.58,0.9,181.26
+LiquidAI/LFM2.5-8B-A1B,C_ExpertAirMoL_LFM2.5_8B_A1B_PLD_Lookup,8.47,100.0,28.82,1.78,2.89,0.883,5.18,1408.29,8.719,0.79,1.3,132.57
+LiquidAI/LFM2.5-8B-A1B,D_ExpertAirMoL_LFM2.5_8B_A1B_BenesLUT6_Cold_OURS,8.47,100.0,33.91,1.85,3.0,1.002,4.56,1408.29,8.719,0.72,1.2,145.42
+LiquidAI/LFM2.5-8B-A1B,E_ExpertAirMoL_LFM2.5_8B_A1B_PostWake_Crystallized_OURS,8.47,100.0,36.46,3.0,4.88,0.663,6.9,1408.29,8.719,1.1,1.8,95.67
+Qwen/Qwen3.6-35B-A3B,A_AirLLM_Qwen3.6_35B_A3B_Dense4Bit_T1,34.66,100.0,100.0,1.0,2.25,18.159,1.0,3214.65,4.863,0.06,0.1,1696.81
+Qwen/Qwen3.6-35B-A3B,B_ExpertAirLLM_Qwen3.6_35B_A3B_RouterSparse_T1,34.66,100.0,6.35,1.0,2.25,2.356,7.71,2530.65,3.828,0.22,0.5,471.87
+Qwen/Qwen3.6-35B-A3B,C_ExpertAirMoL_Qwen3.6_35B_A3B_PLD_Lookup,34.66,100.0,11.58,1.89,4.26,1.708,10.63,2530.65,3.828,0.32,0.7,326.24
+Qwen/Qwen3.6-35B-A3B,D_ExpertAirMoL_Qwen3.6_35B_A3B_BenesLUT6_Cold_OURS,34.66,100.0,12.91,2.0,4.5,1.722,10.54,2530.65,3.828,0.31,0.7,334.42
+Qwen/Qwen3.6-35B-A3B,E_ExpertAirMoL_Qwen3.6_35B_A3B_PostWake_Crystallized_OURS,34.66,100.0,14.97,2.57,5.79,1.477,12.3,2530.65,3.828,0.39,0.9,267.08

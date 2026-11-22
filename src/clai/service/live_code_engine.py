@@ -985,9 +985,17 @@ class PretrainedHFStreamEngineAdapter:
     def from_backend(cls, backend: str, device: torch.device | None = None) -> "PretrainedHFStreamEngineAdapter":
         from clai.frontier.hf_air_mol_pretrained import (
             DEFAULT_2026_HF_MODEL,
+            LFM3_2026_HF_MODEL,
             QWEN35_2026_HF_MODEL,
             PagedBenesLUT6TokenDrafter,
             PretrainedHFAirMoLEngine,
+        )
+        from clai.frontier.moe_air_mol import (
+            LFM25_MOE_8B_MODEL,
+            QWEN36_MOE_35B_MODEL,
+            ExpertRoutedMoEAirMoLEngine,
+            FrontierBenesLUT6TokenDrafter,
+            default_nvme_shard_root,
         )
 
         if device is None:
@@ -999,21 +1007,33 @@ class PretrainedHFStreamEngineAdapter:
                 device = torch.device("cpu")
 
         b_norm = backend.lower()
-        if "qwen" in b_norm:
-            repo_id = QWEN35_2026_HF_MODEL
-            shard_dir = Path("artifacts/hf_qwen3_5_0_8b_shards")
-        else:
-            repo_id = DEFAULT_2026_HF_MODEL
-            shard_dir = Path("artifacts/hf_lfm2_5_350m_shards")
-
-        manifest = PretrainedHFAirMoLEngine.download_and_shard(
-            repo_id=repo_id, shard_dir=shard_dir, build_fp16_baseline=False
-        )
-        hf_eng = PretrainedHFAirMoLEngine(shard_dir, mode="4bit", device=device)
-
         train_f, test_f = load_repo_code_splits(Path("."))
         all_files = train_f + test_f
-        tok_drafter = PagedBenesLUT6TokenDrafter(vocab_size=hf_eng.vocab_size)
+
+        if b_norm in ("lfm2.5-8b-a1b", "qwen3.6-35b-a3b"):
+            repo_id = QWEN36_MOE_35B_MODEL if "35b" in b_norm else LFM25_MOE_8B_MODEL
+            slug = repo_id.split("/")[-1].lower().replace(".", "_").replace("-", "_")
+            shard_dir = default_nvme_shard_root() / f"hf_{slug}_shards"
+            manifest = ExpertRoutedMoEAirMoLEngine.shard_checkpoint(repo_id=repo_id, shard_dir=shard_dir)
+            hf_eng = ExpertRoutedMoEAirMoLEngine(shard_dir, device=device)
+            tok_drafter = FrontierBenesLUT6TokenDrafter(vocab_size=hf_eng.vocab_size)
+        else:
+            if "lfm3" in b_norm:
+                repo_id = LFM3_2026_HF_MODEL
+                shard_dir = default_nvme_shard_root() / "hf_lfm3_1_7b_shards"
+            elif "qwen" in b_norm:
+                repo_id = QWEN35_2026_HF_MODEL
+                shard_dir = Path("artifacts/hf_qwen3_5_0_8b_shards")
+            else:
+                repo_id = DEFAULT_2026_HF_MODEL
+                shard_dir = Path("artifacts/hf_lfm2_5_350m_shards")
+
+            manifest = PretrainedHFAirMoLEngine.download_and_shard(
+                repo_id=repo_id, shard_dir=shard_dir, build_fp16_baseline=False
+            )
+            hf_eng = PretrainedHFAirMoLEngine(shard_dir, mode="4bit", device=device)
+            tok_drafter = PagedBenesLUT6TokenDrafter(vocab_size=hf_eng.vocab_size)
+
         tok_drafter.compile_from_tokenized_files(hf_eng.tokenizer, all_files, max_branch_pages=500)
 
         bram_cache = HardwareBRAMPageCache(page_addr_bits=9)
@@ -1036,10 +1056,21 @@ class PretrainedHFStreamEngineAdapter:
             p_ids, p_b = self._encode_prompt(p_txt)
             n_toks = max(1, self._last_emitted_token_count)
             m_dummy = NVMeIOMeter()
-            toks, _ = self.hf_engine.generate_speculative_tokens(
-                p_ids, p_b, 0, n_toks, lambda _i, _b, _l: [], m_dummy, prefetch=True
-            )
+            if hasattr(self.hf_engine, "generate_tokens"):
+                toks, _, _ = self.hf_engine.generate_tokens(
+                    p_ids, p_b, 0, n_toks, None, m_dummy, dense_sweep_all=False, prefetch=True
+                )
+            else:
+                toks, _ = self.hf_engine.generate_speculative_tokens(
+                    p_ids, p_b, 0, n_toks, lambda _i, _b, _l: [], m_dummy, prefetch=True
+                )
             return self.hf_engine.tokenizer.decode(toks).encode("utf-8", errors="replace")
+
+    def _hf_sweep(self, input_ids: torch.Tensor, cache, io_meter: NVMeIOMeter, record_conv_steps: bool):
+        res = self.hf_engine.forward_nvme_sweep(
+            input_ids, cache, io_meter, prefetch=True, record_conv_steps=record_conv_steps
+        )
+        return res[0], res[1]
 
     @torch.no_grad()
     def stream_complete(
@@ -1068,7 +1099,7 @@ class PretrainedHFStreamEngineAdapter:
         with self.lock:
             cache = DynamicCache(config=self.hf_engine.text_config)
             p_t = torch.tensor([p_ids], device=self.device, dtype=torch.long)
-            lg0, _ = self.hf_engine.forward_nvme_sweep(p_t, cache, io_meter, prefetch=True, record_conv_steps=False)
+            lg0, _ = self._hf_sweep(p_t, cache, io_meter, record_conv_steps=False)
             first_tok = int(lg0[0, -1].argmax().item())
 
         dt_ms = (time.perf_counter() - t0) * 1e3
@@ -1120,7 +1151,7 @@ class PretrainedHFStreamEngineAdapter:
                 if not draft_ids:
                     tier = "HF_NVME_T1"
                     in_t = torch.tensor([[emitted_toks[-1]]], device=self.device, dtype=torch.long)
-                    lg, _ = self.hf_engine.forward_nvme_sweep(in_t, cache, io_meter, prefetch=True, record_conv_steps=False)
+                    lg, _ = self._hf_sweep(in_t, cache, io_meter, record_conv_steps=False)
                     nxt = int(lg[0, 0].argmax().item())
                     emitted_toks.append(nxt)
                     ctx_ids.append(nxt)
@@ -1131,7 +1162,7 @@ class PretrainedHFStreamEngineAdapter:
                 else:
                     tier = "R0_TOK_LUT6_BRAM" if bram_hit else "R0_TOK_LUT6_CAM"
                     vin = torch.tensor([[emitted_toks[-1], *draft_ids]], device=self.device, dtype=torch.long)
-                    v_lg, snaps = self.hf_engine.forward_nvme_sweep(vin, cache, io_meter, prefetch=True, record_conv_steps=True)
+                    v_lg, snaps = self._hf_sweep(vin, cache, io_meter, record_conv_steps=True)
                     keep_m = len(draft_ids)
                     for k_i, d_id in enumerate(draft_ids):
                         tc = int(v_lg[0, k_i].argmax().item())
@@ -1171,7 +1202,7 @@ class PretrainedHFStreamEngineAdapter:
                     if drop_n > 0:
                         for l_i, ltype in enumerate(self.hf_engine.text_config.layer_types):
                             lc = cache.layers[l_i]
-                            if ltype == "full_attention":
+                            if ltype in ("full_attention", "sliding_attention"):
                                 lc.crop(-drop_n)
                             elif l_i in snaps:
                                 cs_d, rs_d = snaps[l_i][keep_m]
@@ -1322,5 +1353,7 @@ class PretrainedHFStreamEngineAdapter:
             "kv260_bram_generation": self.bram_cache.bram_generation,
             "air_nvme_active": True,
             "full_model_fp32_mb": self.manifest["full_fp32_mb"],
-            "nvme_shard_disk_mb": self.manifest["nvme_4bit_shards_mb"],
+            "nvme_shard_disk_mb": self.manifest.get(
+                "nvme_4bit_shards_mb", self.manifest.get("nvme_4bit_total_mb", 0.0)
+            ),
         }

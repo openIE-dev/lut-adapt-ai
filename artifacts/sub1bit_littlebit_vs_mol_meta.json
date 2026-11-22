@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "evaluated_tensor": "LiquidAI/LFM2.5-8B-A1B model.layers.2.feed_forward.experts.0.w1.weight [1792, 2048]",
+    "lut6_rank_r": 258,
+    "lut6_groups_per_latent": 43,
+    "lut6_vs_dense_max_abs_err": 4e-06,
+    "projected_35b_ram_pinned_draft_gb": 2.33
+  },
+  "rows": [
+    {
+      "method": "A_Sub1Bit_UnrotatedSVD_PTQ_0.58bpw (LittleBit-1 style, no QAT)",
+      "bits_per_weight": 0.576,
+      "compression_vs_fp16": 27.8,
+      "weight_snr_db": 1.76,
+      "activation_cosine_sim": 0.5761,
+      "top1_token_agreement_pct": 3.12,
+      "binary_matmul_macs_per_tok": 1981440,
+      "qat_epochs_required": 0
+    },
+    {
+      "method": "B_Sub1Bit_ProcrustesITQ_PTQ_0.58bpw (LittleBit-2 style, no QAT)",
+      "bits_per_weight": 0.576,
+      "compression_vs_fp16": 27.8,
+      "weight_snr_db": 2.42,
+      "activation_cosine_sim": 0.6487,
+      "top1_token_agreement_pct": 10.94,
+      "binary_matmul_macs_per_tok": 1981440,
+      "qat_epochs_required": 0
+    },
+    {
+      "method": "C_OpenIE_Sub1Bit_LUT6_TableLookup_0.58bpw (0 binary MACs, draft)",
+      "bits_per_weight": 0.576,
+      "compression_vs_fp16": 27.8,
+      "weight_snr_db": 2.42,
+      "activation_cosine_sim": 0.6487,
+      "top1_token_agreement_pct": 10.94,
+      "binary_matmul_macs_per_tok": 0,
+      "qat_epochs_required": 0
+    },
+    {
+      "method": "D_OpenIE_ExpertAirMoL_INT4_Target_4.50bpw (Router-Sparse NVMe)",
+      "bits_per_weight": 4.5,
+      "compression_vs_fp16": 3.56,
+      "weight_snr_db": 20.77,
+      "activation_cosine_sim": 0.9958,
+      "top1_token_agreement_pct": 82.81,
+      "binary_matmul_macs_per_tok": 3670016,
+      "qat_epochs_required": 0
+    },
+    {
+      "method": "E_OpenIE_MoL_Sub1BitLUT6_Draft_Plus_TargetVerify_OURS (Lossless)",
+      "bits_per_weight": 0.576,
+      "compression_vs_fp16": 27.8,
+      "weight_snr_db": 148.84,
+      "activation_cosine_sim": 1.0,
+      "top1_token_agreement_pct": 100.0,
+      "binary_matmul_macs_per_tok": 0,
+      "qat_epochs_required": 0
+    }
+  ]
+}

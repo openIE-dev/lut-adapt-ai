@@ -1,0 +1,6 @@
+method,bits_per_weight,compression_vs_fp16,weight_snr_db,activation_cosine_sim,top1_token_agreement_pct,binary_matmul_macs_per_tok,qat_epochs_required
+"A_Sub1Bit_UnrotatedSVD_PTQ_0.58bpw (LittleBit-1 style, no QAT)",0.576,27.8,1.76,0.5761,3.12,1981440,0
+"B_Sub1Bit_ProcrustesITQ_PTQ_0.58bpw (LittleBit-2 style, no QAT)",0.576,27.8,2.42,0.6487,10.94,1981440,0
+"C_OpenIE_Sub1Bit_LUT6_TableLookup_0.58bpw (0 binary MACs, draft)",0.576,27.8,2.42,0.6487,10.94,0,0
+D_OpenIE_ExpertAirMoL_INT4_Target_4.50bpw (Router-Sparse NVMe),4.5,3.56,20.77,0.9958,82.81,3670016,0
+E_OpenIE_MoL_Sub1BitLUT6_Draft_Plus_TargetVerify_OURS (Lossless),0.576,27.8,148.84,1.0,100.0,0,0

@@ -38,8 +38,13 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from transformers import AutoConfig, AutoTokenizer, DynamicCache
-from transformers.masking_utils import create_causal_mask, create_recurrent_attention_mask
+from transformers.masking_utils import (
+    create_causal_mask,
+    create_recurrent_attention_mask,
+    create_sliding_window_causal_mask,
+)
 from transformers.models.lfm2.modeling_lfm2 import Lfm2DecoderLayer, Lfm2RMSNorm, Lfm2RotaryEmbedding
+from transformers.models.lfm3.modeling_lfm3 import Lfm3DecoderLayer, Lfm3RMSNorm, Lfm3RotaryEmbedding
 from transformers.models.qwen3_5.modeling_qwen3_5 import (
     Qwen3_5DecoderLayer,
     Qwen3_5RMSNorm,
@@ -64,6 +69,7 @@ from clai.frontier.code_corpus_speculative import (
 
 DEFAULT_2026_HF_MODEL = "LiquidAI/LFM2.5-350M"
 QWEN35_2026_HF_MODEL = "Qwen/Qwen3.5-0.8B-Base"
+LFM3_2026_HF_MODEL = "LiquidAI/LFM3-1.7B"
 
 
 def deserialize_shard_bytes_dtype(
@@ -523,6 +529,7 @@ class PretrainedHFAirMoLEngine:
         self.text_config._attn_implementation = "eager"
         self.config = self.text_config
         self.is_qwen35 = self.text_config.model_type in ("qwen3_5", "qwen3_5_text")
+        self.is_lfm3 = self.text_config.model_type == "lfm3"
 
         self.tokenizer = AutoTokenizer.from_pretrained(shard_dir)
         self.n_layers = int(self.text_config.num_hidden_layers)
@@ -534,6 +541,8 @@ class PretrainedHFAirMoLEngine:
             self.rotary_emb = Qwen3_5TextRotaryEmbedding(config=self.text_config).to(
                 device=device, dtype=torch.float32
             )
+        elif self.is_lfm3:
+            self.rotary_emb = Lfm3RotaryEmbedding(config=self.text_config).to(device=device, dtype=torch.float32)
         else:
             self.rotary_emb = Lfm2RotaryEmbedding(config=self.text_config).to(device=device, dtype=torch.float32)
 
@@ -567,31 +576,49 @@ class PretrainedHFAirMoLEngine:
             return json.loads(marker.read_text(encoding="utf-8"))
 
         t0 = time.perf_counter()
-        tmp_dl = shard_dir / "_tmp_hf_dl"
-        tmp_dl.mkdir(parents=True, exist_ok=True)
+        local_lib = Path("/Volumes/macos_4TB_external_1/neuronexus_ai/model_library") / repo_id.split("/")[-1]
+        tmp_dl = None
+        if local_lib.exists() and (local_lib / "config.json").exists():
+            src_dir = local_lib
+            for fname in (
+                "config.json",
+                "tokenizer.json",
+                "tokenizer_config.json",
+                "special_tokens_map.json",
+                "vocab.json",
+                "merges.txt",
+                "chat_template.jinja",
+            ):
+                if (src_dir / fname).exists():
+                    shutil.copy2(src_dir / fname, shard_dir / fname)
+            sfs = sorted(src_dir.glob("*.safetensors"))
+            assert sfs, f"No safetensors in {src_dir}"
+            sf_file = str(sfs[0])
+        else:
+            tmp_dl = shard_dir / "_tmp_hf_dl"
+            tmp_dl.mkdir(parents=True, exist_ok=True)
+            for fname in (
+                "config.json",
+                "tokenizer.json",
+                "tokenizer_config.json",
+                "special_tokens_map.json",
+                "vocab.json",
+                "merges.txt",
+            ):
+                try:
+                    p = hf_hub_download(repo_id=repo_id, filename=fname, local_dir=str(tmp_dl))
+                    shutil.copy2(p, shard_dir / fname)
+                except Exception:
+                    pass
 
-        for fname in (
-            "config.json",
-            "tokenizer.json",
-            "tokenizer_config.json",
-            "special_tokens_map.json",
-            "vocab.json",
-            "merges.txt",
-        ):
-            try:
-                p = hf_hub_download(repo_id=repo_id, filename=fname, local_dir=str(tmp_dl))
-                shutil.copy2(p, shard_dir / fname)
-            except Exception:
-                pass
-
-        sf_file = None
-        for sf_candidate in ("model.safetensors", "model.safetensors-00001-of-00001.safetensors"):
-            try:
-                sf_file = hf_hub_download(repo_id=repo_id, filename=sf_candidate, local_dir=str(tmp_dl))
-                break
-            except Exception:
-                continue
-        assert sf_file is not None, f"Could not locate single-file safetensors in {repo_id}"
+            sf_file = None
+            for sf_candidate in ("model.safetensors", "model.safetensors-00001-of-00001.safetensors"):
+                try:
+                    sf_file = hf_hub_download(repo_id=repo_id, filename=sf_candidate, local_dir=str(tmp_dl))
+                    break
+                except Exception:
+                    continue
+            assert sf_file is not None, f"Could not locate single-file safetensors in {repo_id}"
 
         raw_cfg = AutoConfig.from_pretrained(shard_dir)
         tcfg = getattr(raw_cfg, "text_config", raw_cfg)
@@ -669,13 +696,15 @@ class PretrainedHFAirMoLEngine:
                         bytes_fp16 += b_l
                 del layer_sd
 
-        shutil.rmtree(tmp_dl, ignore_errors=True)
+        if tmp_dl is not None:
+            shutil.rmtree(tmp_dl, ignore_errors=True)
 
         manifest = {
             "repo_id": repo_id,
             "model_type": tcfg.model_type,
             "num_layers": n_layers,
-            "conv_ssm_layers": sum(1 for t in tcfg.layer_types if t != "full_attention"),
+            "conv_ssm_layers": sum(1 for t in tcfg.layer_types if t in ("conv", "linear_attention")),
+            "sliding_attn_layers": sum(1 for t in tcfg.layer_types if t == "sliding_attention"),
             "full_attn_layers": sum(1 for t in tcfg.layer_types if t == "full_attention"),
             "hidden_size": int(tcfg.hidden_size),
             "vocab_size": vocab_sz,
@@ -750,7 +779,13 @@ class PretrainedHFAirMoLEngine:
                             "full_attention": create_causal_mask(**mask_kwargs),
                             rec_key: create_recurrent_attention_mask(**mask_kwargs),
                         }
-                        if self.is_qwen35:
+                        if self.is_lfm3:
+                            masks["sliding_attention"] = create_sliding_window_causal_mask(**mask_kwargs)
+                            pos_emb = {
+                                lt: self.rotary_emb(h, position_ids=pos_ids, layer_type=lt)
+                                for lt in self.rotary_emb.layer_types
+                            }
+                        elif self.is_qwen35:
                             pos_3d = pos_ids.unsqueeze(0).expand(3, 1, T)
                             pos_emb = self.rotary_emb(h, pos_3d)
                         else:
@@ -762,18 +797,23 @@ class PretrainedHFAirMoLEngine:
                     with torch.device("meta"):
                         if self.is_qwen35:
                             lyr = Qwen3_5DecoderLayer(self.text_config, layer_idx=l_idx)
+                        elif self.is_lfm3:
+                            if "self_attn.gate_proj.weight" in sd:
+                                sd["self_attn.g_proj.weight"] = sd.pop("self_attn.gate_proj.weight")
+                            lyr = Lfm3DecoderLayer(self.text_config, layer_idx=l_idx)
                         else:
                             lyr = Lfm2DecoderLayer(self.text_config, layer_idx=l_idx)
                     lyr.load_state_dict(sd, strict=True, assign=True)
 
                     assert h is not None and pos_emb is not None
-                    if ltype != "full_attention" and record_conv_steps and T > 1:
+                    l_pe = pos_emb.get(ltype) if isinstance(pos_emb, dict) else pos_emb
+                    if ltype in ("conv", "linear_attention") and record_conv_steps and T > 1:
                         outs_t = []
                         snaps_t = []
                         for t in range(T):
                             p_t = pos_ids[:, t : t + 1]
                             if self.is_qwen35:
-                                pe_t = (pos_emb[0][..., t : t + 1, :], pos_emb[1][..., t : t + 1, :])
+                                pe_t = (l_pe[0][..., t : t + 1, :], l_pe[1][..., t : t + 1, :])
                                 ht = lyr(
                                     h[:, t : t + 1],
                                     position_embeddings=pe_t,
@@ -783,7 +823,7 @@ class PretrainedHFAirMoLEngine:
                                     use_cache=True,
                                 )
                             else:
-                                pe_t = (pos_emb[0][:, t : t + 1], pos_emb[1][:, t : t + 1])
+                                pe_t = (l_pe[0][:, t : t + 1], l_pe[1][:, t : t + 1]) if l_pe is not None else None
                                 ht = lyr(
                                     h[:, t : t + 1],
                                     attention_mask=None,
@@ -805,7 +845,7 @@ class PretrainedHFAirMoLEngine:
                         if self.is_qwen35:
                             h = lyr(
                                 h,
-                                position_embeddings=pos_emb,
+                                position_embeddings=l_pe,
                                 attention_mask=masks[ltype],
                                 position_ids=pos_ids,
                                 cache=cache,
@@ -815,7 +855,7 @@ class PretrainedHFAirMoLEngine:
                             h = lyr(
                                 h,
                                 attention_mask=masks[ltype],
-                                position_embeddings=pos_emb,
+                                position_embeddings=l_pe,
                                 position_ids=pos_ids,
                                 cache=cache,
                             )
@@ -828,6 +868,10 @@ class PretrainedHFAirMoLEngine:
                             if self.is_qwen35:
                                 norm_mod = Qwen3_5RMSNorm(
                                     self.text_config.hidden_size, eps=self.text_config.rms_norm_eps
+                                )
+                            elif self.is_lfm3:
+                                norm_mod = Lfm3RMSNorm(
+                                    self.text_config.hidden_size, eps=self.text_config.norm_eps
                                 )
                             else:
                                 norm_mod = Lfm2RMSNorm(
@@ -915,7 +959,7 @@ class PretrainedHFAirMoLEngine:
             if drop_n > 0:
                 for l_i, ltype in enumerate(self.text_config.layer_types):
                     lc = cache.layers[l_i]
-                    if ltype == "full_attention":
+                    if ltype in ("full_attention", "sliding_attention"):
                         lc.crop(-drop_n)
                     elif l_i in snaps:
                         cs_d, rs_d = snaps[l_i][keep_m]

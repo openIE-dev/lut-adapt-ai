@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "repo_id": "LiquidAI/LFM3-1.7B",
+    "model_type": "lfm3",
+    "num_layers": 24,
+    "conv_ssm_layers": 13,
+    "sliding_attn_layers": 5,
+    "full_attn_layers": 6,
+    "hidden_size": 2048,
+    "vocab_size": 128000,
+    "total_params": 1728801536,
+    "full_fp32_mb": 6594.85,
+    "nvme_fp16_shards_mb": 0.0,
+    "nvme_4bit_shards_mb": 1068.6,
+    "compression_vs_fp32": 6.17,
+    "shard_sec": 1.68,
+    "bits_per_token": 17,
+    "draft_k_tokens": 3,
+    "total_train_bpe_tokens": 199891,
+    "token_pages_3gram": 87425,
+    "token_pages_2gram": 46357,
+    "token_branch_lut6_pages": 1200,
+    "compile_sec": 6.57
+  },
+  "samples": [
+    {
+      "file": "hw/kv260/rtl/clai_kv260_axi_top.sv",
+      "prompt_tail": "(crystallized 3-layer 1,536-LUT6 combinational fabric)\n//     3. 8-Class",
+      "completion": " Engram (8x 512-wire Engram bus)\n//     4. `clai_rung1_c",
+      "nvme_sweeps": 13,
+      "naive_sweeps": 24
+    },
+    {
+      "file": "scripts/run_frontier_ai_bakeoff.py",
+      "prompt_tail": "  D. `LiquidAI/LFM2.5-8B-A1B` (`8.3B` Sparse-MoE, Ungated 1-Shot)\n  E. `",
+      "completion": "LiquidAI/LFM2.5-24B-A3B` (`24B` Sparse-Mo",
+      "nvme_sweeps": 12,
+      "naive_sweeps": 24
+    },
+    {
+      "file": "scripts/run_sub1bit_lut_benchmark.py",
+      "prompt_tail": "dir = Path(\"artifacts\")\n    art_dir.mkdir(exist_ok=True)\n\n    rows, meta",
+      "completion": " = select_torch_device(art_dir, \"artifacts/art1.art\")\n    rows = rows.to(t",
+      "nvme_sweeps": 17,
+      "naive_sweeps": 24
+    }
+  ]
+}

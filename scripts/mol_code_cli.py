@@ -554,6 +554,9 @@ def run_automated_demo(engine: LiveSpeculativeCodeEngine) -> dict:
             srv.server_close()
 
 
+BACKEND_CHOICES = ["mamba3", "lfm3-1.7b", "lfm2.5-350m", "qwen3.5-0.8b", "lfm2.5-8b-a1b", "qwen3.6-35b-a3b"]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="MoL Speculative Code-Completion CLI & HTTP/SSE Server")
     parser.add_argument("--checkpoint", default="artifacts/mol_code_engine.pt")
@@ -561,9 +564,9 @@ def main() -> None:
     parser.add_argument("--air-nvme", action="store_true", help="Enable AirMoL 4-bit per-layer NVMe shard streaming")
     parser.add_argument(
         "--backend",
-        choices=["mamba3", "lfm2.5-350m", "qwen3.5-0.8b"],
+        choices=BACKEND_CHOICES,
         default="mamba3",
-        help="Target model backend (`mamba3` byte-LM or 2026 pretrained `lfm2.5-350m` / `qwen3.5-0.8b`)",
+        help="Target model backend (`mamba3`, `lfm2.5-350m`, `qwen3.5-0.8b`, `lfm2.5-8b-a1b`, `qwen3.6-35b-a3b`)",
     )
     sub = parser.add_subparsers(dest="cmd")
 
@@ -574,29 +577,29 @@ def main() -> None:
     p_comp.add_argument("--max-bytes", type=int, default=80)
     p_comp.add_argument("--verify-lossless", action="store_true", default=True)
     p_comp.add_argument("--air-nvme", dest="sub_air_nvme", action="store_true")
-    p_comp.add_argument("--backend", dest="sub_backend", choices=["mamba3", "lfm2.5-350m", "qwen3.5-0.8b"])
+    p_comp.add_argument("--backend", dest="sub_backend", choices=BACKEND_CHOICES)
 
     p_cryst = sub.add_parser("crystallize", help="Run live online Sleep-Crystallization on edited file(s)")
     p_cryst.add_argument("files", nargs="+")
     p_cryst.add_argument("--adapt-steps", type=int, default=10)
     p_cryst.add_argument("--air-nvme", dest="sub_air_nvme", action="store_true")
-    p_cryst.add_argument("--backend", dest="sub_backend", choices=["mamba3", "lfm2.5-350m", "qwen3.5-0.8b"])
+    p_cryst.add_argument("--backend", dest="sub_backend", choices=BACKEND_CHOICES)
 
     p_repl = sub.add_parser("repl", help="Interactive terminal speculative completion REPL")
     p_repl.add_argument("--max-bytes", type=int, default=80)
     p_repl.add_argument("--air-nvme", dest="sub_air_nvme", action="store_true")
-    p_repl.add_argument("--backend", dest="sub_backend", choices=["mamba3", "lfm2.5-350m", "qwen3.5-0.8b"])
+    p_repl.add_argument("--backend", dest="sub_backend", choices=BACKEND_CHOICES)
 
     p_srv = sub.add_parser("serve", help="Run local multi-threaded HTTP + SSE streaming server")
     p_srv.add_argument("--host", default="127.0.0.1")
     p_srv.add_argument("--port", type=int, default=8765)
     p_srv.add_argument("--watch", default="", help="Optional directory to watch for live file edits")
     p_srv.add_argument("--air-nvme", dest="sub_air_nvme", action="store_true")
-    p_srv.add_argument("--backend", dest="sub_backend", choices=["mamba3", "lfm2.5-350m", "qwen3.5-0.8b"])
+    p_srv.add_argument("--backend", dest="sub_backend", choices=BACKEND_CHOICES)
 
     p_demo = sub.add_parser("demo", help="Run automated HTTP/SSE + Live File-Edit Sleep-Crystallization verification")
     p_demo.add_argument("--air-nvme", dest="sub_air_nvme", action="store_true")
-    p_demo.add_argument("--backend", dest="sub_backend", choices=["mamba3", "lfm2.5-350m", "qwen3.5-0.8b"])
+    p_demo.add_argument("--backend", dest="sub_backend", choices=BACKEND_CHOICES)
 
     args = parser.parse_args()
     cmd = args.cmd or "demo"

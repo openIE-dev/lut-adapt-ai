@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import os
 import platform
+import re
+import subprocess
 import time
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -77,6 +79,29 @@ def _read_rapl_joules() -> float:
         with open(_RAPL_PKG, "r", encoding="utf-8") as f:
             return int(f.read().strip()) * 1e-6
     return 0.0
+
+
+def read_apple_pmu_telemetry() -> tuple[float, int] | None:
+    """
+    Reads non-privileged macOS IORegistry `AppleSmartBattery.PowerTelemetryData`
+    (`AccumulatedSystemEnergyConsumed` in mJ -> J, and `SystemLoadAccumulatorCount` tick).
+    Updates at ~0.1 Hz OS PMU cadence; strictly separated from analytical `est_j`.
+    """
+    if not _IS_APPLE_SILICON:
+        return None
+    try:
+        txt = subprocess.check_output(
+            ["ioreg", "-rw0", "-c", "AppleSmartBattery"], text=True, stderr=subprocess.DEVNULL, timeout=1.5
+        )
+        m = re.search(r'"PowerTelemetryData"\s*=\s*\{([^}]+)\}', txt)
+        if not m:
+            return None
+        kv = {k: int(v) for k, v in re.findall(r'"([^"]+)"=(\d+)', m.group(1))}
+        if "AccumulatedSystemEnergyConsumed" in kv and "SystemLoadAccumulatorCount" in kv:
+            return kv["AccumulatedSystemEnergyConsumed"] * 1e-3, kv["SystemLoadAccumulatorCount"]
+    except Exception:
+        pass
+    return None
 
 
 @contextmanager
