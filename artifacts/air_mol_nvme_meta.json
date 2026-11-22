@@ -1,0 +1,17 @@
+{
+  "tf_params": 14260608,
+  "m3_params": 14300608,
+  "param_match_ratio": 1.0028,
+  "tf_fp16_disk_mb": 27.21,
+  "tf_4bit_disk_mb": 7.79,
+  "m3_fp16_disk_mb": 27.29,
+  "m3_4bit_disk_mb": 7.82,
+  "compression_ratio_fp32_to_4bit": 6.98,
+  "fp32_val_bpb": 2.3063,
+  "int4_val_bpb": 2.3069,
+  "bpb_degradation": 0.0006,
+  "full_model_fp32_mb": 54.55,
+  "m3_pinned_state_kb": 48.0,
+  "lut6_bram_kb": 324.0,
+  "train_sec": 50.57
+}

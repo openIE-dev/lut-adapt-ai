@@ -1,0 +1,20 @@
+# Python & virtualenvs
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Native build caches
+sys/rust/target/
+sys/zig/.zig-cache/
+sys/zig/zig-out/
+
+# Large model checkpoints, NVMe shard caches, and Verilator C++ build objects
+artifacts/*.pt
+artifacts/*_shards/
+artifacts/verilator_*/
+artifacts/paged_bram_rtl_sim/
+
+# OS / editor
+.DS_Store

@@ -1,0 +1,4 @@
+architecture,resident_lut6_pages,context_switch_cycles,context_switch_ns_at_250mhz,synthesized_clb_luts,synthesized_ffs,synthesized_ramb36_equiv,dsp48_count
+1_SinglePage_ShadowBank_Reload_Baseline,1,82,328.0,40155,35843,0.0,0
+2_Distributed_FF_Mux_512Pages_Baseline,512,1,4.0,926619,2690051,0.0,0
+3_MoL_BRAM_HashIndexed_Benes_512Pages_OURS,512,1,4.0,41186,36464,81.0,0

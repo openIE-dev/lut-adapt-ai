@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "repo_id": "LiquidAI/LFM2.5-350M",
+    "model_type": "lfm2",
+    "num_layers": 16,
+    "conv_ssm_layers": 10,
+    "full_attn_layers": 6,
+    "hidden_size": 1024,
+    "vocab_size": 65536,
+    "total_params": 354483968,
+    "full_fp32_mb": 1352.25,
+    "nvme_fp16_shards_mb": 804.14,
+    "nvme_4bit_shards_mb": 226.27,
+    "compression_vs_fp32": 5.98,
+    "shard_sec": 15.5,
+    "total_train_bpe_tokens": 156140,
+    "token_pages_3gram": 66343,
+    "token_pages_2gram": 35194,
+    "token_branch_lut6_pages": 1200,
+    "compile_sec": 8.09
+  },
+  "samples": [
+    {
+      "file": "hw/kv260/rtl/clai_kv260_axi_top.sv",
+      "prompt_tail": "Engram bus)\n//     2. `clai_rung0_core`      (crystallized 3-layer 1,536",
+      "lfm2_5_completion": "-wire core core)\n//     3. `clai_am4_hard`      (am4-2,2,am3-3",
+      "nvme_sweeps": 24,
+      "naive_sweeps": 32
+    },
+    {
+      "file": "scripts/run_frontier_benchmarks.py",
+      "prompt_tail": " Yosys UltraScale+ & Verilator)\n  3. Frontier 3 (`Latent JEPA-EBRM Split",
+      "lfm2_5_completion": "LM LM LM LM LM LM LMMLMLMLMLMLMLMLMLMLMLMLMLML````````````",
+      "nvme_sweeps": 20,
+      "naive_sweeps": 32
+    },
+    {
+      "file": "src/clai/compiler/sleep_crystallizer.py",
+      "prompt_tail": "gy via 3rd-order Walsh-Hadamard cumulants, refines via Straight-Through\n",
+      "lfm2_5_completion": "    \"\"\"\n    def __init__(self, initial_episode, initial_drrrrr):\n        self.initial_episode = initial_",
+      "nvme_sweeps": 26,
+      "naive_sweeps": 32
+    }
+  ]
+}

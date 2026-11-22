@@ -1,0 +1,5 @@
+architecture,dynamic_luts_l0,routable_ports_l0,synthesized_xilinx_luts,kv260_lut_utilization_pct,clb_luts_per_routable_lut6,dsp48_count,post_vlan_drift_accuracy_pct
+2A_Flat_512to1_Crossbar_64LUTs,64,384,119478,102.01331967213115,1866.84375,0,98.4375
+2B_Compact_Flat_Crossbar_32LUTs,32,192,59739,51.00665983606557,1866.84375,0,95.9375
+2C_FixedWire_DiffLogicNet_WNN_80LUTs,80,0,160,0.1366120218579235,2.0,0,52.34375
+2D_MoL_512x512_Benes_Copy_Benes_80LUTs_OURS,80,480,40155,34.28534836065574,501.9375,0,98.4375

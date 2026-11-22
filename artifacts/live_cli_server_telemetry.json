@@ -1,0 +1,105 @@
+{
+  "health_before": {
+    "status": "ok",
+    "device": "mps",
+    "mamba3_params": 1128736,
+    "mamba3_step_mflops": 2.257,
+    "lut6_pages_6gram": 150644,
+    "lut6_pages_4gram": 67484,
+    "lut6_ast_branch_pages": 2800,
+    "kv260_bram_capacity_pages": 512,
+    "kv260_bram_occupied_pages": 438,
+    "kv260_bram_generation": 1,
+    "online_crystallizations": 0
+  },
+  "health_after": {
+    "status": "ok",
+    "device": "mps",
+    "mamba3_params": 1128736,
+    "mamba3_step_mflops": 2.257,
+    "lut6_pages_6gram": 150749,
+    "lut6_pages_4gram": 67538,
+    "lut6_ast_branch_pages": 2824,
+    "kv260_bram_capacity_pages": 512,
+    "kv260_bram_occupied_pages": 460,
+    "kv260_bram_generation": 2,
+    "online_crystallizations": 1
+  },
+  "sse_polyglot_runs": [
+    {
+      "lang": "py",
+      "prompt": "        self.d_model = d_model\n        self.n_heads = n_heads\n        self.d_head = ",
+      "summary": {
+        "completion_text": "torch.Tensor<Self>,\n                                            ",
+        "total_bytes": 64,
+        "total_passes": 15,
+        "mean_bytes_per_pass": 4.267,
+        "r0_lut6_share_pct": 78.12,
+        "bram_generation": 1
+      },
+      "num_sse_events": 15
+    },
+    {
+      "lang": "rs",
+      "prompt": "pub fn verify_kv260_bank_swap(reg_base: usize, shadow_id: u32) -> Result<u32, ",
+      "summary": {
+        "completion_text": "1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1",
+        "total_bytes": 64,
+        "total_passes": 42,
+        "mean_bytes_per_pass": 1.524,
+        "r0_lut6_share_pct": 34.38,
+        "bram_generation": 1
+      },
+      "num_sse_events": 42
+    },
+    {
+      "lang": "sv",
+      "prompt": "    always @(posedge clk) begin\n        if (!rst_n) begin\n            active_bank <= ",
+      "summary": {
+        "completion_text": "1'b0;\n                                                          ",
+        "total_bytes": 64,
+        "total_passes": 14,
+        "mean_bytes_per_pass": 4.571,
+        "r0_lut6_share_pct": 79.69,
+        "bram_generation": 1
+      },
+      "num_sse_events": 14
+    }
+  ],
+  "online_crystallization_event": {
+    "timestamp": 1795280098.7401211,
+    "file_path": "/var/folders/_q/x4hf_qn532vf9htmctc4r2_m0000gn/T/tmpy5h_olnj/telemetry_quorum_packet.py",
+    "lang": "python",
+    "file_bytes": 396,
+    "adapt_r2_steps": 0,
+    "lut6_6gram_pages_updated": 197,
+    "lut6_4gram_pages_updated": 170,
+    "ast_branch_pages_compiled": 38,
+    "kv260_bram_slots_programmed": 164,
+    "bram_generation": 2,
+    "pre_bytes_per_pass": 2.155,
+    "post_bytes_per_pass": 3.8,
+    "pre_lut6_accept_pct": 42.73,
+    "post_lut6_accept_pct": 88.79,
+    "pre_bram_hit_pct": 9.38,
+    "post_bram_hit_pct": 85.32,
+    "elapsed_ms": 201.09
+  },
+  "novel_file_sse_before": {
+    "completion_text": "tuple[int, int]:\n                                               ",
+    "total_bytes": 64,
+    "total_passes": 16,
+    "mean_bytes_per_pass": 4.0,
+    "r0_lut6_share_pct": 76.56,
+    "bram_generation": 1
+  },
+  "novel_file_sse_after": {
+    "completion_text": "tuple[int, int]:\n                                               ",
+    "total_bytes": 64,
+    "total_passes": 16,
+    "mean_bytes_per_pass": 4.0,
+    "r0_lut6_share_pct": 76.56,
+    "bram_generation": 2
+  },
+  "lossless_exact_parity": true
+}

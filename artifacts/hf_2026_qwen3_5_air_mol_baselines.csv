@@ -1,0 +1,5 @@
+method,lossless_token_exact_pct,mean_tokens_per_nvme_sweep,mean_code_chars_per_nvme_sweep,mean_nvme_sweeps_for_32tok,nvme_gb_read_per_completion,peak_active_weight_ram_mb,measured_tok_per_sec,measured_code_chars_per_sec
+B_AirLLM_Qwen3.5_0.8B_Base_4Bit_Prefetch_T1,100.0,1.0,2.72,24.0,12.674,242.5,0.53,1.4
+C_AirLLM_Qwen3.5_0.8B_Base_4Bit_PLD_TokenLookup,100.0,1.32,3.58,18.25,9.637,242.5,0.5,1.4
+D_AirMoL_Qwen3.5_0.8B_Base_4Bit_TokenBenesLUT6_Cold_OURS,100.0,1.48,4.02,16.25,8.581,242.5,0.32,0.9
+E_AirMoL_Qwen3.5_0.8B_Base_4Bit_PostWake_Crystallized_OURS,100.0,2.74,7.46,8.75,4.621,242.5,1.11,3.0

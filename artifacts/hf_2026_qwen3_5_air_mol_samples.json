@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "repo_id": "Qwen/Qwen3.5-0.8B-Base",
+    "model_type": "qwen3_5_text",
+    "num_layers": 24,
+    "conv_ssm_layers": 18,
+    "full_attn_layers": 6,
+    "hidden_size": 1024,
+    "vocab_size": 248320,
+    "total_params": 752393024,
+    "full_fp32_mb": 2870.15,
+    "nvme_fp16_shards_mb": 0.0,
+    "nvme_4bit_shards_mb": 540.75,
+    "compression_vs_fp32": 5.31,
+    "shard_sec": 42.2,
+    "bits_per_token": 18,
+    "draft_k_tokens": 3,
+    "total_train_bpe_tokens": 152031,
+    "token_pages_3gram": 62275,
+    "token_pages_2gram": 34590,
+    "token_branch_lut6_pages": 1200,
+    "compile_sec": 7.89
+  },
+  "samples": [
+    {
+      "file": "hw/kv260/rtl/clai_kv260_axi_top.sv",
+      "prompt_tail": "m bus)\n//     2. `clai_rung0_core`      (crystallized 3-layer 1,536-LUT6",
+      "completion": "4)\n//     3. `clai_engram`          (1,536-LUT6",
+      "nvme_sweeps": 16,
+      "naive_sweeps": 24
+    },
+    {
+      "file": "scripts/run_frontier_benchmarks.py",
+      "prompt_tail": "& Verilator)\n  3. Frontier 3 (`Latent JEPA-EBRM Split-Conformal + Online",
+      "completion": "-Adaptive + Multi-Stage + Multi-Stage + Multi-Stage + Multi-Stage + Multi-Stage +",
+      "nvme_sweeps": 13,
+      "naive_sweeps": 24
+    },
+    {
+      "file": "src/clai/compiler/sleep_crystallizer.py",
+      "prompt_tail": "efines via Straight-Through\n    DiffLUT optimization, and hot-swaps Rung",
+      "completion": "-Through-Off (RTO) to enable parallel execution.\n    \"\"\"\n\n    def __init__(self,",
+      "nvme_sweeps": 17,
+      "naive_sweeps": 24
+    }
+  ]
+}

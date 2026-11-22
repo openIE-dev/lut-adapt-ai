@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F59E0B">
+  <meta name="color-scheme" content="dark light">
+  <meta name="author" content="David Charlot">
+  <meta name="description" content="About: Downward LUT6 Compilation in a Mixture of Limits Cascade. Software measurements, Yosys/Verilator xck26 RTL simulation, and AirMoL 4-bit NVMe streaming on 2026 hybrid models.">
+  <title>About · Downward LUT6 Compilation in a Mixture of Limits Cascade | OpenIE Research</title>
+  <script>
+    (function(){
+      var stored = localStorage.getItem('oe-theme');
+      var theme = stored && ['dark','light','auto'].indexOf(stored) !== -1 ? stored : 'auto';
+      var resolved = theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme;
+      document.documentElement.setAttribute('data-theme', resolved);
+      document.documentElement.style.colorScheme = resolved;
+    })();
+  </script>
+  <link rel="stylesheet" href="openie.css">
+</head>
+<body class="grid-bg">
+  <nav class="nav-glass" aria-label="Main navigation">
+    <a href="https://research.openie.dev/" class="brand-logo">Open<span class="brand-cyan">IE</span> <span class="brand-amber">Research</span></a>
+    <div class="nav-links">
+      <a href="index.html">Paper</a>
+      <a href="living.html">Figures (/living/)</a>
+      <a href="about.html" class="active">About</a>
+      <a href="../mol_architecture.pdf">LaTeX PDF</a>
+      <a href="https://openie.dev" class="pill-cyan">openie.dev</a>
+      <button type="button" id="theme-toggle" class="theme-btn" title="Toggle theme">Theme: <span id="theme-label">Auto</span></button>
+    </div>
+  </nav>
+
+  <main>
+    <section style="max-width: 48rem; margin: 0 auto; padding: 3.5rem 1.75rem 5rem;">
+      <p class="cite-label" style="color: var(--color-brand-amber);">Research paper · about</p>
+      <h1 class="hero-title" style="max-width: none;">Downward LUT6 Compilation in a Mixture of Limits Cascade</h1>
+      <p class="author-line">David Charlot, Open Interface Engineering</p>
+      <p class="hero-deck">
+        This paper studies how a four-rung Mixture of Limits cascade compiles certified neural wakes downward into Beneš-routed <code>LUT6</code> memory pages, and how that zero-FLOP lookup drafter cuts NVMe SSD weight reads on 2026 hybrid language models at <code>100.0%</code> exact token parity.
+      </p>
+
+      <div class="glass-card" style="margin-top: 1.75rem;">
+        <p class="cite-label">In plain words</p>
+        <ol style="margin: 0.5rem 0 0; padding-left: 1.25rem; font-size: 0.94rem; line-height: 1.65;">
+          <li>Most inputs a deployed system sees repeat patterns it has already solved, so running a full neural model on every step wastes compute and memory bandwidth.</li>
+          <li>We put a reconfigurable 6-input truth-table (<code>LUT6</code>) lookup layer in front of streaming state-space and foundation models, and compile answers downward into lookup memory pages only after a strict check certifies them.</li>
+          <li>When a 2026 hybrid language model streams its weights layer-by-layer from an NVMe SSD, the <code>LUT6</code> drafter proposes multi-token bursts verified in a single disk sweep, cutting disk reads by nearly <code>3×</code> without changing a single output token.</li>
+        </ol>
+      </div>
+
+      <div class="glass-card" style="margin-top: 1.25rem;">
+        <p class="cite-label">What each measurement class is</p>
+        <ul style="margin: 0.5rem 0 0; padding-left: 1.25rem; font-size: 0.92rem; line-height: 1.65;">
+          <li><strong>Measured in software (<code>measured_j = None</code>):</strong> Exact Darwin <code>F_NOCACHE</code> <code>os.pread</code> NVMe byte counts, peak active RAM (<code>128.0 MB</code> on <code>LiquidAI/LFM2.5-350M</code>; <code>242.5 MB</code> on <code>Qwen/Qwen3.5-0.8B-Base</code>), wall-clock throughput on Apple M5 Max, and <code>100.0%</code> bit/token parity.</li>
+          <li><strong>Simulated RTL (<code>board_metered = false</code>):</strong> Yosys <code>0.71+</code> (<code>synth_xilinx -family xcup</code> targeting Kria KV260 <code>xck26</code>) netlist synthesis (<code>41,186</code> CLB LUTs, <code>81</code> <code>RAMB36E2</code> blocks, <code>0</code> <code>DSP48</code> slices) and Verilator <code>5.054</code> cycle simulation (<code>CPI = 1.0</code>). No physical KV260 bitstream or rail power was metered in this repository; the <code>11,428 pJ</code> KV260 <code>INA260</code> SOM reading belongs solely to <em>Metered Commit Gates</em> [same house].</li>
+          <li><strong>Analytical energy estimates (<code>est_j</code>):</strong> All <code>J/VC</code> and <code>mJ/byte</code> figures come from operation counts and TDP-time formulas for within-model comparison, never silicon watts.</li>
+        </ul>
+      </div>
+
+      <div class="glass-card" style="margin-top: 1.25rem;">
+        <p class="cite-label">What is not claimed</p>
+        <p style="margin: 0.4rem 0 0; font-size: 0.92rem; line-height: 1.65;">
+          Not claimed: physical KV260 board power for <code>clai_benes_hotswap_core.sv</code>; Vivado post-place-and-route timing closure at <code>250 MHz</code>; silicon energy leadership over commercial ASICs; promotion of <code>Conformal-bounded</code> or <code>ModelGenerated</code> outputs to <code>Deterministic</code>; or capability gains beyond the greedy target checkpoint.
+        </p>
+      </div>
+
+      <div class="btn-row">
+        <a href="index.html" class="btn btn-primary">Read paper →</a>
+        <a href="../mol_architecture.pdf" class="btn btn-amber-outline" download>Download LaTeX PDF</a>
+        <a href="living.html" class="btn btn-ghost">Interactive figures (/living/)</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <div class="brand-logo" style="font-size: 15px;">Open<span class="brand-cyan">IE</span> Research</div>
+        <p style="font-size: 12px; color: var(--color-brand-gray); max-width: 340px; margin-top: 0.5rem;">
+          Research papers hub for Open Interface Engineering, Inc.<br>
+          <code>board_metered = false</code> in <code>lut-adapt-ai</code> · <code>research.openie.dev</code>
+        </p>
+      </div>
+      <div style="display: flex; gap: 2.5rem; font-size: 12px;">
+        <div>
+          <div class="cite-label">This Study</div>
+          <div><a href="index.html" style="color: var(--color-brand-slate); text-decoration: none;">Full Paper</a></div>
+          <div><a href="living.html" style="color: var(--color-brand-slate); text-decoration: none;">Living Figures</a></div>
+          <div><a href="../mol_architecture.pdf" style="color: var(--color-brand-slate); text-decoration: none;">LaTeX PDF</a></div>
+        </div>
+        <div>
+          <div class="cite-label">Same-House Context</div>
+          <div><a href="https://research.openie.dev/papers/gates/" style="color: var(--color-brand-slate); text-decoration: none;">Metered Commit Gates</a></div>
+          <div><a href="https://research.openie.dev/papers/rce-jepa/" style="color: var(--color-brand-slate); text-decoration: none;">RCE-JEPA</a></div>
+          <div><a href="https://research.openie.dev/papers/satiation/" style="color: var(--color-brand-slate); text-decoration: none;">Task Satiation</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copy">© Open Interface Engineering, Inc. Research, free to read, on how to use less energy.</div>
+  </footer>
+
+  <script>
+    (function(){
+      var key = 'oe-theme', modes = ['dark','light','auto'];
+      var btn = document.getElementById('theme-toggle'), lbl = document.getElementById('theme-label');
+      function apply(m) {
+        var r = m === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : m;
+        document.documentElement.setAttribute('data-theme', r);
+        document.documentElement.style.colorScheme = r;
+        lbl.textContent = m.charAt(0).toUpperCase() + m.slice(1);
+      }
+      apply(localStorage.getItem(key) || 'auto');
+      btn.addEventListener('click', function(){
+        var cur = localStorage.getItem(key) || 'auto';
+        var next = modes[(modes.indexOf(cur) + 1) % 3];
+        localStorage.setItem(key, next);
+        apply(next);
+      });
+    })();
+  </script>
+</body>
+</html>

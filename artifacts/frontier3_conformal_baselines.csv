@@ -1,0 +1,6 @@
+method,forward_passes_per_ep,false_crystallization_risk_pct,ood_detection_auroc,safe_id_coverage_pct,crystallized_lut6_clean_acc_pct,detected_unlabeled_vlan_drift
+3A_Naive_MSP_SelfDistillation,1,17.62189905902481,0.8551519074796642,90.93484419263456,99.21875,False
+3B_TempScaled_Margin_Gate,1,17.66211604095563,0.8421714247252758,91.123701605288,98.828125,False
+3C_Helmholtz_Logit_Energy_OOD,1,24.282560706401767,0.8045147611666399,97.16713881019831,99.8046875,False
+3D_MCDropout_5Pass_Epistemic,5,18.23579304495335,0.8493792846778041,91.0292728989613,99.609375,False
+3E_MoL_LatentEBRM_SplitConformal_ACI_OURS,1,0.0,1.0,95.65627950897073,99.0234375,True

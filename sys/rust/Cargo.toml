@@ -1,0 +1,38 @@
+[package]
+name = "clai-cubecl"
+version = "0.2.1"
+authors = ["David Charlot"]
+edition = "2024"
+rust-version = "1.95"
+default-run = "clai-cubecl"
+
+[features]
+default = ["metal", "cpu"]
+cuda = ["burn/cuda", "burn-cubecl/cuda"]
+rocm = ["burn/rocm", "burn-cubecl/hip"]
+metal = ["burn/metal", "burn-cubecl/metal"]
+vulkan = ["burn/vulkan", "burn-cubecl/vulkan"]
+cpu = ["burn/cpu", "burn-cubecl/cpu"]
+
+[dependencies]
+burn = { version = "0.22.1", default-features = false, features = [
+    "std",
+    "autodiff",
+    "fusion",
+    "autotune",
+    "extension",
+    "optim",
+] }
+burn-backend = { version = "0.22.1", default-features = false, features = ["std", "cubecl"] }
+burn-cubecl = { version = "0.22.1", default-features = false, features = [
+    "std",
+    "fusion",
+    "autotune",
+] }
+rayon = "1.10"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 4
+panic = "abort"

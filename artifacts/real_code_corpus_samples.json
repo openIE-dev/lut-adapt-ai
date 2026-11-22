@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "train_files": 34,
+    "train_bytes": 426290,
+    "test_files": 8,
+    "test_bytes": 93152,
+    "train_bpb": 1.479,
+    "train_sec": 90.55,
+    "pages_6gram": 115016,
+    "pages_4gram": 54616,
+    "pages_branch_lut6": 2800,
+    "compile_sec": 11.06
+  },
+  "samples": [
+    {
+      "file_path": "hw/kv260/rtl/clai_kv260_axi_top.sv",
+      "prompt_tail": "best_v   = 8'd0;\\n        comb_second_v = 8'd0;\\n        f",
+      "generated_code": "or (0..MAMBA_D) |p| {\\n                                          ",
+      "lut6_passes": 15,
+      "naive_passes": 64
+    },
+    {
+      "file_path": "scripts/run_frontier_benchmarks.py",
+      "prompt_tail": "yte LUT6 Burst Drafter vs. LLM/SSM Baselines ===\")\\n    f",
+      "generated_code": "or i in 0..16 {\\n                                                ",
+      "lut6_passes": 15,
+      "naive_passes": 64
+    },
+    {
+      "file_path": "sys/rust/src/cpu_cascade.rs",
+      "prompt_tail": "             self.prototypes.push(*z);\\n                s",
+      "generated_code": "elf.regime_id = 0; k < 16; 6]; LUT6 bit-planes as usize] = 0; bl",
+      "lut6_passes": 23,
+      "naive_passes": 64
+    }
+  ]
+}

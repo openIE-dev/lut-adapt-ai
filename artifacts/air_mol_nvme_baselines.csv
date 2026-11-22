@@ -1,0 +1,7 @@
+method,lossless_exact_match_pct,mean_bytes_per_nvme_sweep,mean_nvme_sweeps_for_64b,nvme_mb_read_per_64b,nvme_mb_written_per_64b,peak_resident_ram_mb,measured_ms_per_byte,projected_70b_int4_nvme_gb_per_64b,projected_70b_int4_tok_per_sec
+1_AirLLM_Transformer_FP16_KVSpill_T1,100.0,1.0,64.0,2130.02,407.62,8.81,60.64,9625.6,0.04
+2_AirLLM_Transformer_4Bit_Prefetch_KVSpill_T1,100.0,1.0,64.0,887.55,407.62,8.81,64.87,3187.2,0.13
+3_AirMamba3_4Bit_Swapped_EAGLE2_Drafter,100.0,2.86,22.38,175.27,0.0,7.2,19.2,900.6,0.46
+4_AirMamba3_4Bit_PinnedO1State_T1,100.0,1.0,64.0,488.3,0.0,7.2,37.72,2521.6,0.16
+5_AirMoL_4Bit_PagedBenesLUT6_ColdUnseen_OURS,100.0,3.74,17.12,130.66,0.0,7.51,11.18,674.7,0.62
+6_AirMoL_4Bit_PostWake_SleepCrystallized_OURS,100.0,4.27,15.0,114.44,0.0,7.51,11.09,591.0,0.7

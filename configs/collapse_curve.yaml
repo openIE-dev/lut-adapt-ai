@@ -1,0 +1,41 @@
+experiment:
+  microbatch_size: 64
+  episodes: 5120
+  mutation_interval: 2048      # Shift rule schema mid-run to test circuit breaker & re-crystallization
+  novel_class_episode: 3840    # Spawn unseen open-world class ID mid-stream to test Rung 2.5 HC-SOINN
+  compile_every: 512           # Trigger downward LUT6 crystallization every 512 episodes (8 micro-batches)
+  seed: 42
+
+rung0:
+  bus_bits: 512                # 8 words x 64 bits: [128b XOR fold | 256b 16-slot thermometer | 128b Engram]
+  engram_buckets: 65536
+  lut_layers: 3
+  lut_width: 512               # 512 LUT6 gates per layer (64 votes/class for 8 base classes)
+  margin_threshold: 4          # Minimum integer popcount margin required to commit at Rung 0
+
+rung2:
+  d_mamba: 256
+  n_layers: 4
+  n_heads: 4
+  d_state: 64                  # Even state dim N=64 for complex data-dependent RoPE pairs
+  mimo_rank: 4                 # Rank-4 MIMO -> virtual rank-8 Trapezoidal SSD
+  prob_margin_threshold: 0.45  # Commit at Rung 2 if P(top1) - P(top2) >= 0.45
+
+plasticity:
+  max_nodes: 1024
+  max_edge_age: 50
+  cosine_margin_threshold: 0.035 # Commit at Rung 2.5 HC-SOINN on S^511 if rival cosine margin >= 0.035
+
+rung3:
+  d_model: 512
+  n_concepts: 16
+  n_rvq_levels: 4
+  max_settle_steps: 12
+  step_lr: 0.14
+  tau_commit: 0.42             # Max free-energy allowed to pass Metered Commit Gate
+
+compiler:
+  batch_size: 128
+  epochs: 28
+  lr: 0.04
+  min_holdout_agreement: 0.58  # Hot-swap Rung 0 LUT6 fabric once holdout bit-exact agreement >= 58% (4.6x random)
