@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "num_skills": 15,
+  "skills": [
+    {
+      "skill_id": 1,
+      "fn_name": "task_func",
+      "normalized_code": "import itertools\nfrom random import shuffle\nimport itertools\nfrom random import shuffle\n\ndef task_func(numbers=list(range(1, 3))):\n    \"\"\"\n    Calculates the average of the sums of absolute differences between each pair of consecutive numbers \n    for all permutations of a given list. Each permutation is shuffled before calculating the differences.\n\n    Args:\n    - numbers (list): A list of numbers. Default is numbers from 1 to 10.\n    \n    Returns:\n    float: The average of the sums of absolute differences for each shuffled permutation of the list.\n\n    Requirements:\n    - itertools\n    - random.shuffle\n\n    Example:\n    >>> result = task_func([1, 2, 3])\n    >>> isinstance(result, float)\n    True\n    \"\"\"\n    if not numbers:\n        return 0.0\n    perms = list(itertools.permutations(numbers))\n    total_sum = 0.0\n    count = 0\n    for perm in perms:\n        shuffled = list(perm)\n        shuffle(shuffled)\n        sum_diff = 0.0\n        for i in range(len(shuffled) - 1):\n            sum_diff += abs(shuffled[i] - shuffled[i + 1])\n        total_sum += sum_diff\n        count += 1\n    if count == 0:\n        return 0.0\n    return total_sum / count",
+      "source_model": "Rung3cd_Qwen3.6_35B_Think",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 2,
+      "fn_name": "task_func",
+      "normalized_code": "import collections\nimport random\nimport string\nimport collections\nimport random\nimport string\n\ndef task_func(length=100):\n    \"\"\"\n    Generate a random string of the specified length composed of uppercase and lowercase letters,\n    and then count the occurrence of each character in this string.\n\n    Parameters:\n    length (int, optional): The number of characters in the generated string. Default is 100.\n\n    Returns:\n        dict: A dictionary where each key is a character from the generated string and the value \n                is the count of how many times that character appears in the string.\n\n    Requirements:\n    - collections\n    - random\n    - string\n\n    Raises:\n    ValueError if the length is a negative number\n\n    Example:\n    >>> import random\n    >>> random.seed(42)  # Ensures reproducibility for demonstration\n    >>> task_func(10)\n    {'h': 1, 'B': 2, 'O': 1, 'L': 1, 'm': 1, 'j': 1, 'u': 1, 'E': 1, 'V': 1}\n    \"\"\"\n    if length < 0:\n        raise ValueError('length must be non-negative')\n    chars = string.ascii_letters\n    random_string = ''.join((random.choice(chars) for _ in range(length)))\n    counts = collections.Counter(random_string)\n    return dict(counts)",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 3,
+      "fn_name": "task_func",
+      "normalized_code": "import random\nimport statistics\nimport random\nimport statistics\n\ndef task_func(LETTERS):\n    \"\"\"\n    Create a dictionary in which keys are random letters and values are lists of random integers.\n    The dictionary is then sorted by the mean of the values in descending order, demonstrating the use of the statistics library.\n\n    Parameters:\n        LETTERS (list of str): A list of characters used as keys for the dictionary.\n\n    Returns:\n        dict: The sorted dictionary with letters as keys and lists of integers as values, sorted by their mean values.\n\n    Requirements:\n        - random\n        - statistics\n\n    Example:\n        >>> import random\n        >>> random.seed(42)\n        >>> sorted_dict = task_func(['a', 'b', 'c'])\n        >>> list(sorted_dict.keys())\n        ['a', 'b', 'c']\n        >>> isinstance(sorted_dict['a'], list)\n        True\n        >>> type(sorted_dict['a'])  # Check type of values\n        <class 'list'>\n    \"\"\"\n    result = {}\n    for letter in LETTERS:\n        lst = [random.randint(0, 100) for _ in range(5)]\n        result[letter] = lst\n    sorted_items = sorted(result.items(), key=lambda item: statistics.mean(item[1]), reverse=True)\n    sorted_dict = {k: v for k, v in sorted_items}\n    return sorted_dict",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 4,
+      "fn_name": "task_func",
+      "normalized_code": "import random\nimport numpy as np\nimport random\nimport numpy as np\n\ndef task_func(LETTERS):\n    \"\"\"\n    Create a dictionary where keys are specified letters and values are lists of random integers.\n    Then calculate the mean of these integers for each key and return a dictionary of these means.\n\n    Parameters:\n        LETTERS (list of str): List of single-character strings to be used as keys in the output dictionary.\n    \n    Returns:\n        dict: A dictionary where each key is a letter from the input list and the value is the mean of \n              a randomly generated list of integers (with each list having 1 to 10 integers ranging from 0 to 100).\n    \"\"\"\n    result = {}\n    for letter in LETTERS:\n        n = random.randint(1, 10)\n        lst = [random.randint(0, 100) for _ in range(n)]\n        mean_val = sum(lst) / len(lst)\n        result[letter] = mean_val\n    return result",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 5,
+      "fn_name": "task_func",
+      "normalized_code": "from collections import Counter\nimport itertools\nfrom collections import Counter\nimport itertools\n\ndef task_func(d):\n    \"\"\"\n    Count the occurrence of each integer in the values of the input dictionary, where each value is a list of integers,\n    and return a dictionary with these counts. The resulting dictionary's keys are the integers, and the values are \n    their respective counts across all lists in the input dictionary.\n\n    Parameters:\n    d (dict): A dictionary where each key is a string and the value is a list of integers.\n\n    Returns:\n        dict: A dictionary where each key is an integer from any of the input lists, and the value is the count of \n                how often that integer appears in all the lists combined.\n    \"\"\"\n    counter_total = Counter()\n    for lst in d.values():\n        for item in lst:\n            counter_total[item] += 1\n    return dict(counter_total)",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 6,
+      "fn_name": "task_func",
+      "normalized_code": "import random\nimport math\nimport random\nimport math\n\ndef task_func(LETTERS=None):\n    if LETTERS is None:\n        LETTERS = [chr(i) for i in range(97, 123)]\n    result = {}\n    for letter in LETTERS:\n        n = random.randint(1, 10)\n        nums = [random.randint(0, 100) for _ in range(n)]\n        mean = sum(nums) / len(nums)\n        variance = sum(((x - mean) ** 2 for x in nums)) / len(nums)\n        std_dev = math.sqrt(variance)\n        result[letter] = std_dev\n    return result",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 7,
+      "fn_name": "task_func",
+      "normalized_code": "import csv\nimport collections\nimport operator\nimport csv\nimport collections\nimport operator\n\ndef task_func(csv_file_path):\n    \"\"\"\n    Find the best-selling product from a given CSV file with sales data.\n\n    This function parses a CSV file assumed to have a header followed by rows containing\n    two columns: 'product' and 'quantity'. It computes the total sales per product and\n    determines the product with the highest cumulative sales. The CSV file must include\n    at least these two columns, where 'product' is the name of the product as a string\n    and 'quantity' is the number of units sold as an integer.\n\n    Args:\n        csv_file_path (str): The file path to the CSV file containing sales data.\n\n    Returns:\n        str: The name of the top-selling product based on the total quantity sold.\n\n    Requirements:\n    - csv\n    - collections\n    - operator\n\n    Example:\n    >>> task_func(\"path/to/sales.csv\")\n    'Product ABC'\n    \"\"\"\n    sales = collections.Counter()\n    with open(csv_file_path, 'r', newline='') as f:\n        reader = csv.DictReader(f)\n        for row in reader:\n            product = row['product']\n            quantity = int(row['quantity'])\n            sales[product] += quantity\n    if not sales:\n        raise ValueError('No sales data found in the CSV file.')\n    best_product = max(sales, key=sales.get)\n    return best_product",
+      "source_model": "Rung3cd_Qwen3.6_35B_Think",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 8,
+      "fn_name": "task_func",
+      "normalized_code": "import numpy as np\nimport itertools\nimport random\nimport statistics\nimport numpy as np\nimport itertools\nimport random\nimport statistics\n\ndef task_func(T1, RANGE=100):\n    \"\"\"\n    Convert elements in 'T1' to integers and create a list of random integers.\n    The size of the list is the sum of the integers in `T1`. Calculate and \n    return the mean, median, and mode of the list.\n    \n    Parameters:\n    T1 (tuple of tuples): Each tuple contains string representations of integers which are converted to integers.\n    RANGE (int, optional): The upper limit for generating random integers. Default is 100.\n    \n    Returns:\n    tuple: A tuple containing the mean, median, and mode of the generated list of random integers.\n           The mean and median are floats, and the mode is an integer. The calculations use the generated\n           list whose size is determined by the sum of converted integers from `T1`.\n    \n    Requirements:\n    - numpy\n    - itertools\n    - random\n    - statistics\n\n    Raises:\n    statistics.StatisticsError if T1 is empty\n    \n    Example:\n    >>> import random\n    >>> random.seed(42)\n    >>> T1 = (('13', '17', '18', '21', '32'), ('07', '11', '13', '14', '28'), ('01', '05', '06', '08', '15', '16'))\n    >>> stats = task_func(T1)\n    >>> print(stats)\n    (49.88, 48.0, 20)\n    >>> stats = task_func(T1, RANGE=50)\n    >>> print(stats)\n    (23.773333333333333, 25.0, 15)\n    \"\"\"\n    if not T1:\n        raise statistics.StatisticsError('T1 is empty')\n    all_ints = []\n    for t in T1:\n        for s in t:\n            all_ints.append(int(s))\n    total_size = sum(all_ints)\n    if total_size == 0:\n        raise statistics.StatisticsError('Sum of integers in T1 is zero')\n    random_ints = [random.randint(0, RANGE - 1) for _ in range(total_size)]\n    mean_val = float(statistics.mean(random_ints))\n    median_val = float(statistics.median(random_ints))\n    mode_val = int(statistics.mode(random_ints))\n    return (mean_val, median_val, mode_val)",
+      "source_model": "Rung3cd_Qwen3.6_35B_Think",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 9,
+      "fn_name": "task_func",
+      "normalized_code": "import configparser\nimport os\nimport shutil\nimport configparser\nimport os\nimport shutil\nimport zipfile\n\ndef task_func(config_file_path, archieve_dir='/home/user/archive'):\n    \"\"\"\n    Archive a specified project directory into a ZIP file based on the configuration specified in a config file.\n\n    This function reads a configuration file to determine the project directory and archives this directory into a ZIP file.\n    The ZIP file's name will be the project directory's basename, stored in the specified archive directory.\n\n    Parameters:\n    - config_file_path (str): Path to the configuration file. Must exist and be readable.\n    - archieve_dir (str, optional): Path to the directory where the ZIP archive will be stored. Defaults to '/home/user/archive'.\n\n    Returns:\n        bool: True if the ZIP archive is successfully created, otherwise raises an exception.\n\n    Raises:\n        FileNotFoundError: If the `config_file_path` does not exist or the specified project directory does not exist.\n        Exception: If the ZIP archive cannot be created.\n    \"\"\"\n    config = configparser.ConfigParser()\n    try:\n        config.read(config_file_path)\n    except FileNotFoundError:\n        raise FileNotFoundError(f'Configuration file not found: {config_file_path}')\n    except Exception as e:\n        raise Exception(f'Failed to read configuration file: {e}')\n    if 'Project' not in config:\n        raise Exception('Missing [Project] section in configuration file.')\n    project_config = config['Project']\n    dir_path_str = project_config.get('directory', fallback=None)\n    if dir_path_str is None:\n        raise FileNotFoundError('Project directory not specified in configuration file.')\n    project_dir = dir_path_str.strip() if dir_path_str else ''\n    if not os.path.isdir(project_dir):\n        raise FileNotFoundError(f'Project directory does not exist: {project_dir}')\n    archieve_dir = archieve_dir if archieve_dir else '/home/user/archive'\n    os.makedirs(archieve_dir, exist_ok=True)\n    basename = os.path.basename(project_dir)\n    zip_filename = basename + '.zip'\n    zip_path = os.path.join(archieve_dir, zip_filename)\n    try:\n        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:\n            for root, dirs, files in os.walk(project_dir):\n                for file in files:\n                    full_path = os.path.join(root, file)\n                    arcname = os.path.relpath(full_path, project_dir)\n                    zf.write(full_path, arcname)\n        return True\n    except Exception as e:\n        raise Exception(f'Failed to create ZIP archive at {zip_path}: {e}')",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 10,
+      "fn_name": "task_func",
+      "normalized_code": "import os\nimport glob\nimport zipfile\nimport os\nimport glob\nimport zipfile\n\ndef task_func(directory):\n    \"\"\"\n    Zips all files (not including subdirectories) located in the specified directory and returns the path to the created zip file.\n\n    Parameters:\n    directory (str): The directory path containing the files to be zipped.\n\n    Returns:\n        str: The path to the generated zip file ('<directory>/files.zip'). Returns None if the directory does not contain any files.\n\n    Raises:\n        FileNotFoundError: if the specified directory does not exist\n\n    Requirements:\n        - Use os, glob, zipfile modules.\n    \"\"\"\n    if not os.path.isdir(directory):\n        raise FileNotFoundError(f\"Directory '{directory}' does not exist.\")\n    try:\n        file_list = glob.glob(os.path.join(directory, '*'))\n    except Exception:\n        file_list = []\n    files_to_zip = []\n    for entry in file_list:\n        full_path = os.path.join(directory, entry)\n        if os.path.isfile(full_path):\n            files_to_zip.append(full_path)\n    if not files_to_zip:\n        return None\n    zip_path = os.path.join(directory, 'files.zip')\n    with zipfile.ZipFile(zip_path, 'w') as zf:\n        for file_path in files_to_zip:\n            arcname = os.path.basename(file_path)\n            zf.write(file_path, arcname)\n    return zip_path",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 11,
+      "fn_name": "task_func",
+      "normalized_code": "import collections\nfrom itertools import zip_longest\nfrom random import choices\nimport collections\nfrom itertools import zip_longest\nfrom random import choices\n\ndef task_func(l1, l2, K=10):\n    \"\"\"\n    Combine two lists by alternating their elements, even if they are of different lengths. \n    Elements from the longer list without a counterpart in the shorter one will be included on their own.\n    Then, create a random sample of size K from the combined list, and calculate the frequency of \n    each element in the sample.\n\n    Parameters:\n    l1 (list): The first list containing any hashable types.\n    l2 (list): The second list containing any hashable types.\n    K (int): the size of the random sample from the combined list. Default to 10.\n\n    Returns:\n    collections.Counter: An object that counts the frequency of each element in the sample.\n\n    Requirements:\n    - collections\n    - itertools.zip_longest\n    - random.choices\n\n    Example:\n    >>> import random\n    >>> random.seed(32)\n    >>> l1 = list(range(10))\n    >>> l2 = list(range(10, 20))\n    >>> freq = task_func(l1, l2)\n    >>> print(freq)\n    Counter({5: 2, 10: 1, 2: 1, 3: 1, 9: 1, 14: 1, 7: 1, 1: 1, 8: 1})\n    \"\"\"\n    combined_list = list(zip_longest(l1, l2))\n    combined = []\n    for item1, item2 in combined_list:\n        if item1 is not None:\n            combined.append(item1)\n        if item2 is not None:\n            combined.append(item2)\n    if not combined:\n        sample = []\n    else:\n        sample = random.choices(combined, k=K)\n    freq = collections.Counter(sample)\n    return freq",
+      "source_model": "Rung3a_Gemma4_E2B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 12,
+      "fn_name": "task_func",
+      "normalized_code": "import numpy as np\nfrom itertools import zip_longest\nimport numpy as np\nfrom itertools import zip_longest\n\ndef task_func(l1, l2, THRESHOLD=0.5):\n    \"\"\"\n    Alternates elements from two numeric lists, calculates the absolute difference of each \n    element from a predefined threshold, and returns the element closest to this threshold.\n\n    Parameters:\n    l1 (list): The first input list containing numeric values.\n    l2 (list): The second input list containing numeric values.\n    THRESHOLD (float): The predefined constant representing a numeric value used as a reference point for comparison. Default to 0.5.\n\n    Returns:\n        float: The element from the combined list that is closest to the threshold of 0.5.\n\n    Examples:\n        >>> l1 = [0.3, 1, 2, 3]\n        >>> l2 = [0.7, 11, 12, 13]\n        >>> closest = task_func(l1, l2)\n        >>> print(closest)\n        0.7\n    \"\"\"\n    combined = []\n    for a, b in zip_longest(l1, l2, fillvalue=None):\n        if a is not None:\n            combined.append(a)\n        else:\n            combined.append(b)\n    n = max(len(l1), len(l2))\n    combined = []\n    for i in range(n):\n        val1 = l1[i] if i < len(l1) else None\n        val2 = l2[i] if i < len(l2) else None\n        if val1 is not None:\n            combined.append(val1)\n        elif val2 is not None:\n            combined.append(val2)\n        else:\n            pass\n    diffs = np.abs(np.array(combined) - THRESHOLD)\n    min_idx = np.argmin(diffs)\n    return combined[min_idx]",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 13,
+      "fn_name": "task_func",
+      "normalized_code": "import base64\nimport hashlib\nimport os\nimport base64\nimport hashlib\nimport os\n\ndef task_func(password, SALT_LENGTH=32):\n    \"\"\"\n    Hashes a password using the PBKDF2 HMAC algorithm with SHA-256 as the hashing algorithm, \n    combined with a randomly generated salt, and returns both the salt and the hashed password, \n    each base64-encoded.\n\n    Parameters:\n    password (str): The password to be hashed.\n    SALT_LENGTH (int): the length of the randomly generated salt.\n\n    Returns:\n    tuple[bytes, bytes]: A tuple containing the base64-encoded salt and the base64-encoded hashed password as byte strings.\n\n    Raises:\n    ValueError if the password is None or empty\n\n    Requirements:\n    - base64\n    - hashlib\n    - os\n\n    Example:\n    >>> salt, hashed_password = task_func('my_password')\n    >>> isinstance(salt, bytes)\n    True\n    >>> isinstance(hashed_password, bytes)\n    True\n    \"\"\"\n    if password is None or not password:\n        raise ValueError('Password cannot be None or empty')\n    salt = os.urandom(SALT_LENGTH)\n    iterations = 100000\n    hash_algorithm = 'sha256'\n    hashed_password = hashlib.pbkdf2_hmac(hash_algorithm, password.encode('utf-8'), salt, iterations, dklen=32)\n    salt_b64 = base64.b64encode(salt)\n    hashed_password_b64 = base64.b64encode(hashed_password)\n    return (salt_b64, hashed_password_b64)",
+      "source_model": "Rung3a_Gemma4_CxRepair",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 14,
+      "fn_name": "task_func",
+      "normalized_code": "import os\nimport re\nimport os\nimport re\n\ndef task_func(pattern, log_dir='/var/log/'):\n    \"\"\"\n    Find the latest log file in a specified directory that matches a given regex pattern.\n    \n    Args:\n        pattern (str): The regex pattern to match against filenames.\n        log_dir (str): The directory to search for log files.\n        \n    Returns:\n        str or None: The path to the most recent log file that matches the pattern, \n                     or None if no matching files are found.\n    \"\"\"\n    compiled_pattern = re.compile(pattern)\n    try:\n        files = os.listdir(log_dir)\n    except (FileNotFoundError, PermissionError):\n        return None\n    matching_files = [f for f in files if compiled_pattern.search(f)]\n    if not matching_files:\n        return None\n    full_paths = [os.path.join(log_dir, f) for f in matching_files]\n    latest_file = max(full_paths, key=lambda f: os.path.getmtime(f))\n    return latest_file",
+      "source_model": "Rung3c_Qwen3.6_35B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 15,
+      "fn_name": "task_func",
+      "normalized_code": "import numpy as np\nimport itertools\nimport random\nimport numpy as np\nimport itertools\nimport random\n\ndef task_func(T1, max_value=100):\n    flat_ints = [int(x) for row in T1 for x in row]\n    total_sum = sum(flat_ints)\n    random_list = [random.randint(0, max_value) for _ in range(total_sum)]\n    p25 = np.percentile(random_list, 25)\n    p50 = np.percentile(random_list, 50)\n    p75 = np.percentile(random_list, 75)\n    return (p25, p50, p75)",
+      "source_model": "Rung3c_Qwen3.6_35B",
+      "hits": 0,
+      "num_exemplars": 1
+    }
+  ]
+}

@@ -5,7 +5,7 @@ author: "David Charlot"
 affiliation: "Open Interface Engineering"
 genre: "Research paper · systems & hardware architecture"
 status: "Draft"
-date: "2026-11-22"
+date: "2026-11-23"
 board_metered: false
 slug: "lut-adapt"
 ---
@@ -15,9 +15,9 @@ slug: "lut-adapt"
 **David Charlot, Open Interface Engineering**  
 Research paper · OpenIE `research.openie.dev` · Repository: `lut-adapt-ai`
 
-> **Measurement.** Research paper, not a journal final. No physical FPGA board or isolated silicon rail shunt was metered in this repository (`measured_j = None`, `board_metered = false`). Hardware logic/BRAM utilization (`41,186` `xcup` CLB LUTs, `81` `RAMB36E2` blocks, `0` `DSP48` slices) and single-cycle (`CPI = 1` at `250 MHz` nominal) switching are **simulated** via Yosys `0.71+` (`synth_xilinx -family xcup` targeting AMD Kria KV260 `xck26`) and Verilator `5.054`. Workstation wall-clock times, exact Darwin `F_NOCACHE` `os.pread` NVMe byte counts, peak active RAM (`250.0 MB` on Oct 2026 `LiquidAI/LFM3-1.7B`, `500.0 MB` on Metal-fused `LiquidAI/LFM2.5-8B-A1B`, `970.0 MB` = `1.47%` of FP16 on Metal-fused `Qwen/Qwen3.6-35B-A3B`), `100.0%` bit/token parity, dual-channel Apple Silicon on-chip `reported_j` hardware counters (`L3 proc_pid_rusage(RUSAGE_INFO_V6).ri_energy_nj` CPU `nJ` + `L2 libIOReport` `"Energy Model"` `'GPU Energy'` `nJ`), and whole-machine macOS `PMU` battery/adapter accumulator deltas are **measured / reported** in software on Apple M5 Max. Analytical joule figures (`est_j`) stay strictly separated from on-chip `reported_j`, and `measured_j` remains `None` throughout. The `11,428 pJ` KV260 `INA260` `VCC_SOM` board reading cited for context belongs solely to *Metered Commit Gates* [same house]. No fabricated citations.
+> **Measurement.** Research paper, not a journal final. No physical FPGA board or isolated silicon rail shunt was metered in this repository (`measured_j = None`, `board_metered = false`). Hardware logic/BRAM utilization (`41,186` `xcup` CLB LUTs in `1`-cycle OOC; **`41,459` `xcup` CLB LUTs = `35.40%`**, **`13` logic levels [`4.00×` shallower]**, **`170 <= 189` `IOB`s**, `81` `RAMB36E2` blocks, `0` `DSP48` slices in the `4`-stage `250 MHz`-pipelined `P4-AXIS` top) and zero-bubble (`CPI = 1.00` at `250 MHz` nominal, `256/256` consecutive beats) switching are **simulated** via Yosys `0.71+` (`synth_xilinx -family xcup` targeting AMD Kria KV260 `xck26-sfvc784-2LV-c`) and Verilator `5.054`. Workstation wall-clock times, exact Darwin `F_NOCACHE` `os.pread` NVMe byte counts, peak active RAM (`250.0 MB` on Oct 2026 `LiquidAI/LFM3-1.7B`, `500.0 MB` on Metal-fused `LiquidAI/LFM2.5-8B-A1B`, `970.0 MB` = `1.47%` of FP16 on Metal-fused `Qwen/Qwen3.6-35B-A3B`), `100.0%` bit/token parity, dual-channel Apple Silicon on-chip `reported_j` hardware counters (`L3 proc_pid_rusage(RUSAGE_INFO_V6).ri_energy_nj` CPU `nJ` + `L2 libIOReport` `"Energy Model"` `'GPU Energy'` `nJ`), and whole-machine macOS `PMU` battery/adapter accumulator deltas are **measured / reported** in software on Apple M5 Max. Analytical joule figures (`est_j`) stay strictly separated from on-chip `reported_j`, and `measured_j` remains `None` throughout. The `11,428 pJ` KV260 `INA260` `VCC_SOM` board reading cited for context belongs solely to *Metered Commit Gates* [same house]. No fabricated citations.
 
-> A cascade that runs zero-FLOP lookup circuits first, streams late-2026 hybrid and sparse-MoE foundation models up to `34.66B` parameters from NVMe only on novel inputs, gates code commits behind deterministic verifiers, and compiles certified wakes downward into Beneš-routed `LUT6` pages — cutting NVMe weight traffic by up to `12.30×` at `100%` exact token parity and reaching `0.00%` broken commits admitted across multi-wave engineering benchmarks.
+> A cascade that runs zero-FLOP lookup circuits first, streams late-2026 hybrid and sparse-MoE foundation models up to `34.66B` parameters from NVMe only on novel inputs, gates code commits behind deterministic verifiers, and compiles certified wakes downward into Beneš-routed `LUT6` pages — cutting NVMe weight traffic by up to `12.30×` at `100%` exact token parity and reaching `0.00%` broken commits admitted across `BigCodeBench v0.1.3`, upstream `SWE-bench Verified` git worktrees, and multi-wave engineering benchmarks.
 
 ---
 
@@ -29,7 +29,7 @@ This paper studies how a machine can turn repeated neural-model work into cheap 
 
 1. Most inputs a deployed system sees are variations of patterns it has already solved, so paying full neural-network compute and memory traffic on every token wastes energy and bandwidth.
 2. We place a fast, reconfigurable 6-input truth-table (`LUT6`) lookup layer in front of streaming state-space and foundation models, and compile answers downward into lookup memory pages only after a strict check certifies them.
-3. When late-2026 hybrid and sparse Mixture-of-Experts (`MoE`) language models up to `34.66B` parameters stream their 4-bit weights from NVMe flash (`Expert-AirMoL`) through custom fused Apple Metal `INT4` + `GatedDeltaNet` shaders, router-sparse expert `pread` plus a zero-FLOP `LUT6` burst drafter cuts disk reads by up to `12.30×` in **`970.0 MB` active RAM (`1.47%` of FP16, `6.77 J/tok` `reported_j`)** with zero change to the output tokens; pairing the cascade with a deterministic contract or `pytest` verifier `C(z)` lifts verified pass rate to **`87.50%`** across both a `48`-task algorithmic suite (vs. `77.08%` for standalone `35B`) and a `16`-task multi-file git-repository patching benchmark (vs. `62.50%` for `35B`), admitting **`0.00%` broken commits** and replaying crystallized Wave-3 skills in **`2.89 ms` (`0.0424 J` `reported_j`, `15,401×` faster and `25,227×` lower `reported_j`)**.
+3. When late-2026 hybrid and sparse Mixture-of-Experts (`MoE`) language models up to `34.66B` parameters stream their 4-bit weights from NVMe flash (`Expert-AirMoL`) through custom fused Apple Metal (`MSL`) and portable Rust `Burn 0.22.1 / CubeCL` `INT4` + `GatedDeltaNet` kernels, router-sparse expert `pread` plus a zero-FLOP `LUT6` burst drafter cuts disk reads by up to `12.30×` in **`970.0 MB` active RAM (`1.47%` of FP16, `6.77 J/tok` `reported_j`)** with zero change to the output tokens; pairing the cascade with deterministic `unittest` / `pytest` verifiers $C(z)$ and bounded open-weights `Rung 3d` `<think>` escalation reaches **`91.67%` overall (`93.75%` W2–W3)** on the `48`-task algorithmic suite, **`90.62%` overall (`93.75%` W2 human paraphrase)** on official `BigCodeBench v0.1.3` (vs. `78.12%` for standalone `35B`), and **`50.00%`** on upstream `SWE-bench Verified` `sympy/sympy` git worktrees (vs. `25.00%` for `35B`), admitting **`0.00%` broken commits** throughout.
 
 In *Metered Commit Gates* [same house], Part II introduced **Mixture of Limits (MoL)**: try gears in decreasing order of pass probability per joule $p_i / c_i$ (Simon and Kadane, 1975), stop as soon as the task completion predicate $C(z) = 1$ holds, and never promote `ModelGenerated` output to `Deterministic`. A static Lookup gear, however, covers only the patterns written into it before deployment. Conversely, existing lookup-table neural networks — LogicNets (Umuroglu et al., 2020), DiffLogic (Petersen et al., 2022), and Differentiable Weightless Neural Networks (Bacellar et al., 2024) — bake wire connectivity into fixed FPGA routing, requiring minutes to hours of vendor place-and-route (`Vivado`) whenever the input distribution shifts.
 
@@ -44,11 +44,11 @@ This work closes the loop between the top and bottom of the cascade via **online
 ### 0.1 Contributions
 
 1. **Amortized downward compilation condition (Section 2.1)**: Extends the Simon–Kadane $p_i/c_i$ cascade ordering with an explicit crystallization cost $E_{\text{compile}}$, establishing when compiling certified Rung 3 wakes into Rung 0 `LUT6` pages lowers cumulative energy-to-correct-completion.
-2. **Non-blocking $512 \times 512$ Beneš–Copy–Beneš + `81`-`RAMB36E2` RTL architecture (Section 2.2, Section 3.3, Claim LA-3)**: Eliminates both the `102.0%` KV260 LUT overflow of flat crossbars (`119,478` LUTs) and the `926,619`-LUT explosion of flip-flop page multiplexers, synthesizing to `41,186` `xcup` CLB LUTs (`35.2%` of `xck26`), `81` `RAMB36E2`s (`56.2%`), and `0` `DSP48` slices with `1`-cycle (`4.0 ns` at `250 MHz` nominal) page switching in simulation.
+2. **Non-blocking $512 \times 512$ Beneš–Copy–Beneš + `81`-`RAMB36E2` RTL architecture & `4`-stage `250 MHz`-pipelined `P4-AXIS` subsystem (Section 2.2, Section 3.3, Claims LA-3 & LA-16)**: Eliminates both the `102.0%` KV260 LUT overflow of flat crossbars (`119,478` LUTs) and the `926,619`-LUT explosion of flip-flop page multiplexers (`41,186` LUTs in `1`-cycle OOC), while a `4`-stage registered pipeline inside an IOB-safe `AXI4-Stream` wrapper (`clai_benes_axi_stream_250mhz_top`) collapses single-cycle logic depth **`4.00×`** from `52` to **`13` levels** (`4.62×` shallower than `clai_kv260_axi_top`'s `60` levels), fits **`170 <= 189` `xck26` `IOB`s** (`41,459` LUTs = `35.40%`, `81` `RAMB36E2`s, `0` `DSP48`s), and sustains **`CPI = 1.00` (`256 / 256` zero-bubble consecutive beats)** in Verilator `5.054`.
 3. **Universal $\le 64$-bit joint-mode minterm synthesis (Section 2.3, Claims LA-5 & LA-7)**: Proves joint-mode minterm lookup dominates independent bit-plane DiffLogic argmax on correlated branches (`if/else`, BPE multi-token bursts) with zero off-support chimeras, packing $K = \lfloor 64 / \lceil \log_2 |V| \rceil \rfloor$ subword tokens into a single `uint64` (`16b × 4 = 64b` for `|V|=65,536`; `18b × 3 = 54b` for `|V|=248,320`).
 4. **Oracle-free Split-Conformal + Online ACI crystallization gate (Section 2.4, Claim LA-4)**: Pairs a quadratically regularized latent `JEPA-EBRM` score with Split Conformal calibration and Adaptive Conformal Inference (Gibbs and Candès, 2021), achieving `0.00%` false crystallization risk and `1.0000` OOD AUROC on shifted regimes where softmax MSP, margin, Helmholtz logit energy, and 5-pass MC-Dropout suffer `17.62%–24.28%` false risk.
 5. **`AirMoL` and `Expert-AirMoL` zero-extra-sweep 4-bit NVMe streaming up to `34.66B` Sparse-MoE (Sections 3.4–3.5, Claims LA-6, LA-7, LA-9)**: Combines Darwin `F_NOCACHE` `os.pread` 4-bit sharding, router-indexed sparse-expert `pread` (`pack4` byte strides fetching only active `k`-of-`E` experts), hybrid state rollback (`ShortConv` / `SlidingAttn` / `Gated DeltaNet` + `GQA KV`), and online token-`LUT6` burst speculation across `LiquidAI/LFM3-1.7B` (Oct 2026; `2.74×` I/O cut in `3.79%` RAM), `LiquidAI/LFM2.5-8B-A1B` (`8.47B`; `6.90×` I/O cut, `3.93×` speedup), and `Qwen/Qwen3.6-35B-A3B` (`34.66B`; **`12.30×` I/O cut**, **`2,530.7 MB` RAM = `3.83%` of FP16**, **`6.50×` speedup**) at `100.0%` exact token parity.
-6. **Sub-1-bit `LUT6` factorization, custom Metal `INT4` MoE / `GatedDeltaNet` kernels, multi-file git-repo `pytest` patching, and OpenAI/MCP `.mol/` agent (Section 3.5, Claims LA-10 through LA-14)**: Replaces the `1.98M` runtime binary-matrix MACs of `LittleBit-1 / LittleBit-2` (`0.576 bpw`; Lee et al., 2025; Lee and Kim, 2026) with zero-MAC `Sub1Bit-LUT6` partial-sum tables (`< 4 × 10⁻⁶` max error, `100.0%` exact parity via `MoL` verification in `0` QAT epochs); accelerates `GatedDeltaNet` **`20.66×`** and `INT4` Sparse-MoE **`43.45×`** in custom Apple Metal shaders (`970.0 MB` = `1.47%` of FP16 active RAM on `Qwen3.6-35B-A3B`, `6.77 J/tok` `reported_j`); and reaches **`87.50%` verified pass** on both the `48`-task algorithmic bakeoff (vs. `0.00%–77.08%` standalone, using `35B` on only `22.92%` of tasks) and the `16`-task multi-file git-repository `pytest` benchmark (vs. `0.00%–62.50%` standalone) with **`0.00%` broken commits** and a drop-in OpenAI (`/v1/chat/completions` REST+SSE) and Model Context Protocol (`MCP` JSON-RPC `2.0`) local coding agent (`26/26` `pytest` passing).
+6. **`Sub1Bit-LUT6`, Apple Metal + Cross-Platform Rust `CubeCL` `INT4` MoE / `GatedDeltaNet` Kernels, `Rung 3d` `<think>`, and Official `BigCodeBench` + `SWE-bench Verified` via `MCP` (Section 3.5, Claims LA-10 through LA-18)**: Replaces `LittleBit-1 / LittleBit-2` (`0.576 bpw`) runtime binary MACs with zero-MAC `Sub1Bit-LUT6` lookup (`< 4 × 10⁻⁶` error, `100.0%` parity via `MoL` in `0` QAT epochs); accelerates `GatedDeltaNet` (`20.66×` `MSL`, **`69.20×` `CubeCL` Metal**, `14.87×` `LLVM CPU`) and `INT4` Sparse-MoE (`43.45×` `MSL`, **`35.09×` `CubeCL` Metal**, `2.67×` `LLVM CPU`); lifts the `48`-task algorithmic bakeoff to **`91.67%` overall (`93.75%` W2–W3)** via bounded `Rung 3d` `<think>` (`20.83%` `35B` calls); and beats standalone `LFM3-1.7B`, `Gemma-4-E2B-it`, and `Qwen3.6-35B-A3B` on official `BigCodeBench v0.1.3` (**`90.62%` vs. `78.12%`**, `93.75%` W2) and upstream `SWE-bench Verified` `sympy/sympy` git worktrees (**`50.00%` vs. `25.00%`**) via live `MCP` JSON-RPC `2.0` with **`0.00%` broken commits** (`30/30` `pytest` passing).
 
 ### 0.2 Energy to correct completion and downward amortization
 
@@ -67,7 +67,7 @@ Prior OpenIE studies — *Metered Commit Gates*, *Task Satiation vs. Aggregate R
 
 ### 0.4 How to read this paper
 
-Section 1 defines all notation, acronyms, and measurement labels before use. Section 2 states and proves four mathematical results governing cascade amortization, Beneš multicast routing, joint-mode minterm synthesis, and conformal wake gating. Section 3 describes the reference implementation across Python, Rust, Zig, Go, Julia, SystemVerilog (`xck26`), `AirMoL` / `Expert-AirMoL` NVMe streaming, and `VerifiedCodeCascade`. Section 4 reports Claims `LA-1` through `LA-11` with explicit measurement columns. Section 5 compares prior work in two structured tables. Section 6 records threats to validity, non-claims, and executable falsifiers `LA-F1` through `LA-F11`. Appendix A lists exact reproduction commands.
+Section 1 defines all notation, acronyms, and measurement labels before use. Section 2 states and proves four mathematical results governing cascade amortization, Beneš multicast routing, joint-mode minterm synthesis, and conformal wake gating. Section 3 describes the reference implementation across Python, Rust, Zig, Go, Julia, SystemVerilog (`xck26`), `AirMoL` / `Expert-AirMoL` NVMe streaming, and `VerifiedCodeCascade`. Section 4 reports Claims `LA-1` through `LA-18` with explicit measurement columns. Section 5 compares prior work in two structured tables. Section 6 records threats to validity, non-claims, and executable falsifiers `LA-F1` through `LA-F18`. Appendix A lists exact reproduction commands.
 
 ---
 
@@ -91,7 +91,9 @@ All symbols, hardware primitives, model acronyms, and evidence labels used in la
 | **`LFM2.5-8B-A1B` & `Qwen3.6-35B-A3B`** | Late-2026 sparse Mixture-of-Experts (`MoE`) hybrid checkpoints: Liquid AI's `8.47B` (`4`-of-`32` active experts, `18` `Conv` + `6` `Attn`) and Qwen's `34.66B` (`8`-of-`256` active experts + shared expert, `30` `Gated DeltaNet` + `10` `Attn`, `|V| = 248,320`). |
 | **`Gemma-4-E2B-it` & `Qwen3.5-0.8B`** | Google's 2026 on-device hybrid instruction model (`google/gemma-4-E2B-it`) and Alibaba Qwen Team's February 2026 `752.4M` hybrid checkpoint (`Qwen/Qwen3.5-0.8B-Base`). |
 | **`LittleBit` / `LittleBit-2` & `Sub1Bit-LUT6`** | Samsung's `0.1–0.58 bpw` multi-scale sign-value-independent binary latent factorization (`W ≈ G ⊙ ((U₁V₁ᵀ)s₁ + (U₂V₂ᵀ)s₂)` via SVD / Procrustes ITQ + QAT; Lee et al., 2025; Lee and Kim, 2026), vs. OpenIE's zero-MAC `6`-input `LUT6` partial-sum precomputation (`Sub1Bit-LUT6`). |
-| **`VerifiedCodeCascade`** | Multi-rung code-synthesis cascade gating every commit behind a `0.35s`-bounded AST + sandbox execution + boundary-invariant contract verifier $C(z) \in \{0,1\}$, counterexample escalation, and online `BenesLUT6` + canonical AST skill crystallization. |
+| **`VerifiedCodeCascade`** | Multi-rung code-synthesis cascade gating every commit behind a `0.35s`-bounded AST + sandbox execution + boundary-invariant contract verifier $C(z) \in \{0,1\}$, counterexample escalation (including bounded open-weights `Rung 3d` `<think>`), and online `BenesLUT6` + canonical AST skill crystallization. |
+| **`BigCodeBench` & `SWE-bench Verified`** | Official public external coding & repository benchmarks: `bigcode/bigcodebench` `v0.1.3` (`SHA-256 = ed5a3a39...`; Zhuo et al., 2024) and `princeton-nlp/SWE-bench_Verified` (`SHA-256 = a45b1fe4...`; Jimenez et al., 2024), evaluated with zero gold-solution leakage through live `MCP` JSON-RPC `2.0`. |
+| **`Burn 0.22.1 / CubeCL`** | Zero-Python portable Rust compute shader compiler (`#[cube]`) targeting Apple `Metal`, `Vulkan` (`SPIR-V`), NVIDIA `CUDA` (`PTX`), AMD `ROCm` (`HIP`), and `LLVM` SIMD `CPU`. |
 | **`PLD` / `REST`** | Prompt Lookup Decoding (Saxena, 2023) and Retrieval-Based Speculative Decoding (He et al., 2024), zero-FLOP retrieval drafters evaluated as baselines. |
 | **`Medusa` / `EAGLE-2`** | Multi-head MLP speculative drafter (Cai et al., 2024) and context-aware autoregressive feature drafter (Li et al., 2024), neural drafters evaluated as baselines. |
 | **`Deterministic` / `Check-safe`** | Provenance of an output verified by an exact specification check (`RCE` / $C(z)=1$); distinct from statistical model predictions. |
@@ -446,7 +448,56 @@ Because `q4_moe_*` never unpacks `INT4` experts into `FP16/FP32` buffers, cold-N
 
 ### 4.14 Claim LA-14: Drop-in OpenAI (`/v1/chat/completions`) and `MCP` (`JSON-RPC 2.0`) local coding agent with persistent `.mol/` skills
 
-`src/clai/service/openai_mcp_agent.py` and `scripts/mol_agent_server.py` (`mol-agent` CLI entrypoint) package the cascade for immediate IDE/agent integration (`Cursor`, `Continue.dev`, `Claude Code`, `Antigravity`, `OpenAI SDK`) with zero third-party web dependencies: (i) OpenAI-compatible `GET /v1/models` and `POST /v1/chat/completions` (`stream: true/false` SSE, optional `x_mol_contract` deterministic verifier, and `x_mol_receipt` reporting rung, `skill_id`, `est_j`, `reported_j`, `measured_j: null`); and (ii) Model Context Protocol (`MCP` JSON-RPC `2.0` over `--mcp-stdio` and `POST /mcp`) exposing `mol_synthesize_verified_function`, `mol_repair_repo_pytest`, `mol_lookup_crystallized_skill`, and `mol_energy_telemetry` backed by persistent `.mol/skills_v1.json` + `.mol/benes_lut6_router.npz` (`26 / 26` `pytest` tests passing).
+`src/clai/service/openai_mcp_agent.py` and `scripts/mol_agent_server.py` (`mol-agent` CLI entrypoint) package the cascade for immediate IDE/agent integration (`Cursor`, `Continue.dev`, `Claude Code`, `Antigravity`, `OpenAI SDK`) with zero third-party web dependencies: (i) OpenAI-compatible `GET /v1/models` and `POST /v1/chat/completions` (`stream: true/false` SSE, optional `x_mol_contract` deterministic verifier, and `x_mol_receipt` reporting rung, `skill_id`, `est_j`, `reported_j`, `measured_j: null`); and (ii) Model Context Protocol (`MCP` JSON-RPC `2.0` over `--mcp-stdio` and `POST /mcp`) exposing `mol_synthesize_verified_function`, `mol_repair_repo_pytest`, `mol_lookup_crystallized_skill`, and `mol_energy_telemetry` backed by persistent `.mol/skills_v1.json` + `.mol/benes_lut6_router.npz` (`30 / 30` `pytest` tests passing).
+
+### 4.15 Claim LA-15: Official `BigCodeBench v0.1.3` (`32` evals) and upstream `SWE-bench Verified` `sympy/sympy` git-worktree (`16` evals) benchmarks via `MCP` `JSON-RPC 2.0`
+
+`src/clai/frontier/external_public_benchmarks.py` and `scripts/run_external_public_benchmarks.py` (`artifacts/external_public_bcb_swebench.csv`, `artifacts/external_public_bcb_swebench_traces.json`) evaluate `OpenIE MoL MCP Agent` (`handle_mcp_jsonrpc` + `.mol/` crystallization) head-to-head against standalone `LiquidAI/LFM3-1.7B`, `google/gemma-4-E2B-it`, and Metal-accelerated `Qwen/Qwen3.6-35B-A3B` on two official public HuggingFace Parquet benchmarks verified by SHA-256 at load time (`bigcode/bigcodebench` `v0.1.3`: `ed5a3a39...`, `16` tasks × `2` human-authored prompt waves [`complete_prompt` W1 + `instruct_prompt` W2] = `32` `unittest` evaluations; and `princeton-nlp/SWE-bench_Verified`: `a45b1fe4...`, `8` real `sympy/sympy` `1.11–1.12` git-worktree checkouts × `2` waves = `16` `pytest` evaluations across `FAIL_TO_PASS + PASS_TO_PASS`) under strict zero gold-solution leakage (`apple_pmu_system_energy_delta_j = 59,250.43 J`):
+
+| Official Public Benchmark & Arm | W1 Cold | W2 Paraphrase / Backport | Overall Verified Pass | Broken Admitted | W2 `.mol/` Fast-Path | `35B` Calls | Mean W1 / W2 (`ms`) | `reported_j` / Solve (`est_j`) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| `BigCodeBench v0.1.3` (`32`) · `A` `LiquidAI/LFM3-1.7B` | `50.00%` | `37.50%` | `43.75%` | `56.25%` | `0.00%` | `0.00%` | `5,471` / `5,716` | `169.67 J` (`409.11 est_j`) |
+| `BigCodeBench v0.1.3` (`32`) · `B` `google/gemma-4-E2B-it` | `31.25%` | `43.75%` | `37.50%` | `62.50%` | `0.00%` | `0.00%` | `12,187` / `9,791` | `190.91 J` (`1,230.76 est_j`) |
+| `BigCodeBench v0.1.3` (`32`) · `C` `Qwen/Qwen3.6-35B-A3B` Metal | `75.00%` | `81.25%` | `78.12%` | `21.88%` | `0.00%` | `100.00%` | `28,365` / `10,926` | `277.45 J` (`2,388.89 est_j`) |
+| **`BigCodeBench v0.1.3` (`32`) · `D` OpenIE `MoL MCP Agent` (Ours)** | **`87.50%`** | **`93.75%`** | **`90.62%`** | **`0.00%`** | **`81.25%`** | **`25.00%`** | **`47,321` / `6,001`** | **`263.54 J` (`1,917.44 est_j`)** |
+| `SWE-bench Verified` `SymPy` (`16`) · `A` `LiquidAI/LFM3-1.7B` | `0.00%` | `0.00%` | `0.00%` | `100.00%` | `0.00%` | `0.00%` | `5,449` / `5,486` | `869.84 J` (`2,799.45 est_j`) |
+| `SWE-bench Verified` `SymPy` (`16`) · `B` `google/gemma-4-E2B-it` | `0.00%` | `0.00%` | `0.00%` | `100.00%` | `0.00%` | `0.00%` | `8,304` / `5,040` | `1,015.22 J` (`4,483.82 est_j`) |
+| `SWE-bench Verified` `SymPy` (`16`) · `C` `Qwen/Qwen3.6-35B-A3B` Metal | `25.00%` | `25.00%` | `25.00%` | `75.00%` | `0.00%` | `100.00%` | `18,384` / `19,898` | `1,280.08 J` (`7,273.48 est_j`) |
+| **`SWE-bench Verified` `SymPy` (`16`) · `D` OpenIE `MoL MCP Agent` (Ours)** | **`50.00%`** | **`50.00%`** | **`50.00%`** | **`0.00%`** | **`50.00%`** | **`68.75%`** | **`131,976` / `17,215`** | **`6,130.89 J` (`0.33–0.44 J` W2 hits)** |
+
+On `BigCodeBench v0.1.3`, `OpenIE MoL MCP Agent` beats standalone `Qwen3.6-35B-A3B` by **`+12.50` percentage points (`90.62%` vs. `78.12%`, reaching `93.75%` [`15/16`] on human-paraphrased `instruct_prompt` Wave 2)** while calling `35B` on only `25.00%` of tasks, cutting Wave-2 latency **`7.89×`** (`47,321` $\to$ `6,001 ms`; `63–146 ms` and `0.09–0.13 J` `reported_j` on `12` of `13` `.mol/` hits), and consuming **less `reported_j` per verified solve (`263.54 J` vs. `277.45 J`)** with `0.00%` broken outputs admitted. On upstream `SWE-bench Verified` (`sympy/sympy`), zero-leakage AST + stack-frame localization identifies all `8 / 8` target files without touching `patch`, and `MoL` doubles verified solve rate (**`50.00%` [`4/8`: `sympy-23534`, `23950`, `24066`, `24213`] vs. `25.00%` [`2/8`] on `35B` and `0.00%` on `LFM3`/`Gemma4`**), replaying all `4` crystallized unified `git diff` skills in Wave 2 in **`1,590–1,720 ms` (`0.33–0.44 J` `reported_j`, including fresh `git worktree` checkout + `pytest`)** and cleanly abstaining (`VERIFIER_ABSTAIN_SAFE`) on the `4` unsolved multi-hunk algebra issues (`0.00%` broken patches admitted).
+
+### 4.16 Claim LA-16: `4`-stage `250 MHz`-pipelined Kria KV260 (`xck26`) Beneš–Copy–Beneš + `81-RAMB36E2` RTL subsystem (`4.00×` logic-depth collapse)
+
+`hw/kv260/rtl/clai_benes_pipelined_250mhz.sv` and `scripts/verify_pipelined_250mhz_rtl.py` (`artifacts/kv260_pipelined_250mhz_rtl.csv`, `artifacts/kv260_pipelined_250mhz_meta.json`) insert three synchronous pipeline register walls (`S0 -> S1 -> S2 -> S3`) across `Beneš_1` (`9` stages), `Copy + Beneš_2[0..3]` + parallel `RAMB36E2` tag/page read, `Beneš_2[4..8]`, and `80 × LUT6` + `16`-bit folded popcount voter, wrapped inside an IOB-safe `64`-bit `AXI4-Stream` shell (`clai_benes_axi_stream_250mhz_top`):
+
+| KV260 (`xck26-sfvc784-2LV-c`) RTL Variant | Stages (`CPI`) | Sync Logic Depth | Top `IOB`s (`<=189`) | `xcup` CLB LUTs (`%`) | `xcup` FFs (`%`) | `RAMB36E2` (`%`) | `DSP48E2` | Verilator Stream Parity |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| `U1` `clai_benes_paged_hotswap_core` (`1`-cyc OOC) | `1` (`1.00`) | `52` levels | `1,600` (`No`) | `41,186` (`35.17%`) | `36,464` (`15.57%`) | `81` (`56.25%`) | `0` | `100.0%` |
+| `U2` `clai_kv260_axi_top` (Unpipelined `AXI4` Rung-0) | `1` (`1.00`) | `60` levels | `127` (`Yes`) | `67,366` (`57.52%`) | `16,619` (`7.09%`) | `4` (`2.78%`) | `0` | `100.0%` |
+| **`P4` `clai_benes_paged_pipelined_250mhz` (OOC, Ours)** | **`4` (`1.00`)** | **`13` levels (`4.00×`)** | `1,600` (`OOC`) | **`41,439` (`35.38%`)** | **`47,922` (`20.46%`)** | **`81` (`56.25%`)** | **`0`** | **`100.0%` (`256/256`)** |
+| **`P4-AXIS` `clai_benes_axi_stream_250mhz_top` (Ours)** | **`5` (`1.00`)** | **`13` levels (`4.62×`)** | **`170` (`Yes`)** | **`41,459` (`35.40%`)** | **`48,979` (`20.91%`)** | **`81` (`56.25%`)** | **`0`** | **`100.0%` (`256/256`)** |
+
+Exact graph traversal over technology-mapped `synth_xilinx -family xcup` primitives (`FDRE/RAMB36E2/IBUF -> FDRE/RAMB36E2/OBUF`) confirms single-cycle synchronous combinational depth drops **`4.00×`** from `52` levels (`60` in `U2`) down to **`13` levels** at a cost of only `+253` LUTs (`+0.21%` of `xck26`), fits physical KV260 package pins (**`170 <= 189` `IOB`s**), and achieves **`256 / 256` zero-bubble back-to-back streaming parity (`CPI = 1.00`, `0` errors)** in Verilator `5.054`.
+
+### 4.17 Claim LA-17: Bounded open-weights `Rung 3d` native `<think>` ceiling (`91.67%` overall, `93.75%` Wave 2–3, `0.00%` broken commits)
+
+`scripts/run_rung3d_thinking_ceiling.py` (`artifacts/frontier_ai_rung3d_ceiling.csv`, `artifacts/frontier_ai_rung3d_ceiling_traces.json`) adds an optional **`Rung 3d` bounded open-weights reasoning rung** (`Qwen/Qwen3.6-35B-A3B` with native `enable_thinking=True`, `1,536–2,200` `<think>` token cap, `100%` Apache-2.0 local weights, zero cloud APIs) invoked **strictly** on the residual tasks where `Rungs 0–3c` abstain on the `48`-task (`16` specs × `3` waves) engineering bakeoff:
+- **`Arm H` (`OpenIE MoL + Rung 3d Qwen3.6-35B-A3B <think>`)** lifts verified solve rate from `87.50%` (`Arm G`) to **`87.50%` W1 Cold, `93.75%` (`15 / 16`) W2 Adapt, `93.75%` (`15 / 16`) W3 Warm, and `91.67%` (`44 / 48`) Overall** (**`+14.59` percentage points** above standalone `Qwen3.6-35B-A3B`'s `77.08%`), while keeping `35B` invocations down to **`20.83%`** (`Rung 3d <think>` wakes on only **`5 / 48 = 10.42%`** of tasks!).
+- Specifically, `Rung 3d` derives a verified `6`-switch Waksman `4×4` permutation solver on `W2_11_F11_benes4_route` in `2,185` `<think>` tokens and crystallizes it into `Skill#17`, so `W3_11` replays in `< 3.8 ms` (`0.0351 J` mean `reported_j` across all `15` crystallized Wave-3 solves), while `F10_true_damerau` (OSA vs. unrestricted Lowrance–Wagner alphabet-DP conflict) honestly triggers `VERIFIER_ABSTAIN_SAFE` (`0.00%` broken commits admitted).
+
+### 4.18 Claim LA-18: Zero-Python cross-platform Rust `Burn 0.22.1 / CubeCL` fused `INT4` Sparse-MoE & `GatedDeltaNet` kernels
+
+`sys/rust/src/kernels/q4_moe_deltanet_cube.rs` and `sys/rust/src/bin/bench_cubecl_moe_deltanet.rs` (`artifacts/cubecl_cross_platform_moe_deltanet.csv`, `artifacts/cubecl_cross_platform_moe_deltanet_meta.json`) port the fused `INT4` Block-64 Sparse-MoE (`q4_moe_gate_up_silu_cube_kernel` + `q4_moe_down_weighted_cube_kernel`, `u32` 8-nibble bit-unpacking with zero `FP16/FP32` expert weight buffers) and `GatedDeltaNet` (`gated_delta_recurrent_k128_cube_kernel`) shaders into pure Rust **`Burn 0.22.1 / CubeCL` `#[cube]` kernels** compiling from one codebase to `Metal`, `Vulkan` (`SPIR-V`), `CUDA` (`PTX`), `ROCm` (`HIP`), and `LLVM` SIMD `CPU`:
+
+| Portable Rust `Burn 0.22.1 / CubeCL` Kernel & Shape | Backend Target | Mean Latency (`ms`) | Speedup vs. Host `FP32` | Max Abs `FP32` Error | Portable Shader Targets |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| `q4_moe_gate_up_silu_down` (`D=2048, I=512, K=28, P=32`) | `Host_Scalar_FP32_Ref` | `27.2480 ms` | `1.00×` | `0.0` | Rust `std` |
+| `q4_moe_gate_up_silu_down` (`D=2048, I=512, K=28, P=32`) | `CubeCL_LLVM_CPU` | `10.2213 ms` | **`2.67×`** | `1.49 × 10⁻⁷` | `Metal+Vulkan+CUDA+ROCm+CPU` |
+| **`q4_moe_gate_up_silu_down` (`D=2048, I=512, K=28, P=32`)** | **`CubeCL_Metal_GPU`** | **`0.7765 ms`** | **`35.09×`** | **`1.79 × 10⁻⁷`** | **`Metal+Vulkan+CUDA+ROCm+CPU`** |
+| `gated_delta_recurrent_k128` (`B=1, Hk=16, Hv=32, T=256, K=V=128`) | `Host_Scalar_FP32_Ref` | `166.8918 ms` | `1.00×` | `0.0` | Rust `std` |
+| `gated_delta_recurrent_k128` (`B=1, Hk=16, Hv=32, T=256, K=V=128`) | `CubeCL_LLVM_CPU` | `11.2224 ms` | **`14.87×`** | `1.49 × 10⁻⁸` | `Metal+Vulkan+CUDA+ROCm+CPU` |
+| **`gated_delta_recurrent_k128` (`B=1, Hk=16, Hv=32, T=256, K=V=128`)** | **`CubeCL_Metal_GPU`** | **`2.4118 ms`** | **`69.20×`** | **`2.24 × 10⁻⁸`** | **`Metal+Vulkan+CUDA+ROCm+CPU`** |
 
 ---
 
@@ -483,13 +534,13 @@ Because `q4_moe_*` never unpacks `INT4` experts into `FP16/FP32` buffers, cold-N
 
 **Construct validity.** Exact parity (`100.0%` in Claims LA-5, LA-6, LA-7) proves that `AirMoL` and `PagedBenesLUT6` reproduce the **greedy output of the target model** bit-for-bit; it does not make a `350M` or `0.8B` base model infallible on open-ended software engineering benchmarks (`SWE-bench`). Likewise, `Conformal-bounded` (`1 - α`) bounds false crystallization relative to the calibrated `JEPA-EBRM` manifold, not physical plant safety (`ModelGenerated ↛ Deterministic`).
 
-**External validity.** Foundation-model streaming and coding benchmarks (`Claims LA-7, LA-9, LA-11`) were executed across six pretrained 2026 checkpoints (`LFM2.5-350M`, `Qwen3.5-0.8B-Base`, `LiquidAI/LFM3-1.7B`, `google/gemma-4-E2B-it`, `LiquidAI/LFM2.5-8B-A1B` `8.47B`, and `Qwen/Qwen3.6-35B-A3B` `34.66B`, plus `LittleBit-2` `Qwen3-8B` `0.55 bpw`) on an Apple M5 Max workstation with external NVMe storage. Checkpoints at `70B+` remain labeled projections in `artifacts/air_mol_nvme_baselines.csv`, not measured `70B` runs. In `Claim LA-11`, greedy `220–300`-token budgets caused `9` of `16` multi-constraint algorithmic specs to hit `VERIFIER_ABSTAIN_SAFE` even after escalating to `Qwen3.6-35B-A3B`; `MoL` guarantees `0.00%` broken commits admitted and strict dominance over every constituent model, not `100%` cold solve rate on arbitrary unbounded software repositories.
+**External validity.** Foundation-model streaming and coding benchmarks (`Claims LA-7, LA-9, LA-11, LA-15, LA-17`) were executed across six pretrained 2026 checkpoints (`LFM2.5-350M`, `Qwen3.5-0.8B-Base`, `LiquidAI/LFM3-1.7B`, `google/gemma-4-E2B-it`, `LiquidAI/LFM2.5-8B-A1B` `8.47B`, and `Qwen/Qwen3.6-35B-A3B` `34.66B`, plus `LittleBit-2` `Qwen3-8B` `0.55 bpw`) on an Apple M5 Max workstation with external NVMe storage, including `32` official `BigCodeBench v0.1.3` evaluations and `16` real `sympy/sympy` git-worktree evaluations from `SWE-bench Verified`. Checkpoints at `70B+` remain labeled projections in `artifacts/air_mol_nvme_baselines.csv`, not measured `70B` runs. On upstream `SWE-bench Verified` (`Claim LA-15`), `4` of `8` multi-hunk SymPy issues hit `VERIFIER_ABSTAIN_SAFE`; `MoL` guarantees `0.00%` broken commits admitted and `2.00×` pass rate over standalone `35B`, not `100%` cold solve rate on arbitrary unbounded software repositories.
 
-**Measurement validity.** Every per-task `J/VC`, `est_j/tok`, and `mJ/byte` figure in this paper is an **analytical estimate (`est_j`)**. On macOS, `src/clai/contracts/joule_meter.py` records both an analytical TDP-time / operation-count estimate (`est_j`) and non-privileged whole-machine `ioreg` `AppleSmartBattery.PowerTelemetryData` `PMU` cumulative energy deltas (`9,237.23 J`, `20,070.18 J`, `126,947.30 J`), which include display/SSD/OS background power and are never reported as isolated silicon-rail joules (`measured_j = None`). On FPGA RTL (`Claim LA-3`), Yosys `0.71+` (`synth_xilinx -family xcup`) proves structural `xck26` netlist synthesis (`41,186` LUTs, `81` `RAMB36E2`s, `0` `DSP48`s) and Verilator `5.054` proves cycle-accurate `CPI = 1` behavior, **not** Xilinx Vivado post-place-and-route `250 MHz` timing closure (`WNS >= 0`) and **not** physical KV260 `VCCINT` / `INA260` power (`board_metered = false`).
+**Measurement validity.** Analytical `est_j` figures are strictly separated from dual-channel Apple Silicon on-chip `reported_j` hardware counters (`L3 RUSAGE_INFO_V6` CPU `nJ` + `L2 IOReport` `'GPU Energy'` `nJ`) and whole-machine `ioreg` `AppleSmartBattery.PowerTelemetryData` `PMU` cumulative energy deltas (`measured_j = None`). On FPGA RTL (`Claims LA-3, LA-16`), Yosys `0.71+` (`synth_xilinx -family xcup`) verifies structural `xck26` netlist synthesis (`41,459` LUTs, `13` synchronous logic levels, `170 <= 189` `IOB`s, `81` `RAMB36E2`s, `0` `DSP48`s in `P4-AXIS`) and Verilator `5.054` verifies `256/256` zero-bubble `CPI = 1.00` behavior, **not** commercial AMD/Xilinx Vivado post-place-and-route `250 MHz` timing closure (`WNS >= 0`) and **not** physical KV260 `VCCINT` / `INA260` power (`board_metered = false`).
 
 **Statistical reporting.** Counts, byte totals, peak active RAM, and mean acceptance rates are reported directly from deterministic CSV/JSON artifacts in `artifacts/` without inventing uncomputed confidence intervals.
 
-**Not claimed.** The following are **not** claimed in this paper: physical KV260 bitstream loading or rail-metered joules for the `clai_benes_hotswap_core.sv` netlist; Vivado post-PAR timing closure at `250 MHz`; silicon energy leadership against commercial ASICs (Groq, Etched, Taalas); promotion of `JEPA-EBRM` conformal proposals to `Deterministic`; or full repository-scale `SWE-bench` evaluation beyond the `48`-task deterministic contract benchmark in `Claim LA-11`.
+**Not claimed.** The following are **not** claimed in this paper: physical KV260 bitstream loading or rail-metered joules for `clai_benes_hotswap_core.sv` or `clai_benes_pipelined_250mhz.sv`; commercial Vivado post-PAR timing closure at `250 MHz`; silicon energy leadership against commercial ASICs (Groq, Etched, Taalas); promotion of `JEPA-EBRM` conformal proposals to `Deterministic`; or full `500`-instance `SWE-bench Verified` evaluation beyond the `8`-instance (`16`-eval) `sympy/sympy` git-worktree suite in `Claim LA-15`.
 
 ### 6.1 Executable falsifiers
 
@@ -502,13 +553,17 @@ Because `q4_moe_*` never unpacks `INT4` experts into `FP16/FP32` buffers, cold-N
 | **`LA-F5`** | `Claim LA-5` (Lossless byte-level speculation) | `python3 scripts/run_code_corpus_benchmark.py` produces any `< 100.0%` exact byte-for-byte match against greedy `Mamba3CodeLM` across the `48` unseen test prompts. |
 | **`LA-F6`** | `Claim LA-6` (`AirMoL` 4-Bit NVMe I/O reduction) | `python3 scripts/run_air_mol_benchmark.py` under Darwin `F_NOCACHE` fails `100.0%` lossless match or reads more NVMe bytes than `AirLLM` 4-bit `T=1`. |
 | **`LA-F7`** | `Claim LA-7` (2026 `LFM3-1.7B`, `LFM2.5`, & `Qwen3.5` `AirMoL`) | `run_hf_lfm3_air_mol.py`, `run_hf_air_mol_pretrained.py`, or `run_hf_qwen35_air_mol.py` diverges by even `1` BPE token from exact greedy target decoding (`< 100.0%` parity). |
-| **`LA-F8`** | `Claim LA-8` (Full repository regression suite) | `pytest -v` exits non-zero on any of the `26` tests in `tests/`. |
+| **`LA-F8`** | `Claim LA-8` (Full repository regression suite) | `pytest -v` exits non-zero on any of the `30` tests in `tests/`. |
 | **`LA-F9`** | `Claim LA-9` (`8.47B` & `34.66B` Sparse-MoE `Expert-AirMoL`) | `run_hf_moe_8b_35b_air_mol.py` diverges from `100.0%` exact greedy token parity or fails to reduce `F_NOCACHE` NVMe bytes read per token below both dense 4-bit `AirLLM` and router-sparse `T=1` `Expert-AirLLM`. |
 | **`LA-F10`** | `Claim LA-10` (`Sub1Bit-LUT6` zero-MAC equivalence) | `run_sub1bit_lut_benchmark.py` shows `> 1e-3` max error between `Sub1Bit-LUT6` (`0` binary MACs) and dense Procrustes `ITQ` binary matmul, or fails `100.0%` parity when paired with target verification. |
 | **`LA-F11`** | `Claim LA-11` (`VerifiedCodeCascade` soundness & dominance) | `run_frontier_ai_bakeoff.py` admits `> 0%` broken commits, admits a stale Wave-1 skill on a mutated Wave-2 specification, or achieves lower verified pass rate than any constituent standalone model. |
 | **`LA-F12`** | `Claim LA-12` (Metal `INT4` MoE & `GatedDeltaNet` shaders) | `run_metal_moe_benchmark.py` exceeds `1e-4` `FP32` kernel error or diverges from `100.0%` greedy token parity on `LFM2.5-8B-A1B` or `Qwen3.6-35B-A3B`. |
 | **`LA-F13`** | `Claim LA-13` (`SWE-Mini` multi-file git-repo `pytest` cascade) | `run_repo_patch_benchmark.py` admits `> 0%` broken patches, allows modification of `tests/`, or fails to catch the Wave-2 `R03` specification mutation. |
 | **`LA-F14`** | `Claim LA-14` (OpenAI `/v1` + `MCP` `.mol/` agent server) | `pytest tests/test_phase26_metal_ioreport_mcp.py` fails OpenAI REST/SSE streaming, `MCP` JSON-RPC `2.0` tool dispatch, `.mol/` reload, or stamps non-null `measured_j`. |
+| **`LA-F15`** | `Claim LA-15` (Official `BigCodeBench` + `SWE-bench Verified` `MCP`) | `run_external_public_benchmarks.py` fails Parquet SHA-256 verification, exposes gold `canonical_solution`/`patch`, admits `> 0%` broken outputs, or achieves `0%` Wave-2 `.mol/` fast-path hits. |
+| **`LA-F16`** | `Claim LA-16` (`4`-stage `250 MHz`-pipelined `xck26` RTL) | `verify_pipelined_250mhz_rtl.py` exceeds `20` single-cycle logic levels, exceeds `189` top `IOB`s on `P4-AXIS`, uses `> 0` `DSP48`s, or fails `256/256` zero-bubble `CPI = 1.00` Verilator parity. |
+| **`LA-F17`** | `Claim LA-17` (`Rung 3d` `<think>` bounded reasoning ceiling) | `run_rung3d_thinking_ceiling.py` admits `> 0%` broken commits, invokes proprietary cloud APIs, or fails to lift verified solve rate above `87.50%` (`Arm G`). |
+| **`LA-F18`** | `Claim LA-18` (Portable Rust `CubeCL` `INT4` MoE & `GatedDeltaNet`) | `cargo run --release --bin bench_cubecl_moe_deltanet` exceeds `1e-4` max `FP32` error on `LLVM CPU` or `Metal GPU`, or achieves `< 25×` Metal speedup vs. host reference. |
 
 ---
 
@@ -561,30 +616,33 @@ Because `q4_moe_*` never unpacks `INT4` experts into `FP16/FP32` buffers, cold-N
 43. Vovk, V., Gammerman, A., and Shafer, G. (2005). *Algorithmic Learning in a Random World*. Springer.
 44. Waksman, A. (1968). A Permutation Network. *Journal of the ACM*, 15(1):159–163.
 45. Wei, J., et al. (2024). T-MAC: CPU Renaissance via Table Lookup for Low-Bit LLM Deployment on Edge. *arXiv:2407.00088*.
+46. Jimenez, C. E., Yang, J., Wettig, A., Yao, S., Pei, K., Press, O., and Narasimhan, K. (2024). SWE-bench: Can Language Models Resolve Real-World GitHub Issues? *ICLR 2024*, *arXiv:2310.06770*.
+47. Zhuo, T. Y., Vu, M. C., Chim, J., Hu, H., Yu, W., Widyasari, R., et al. (2024). BigCodeBench: Benchmarking Code Generation with Diverse Function Calls and Complex Instructions. *ICLR 2025*, *arXiv:2406.15877*.
 
 ---
 
 ## Appendix A. Reproducibility
 
-All artifacts, RTL netlists, and CSV/JSON tables reported in Claims `LA-1` through `LA-11` are reproduced from the repository root (`openIE-dev/lut-adapt-ai`):
+All artifacts, RTL netlists, and CSV/JSON tables reported in Claims `LA-1` through `LA-18` are reproduced from the repository root (`openIE-dev/lut-adapt-ai`):
 
 ```bash
-# 1. Full 22-test Python + RTL + Conformal + AirMoL + Expert-AirMoL + Bakeoff regression suite
+# 1. Full 30-test Python + RTL + Conformal + AirMoL + Metal + CubeCL + External Benchmarks suite
 PYTHONPATH=src pytest -v
 
 # 2. Synthetic & real Wireshark .pcap collapse curves + KV260 Verilator parity (Claim LA-1)
 python3 scripts/run_collapse_curve.py
 python3 scripts/run_realworld_domain.py
 
-# 3. Polyglot verification: Rust Burn/CubeCL Metal, Zig 0.17.1, Go 1.27.4, Julia 1.13.4 (Claim LA-2)
-(cd sys/rust && cargo run --release)
+# 3. Polyglot verification + Portable Rust Burn 0.22.1 / CubeCL INT4 MoE & GatedDeltaNet (Claims LA-2, LA-18)
+(cd sys/rust && cargo test --release && cargo run --release --bin bench_cubecl_moe_deltanet && cargo run --release)
 (cd sys/zig && zig build test)
 (cd sys/go && go test -v -bench=.)
 julia sys/julia/mol_scientific.jl
 
-# 4. Frontier baselines & KV260 512x512 Benes + 81-RAMB36E2 Yosys/Verilator synthesis (Claims LA-3, LA-4)
+# 4. Frontier baselines & KV260 512x512 Benes + 81-RAMB36E2 1-cycle & 4-stage 250 MHz RTL (Claims LA-3, LA-4, LA-16)
 python3 scripts/run_frontier_benchmarks.py
 python3 scripts/verify_paged_bram_rtl.py
+python3 scripts/verify_pipelined_250mhz_rtl.py
 
 # 5. 520 KB real source-code speculative decoding & controlled 14.3M AirMoL NVMe benchmarks (Claims LA-5, LA-6)
 python3 scripts/run_code_corpus_benchmark.py
@@ -601,12 +659,14 @@ python3 scripts/run_hf_moe_8b_35b_air_mol.py
 # 8. Sub-1-Bit Latent Factorization (LittleBit-1 / LittleBit-2 vs. Sub1Bit-LUT6 & MoL; Claim LA-10)
 python3 scripts/run_sub1bit_lut_benchmark.py
 
-# 9. 48-Task (16 Specs x 3 Waves) Head-to-Head Late-2026 Frontier Coding Bakeoff (Claim LA-11)
+# 9. 48-Task Frontier Coding Bakeoff + Rung 3d Native <think> Ceiling (Claims LA-11, LA-17)
 python3 scripts/run_frontier_ai_bakeoff.py
+python3 scripts/run_rung3d_thinking_ceiling.py
 
-# 10. Native Apple Metal INT4 MoE & GatedDeltaNet + reported_j, SWE-Mini Repo Patch, & OpenAI/MCP Agent (Claims LA-12..14)
+# 10. Native Apple Metal INT4 MoE & GatedDeltaNet, SWE-Mini, OpenAI/MCP, & Official BigCodeBench/SWE-bench (Claims LA-12..15)
 python3 scripts/run_metal_moe_benchmark.py
 python3 scripts/run_repo_patch_benchmark.py
+python3 scripts/run_external_public_benchmarks.py
 python3 scripts/mol_agent_server.py --host 127.0.0.1 --port 8090 --mol-dir .mol
 
 # 11. Interactive CLI / HTTP-SSE streaming server with NVMe + KV260 BRAM telemetry (Claim LA-8)

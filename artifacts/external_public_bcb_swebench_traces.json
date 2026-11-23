@@ -1,0 +1,442 @@
+{
+  "meta": {
+    "bigcodebench_v0_1_3_parquet_sha256": "ed5a3a39e011468f6309ea3277bf37698fb0753f52fc852a3aef8ce3a50ac512",
+    "swebench_verified_parquet_sha256": "a45b1fe4e2f0c8390b2b2938ac83e92ed5979000856808f3679c07812e9e6dcd",
+    "bigcodebench_task_ids": [
+      "BigCodeBench/0",
+      "BigCodeBench/1",
+      "BigCodeBench/2",
+      "BigCodeBench/3",
+      "BigCodeBench/4",
+      "BigCodeBench/5",
+      "BigCodeBench/6",
+      "BigCodeBench/7",
+      "BigCodeBench/8",
+      "BigCodeBench/10",
+      "BigCodeBench/11",
+      "BigCodeBench/14",
+      "BigCodeBench/19",
+      "BigCodeBench/22",
+      "BigCodeBench/23",
+      "BigCodeBench/24"
+    ],
+    "swebench_instance_ids": [
+      "sympy__sympy-23262",
+      "sympy__sympy-23413",
+      "sympy__sympy-23534",
+      "sympy__sympy-23824",
+      "sympy__sympy-23950",
+      "sympy__sympy-24066",
+      "sympy__sympy-24213",
+      "sympy__sympy-24443"
+    ],
+    "zero_gold_leakage_enforced": true,
+    "measured_j": null,
+    "board_metered": false,
+    "apple_pmu_system_energy_delta_j": 59250.43
+  },
+  "bcb_traces": [
+    {
+      "eval_id": "W1_01_BigCodeBench_0_complete",
+      "wave": 1,
+      "resolved_by": "Rung3cd_Qwen3.6_35B_Think->Crystallized_Skill#1",
+      "latency_ms": 74216.18,
+      "reported_j": 428.7139,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_02_BigCodeBench_1_complete",
+      "wave": 1,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Skill#2",
+      "latency_ms": 3702.03,
+      "reported_j": 55.3497,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_03_BigCodeBench_2_complete",
+      "wave": 1,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Skill#3",
+      "latency_ms": 14133.82,
+      "reported_j": 61.9315,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_04_BigCodeBench_3_complete",
+      "wave": 1,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Skill#4",
+      "latency_ms": 12464.02,
+      "reported_j": 41.3274,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_05_BigCodeBench_4_complete",
+      "wave": 1,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Skill#5",
+      "latency_ms": 2811.09,
+      "reported_j": 39.6403,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_06_BigCodeBench_5_complete",
+      "wave": 1,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Skill#6",
+      "latency_ms": 2469.66,
+      "reported_j": 30.8972,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_07_BigCodeBench_6_complete",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 201037.38,
+      "reported_j": 1176.5415,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_08_BigCodeBench_7_complete",
+      "wave": 1,
+      "resolved_by": "Rung3cd_Qwen3.6_35B_Think->Crystallized_Skill#7",
+      "latency_ms": 63288.03,
+      "reported_j": 512.7636,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_09_BigCodeBench_8_complete",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 152576.73,
+      "reported_j": 1824.7076,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_10_BigCodeBench_10_complete",
+      "wave": 1,
+      "resolved_by": "Rung3cd_Qwen3.6_35B_Think->Crystallized_Skill#8",
+      "latency_ms": 143441.0,
+      "reported_j": 1870.104,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_11_BigCodeBench_11_complete",
+      "wave": 1,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#8",
+      "latency_ms": 91.84,
+      "reported_j": 0.0985,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_12_BigCodeBench_14_complete",
+      "wave": 1,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Skill#9",
+      "latency_ms": 7446.32,
+      "reported_j": 110.8886,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_13_BigCodeBench_19_complete",
+      "wave": 1,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Skill#10",
+      "latency_ms": 13930.89,
+      "reported_j": 76.5116,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_14_BigCodeBench_22_complete",
+      "wave": 1,
+      "resolved_by": "Rung3a_Gemma4_E2B->Crystallized_Skill#11",
+      "latency_ms": 18906.02,
+      "reported_j": 204.9412,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_15_BigCodeBench_23_complete",
+      "wave": 1,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Skill#12",
+      "latency_ms": 6133.14,
+      "reported_j": 101.8154,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_16_BigCodeBench_24_complete",
+      "wave": 1,
+      "resolved_by": "Rung3a_Gemma4_CxRepair->Crystallized_Skill#13",
+      "latency_ms": 40488.48,
+      "reported_j": 310.1366,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_01_BigCodeBench_0_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#1",
+      "latency_ms": 4514.48,
+      "reported_j": 0.4386,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_02_BigCodeBench_1_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#2",
+      "latency_ms": 63.69,
+      "reported_j": 0.1082,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_03_BigCodeBench_2_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#3",
+      "latency_ms": 142.61,
+      "reported_j": 0.1265,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_04_BigCodeBench_3_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#4",
+      "latency_ms": 94.91,
+      "reported_j": 0.1037,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_05_BigCodeBench_4_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#5",
+      "latency_ms": 69.16,
+      "reported_j": 0.108,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_06_BigCodeBench_5_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#6",
+      "latency_ms": 76.12,
+      "reported_j": 0.1151,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_07_BigCodeBench_6_instruct",
+      "wave": 2,
+      "resolved_by": "Rung3c_Qwen3.6_35B->Crystallized_Skill#14",
+      "latency_ms": 36288.22,
+      "reported_j": 298.357,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_08_BigCodeBench_7_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#7",
+      "latency_ms": 63.35,
+      "reported_j": 0.1021,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_09_BigCodeBench_8_instruct",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 19786.34,
+      "reported_j": 184.5293,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_10_BigCodeBench_10_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#8",
+      "latency_ms": 110.95,
+      "reported_j": 0.1164,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_11_BigCodeBench_11_instruct",
+      "wave": 2,
+      "resolved_by": "Rung3c_Qwen3.6_35B->Crystallized_Skill#15",
+      "latency_ms": 34352.7,
+      "reported_j": 311.7842,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_12_BigCodeBench_14_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#9",
+      "latency_ms": 82.88,
+      "reported_j": 0.0866,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_13_BigCodeBench_19_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#10",
+      "latency_ms": 70.14,
+      "reported_j": 0.1021,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_14_BigCodeBench_22_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#11",
+      "latency_ms": 63.83,
+      "reported_j": 0.0975,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_15_BigCodeBench_23_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#12",
+      "latency_ms": 90.51,
+      "reported_j": 0.0976,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_16_BigCodeBench_24_instruct",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->Skill#13",
+      "latency_ms": 145.95,
+      "reported_j": 0.1165,
+      "verified": true
+    }
+  ],
+  "swe_traces": [
+    {
+      "eval_id": "W1_01_sympy__sympy-23262",
+      "instance_id": "sympy__sympy-23262",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 187386.89,
+      "reported_j": 1880.3876,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_02_sympy__sympy-23413",
+      "instance_id": "sympy__sympy-23413",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 222262.65,
+      "reported_j": 2370.9303,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_03_sympy__sympy-23534",
+      "instance_id": "sympy__sympy-23534",
+      "wave": 1,
+      "resolved_by": "Rung3cd_Qwen3.6_35B_Think->Crystallized_GitDiffSkill#1",
+      "latency_ms": 132270.55,
+      "reported_j": 36587.4855,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_04_sympy__sympy-23824",
+      "instance_id": "sympy__sympy-23824",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 191899.42,
+      "reported_j": 2592.6507,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_05_sympy__sympy-23950",
+      "instance_id": "sympy__sympy-23950",
+      "wave": 1,
+      "resolved_by": "Rung3a_Gemma4_CxRepair->Crystallized_GitDiffSkill#2",
+      "latency_ms": 9603.3,
+      "reported_j": 85.4434,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_06_sympy__sympy-24066",
+      "instance_id": "sympy__sympy-24066",
+      "wave": 1,
+      "resolved_by": "Rung3cd_Qwen3.6_35B_Think->Crystallized_GitDiffSkill#3",
+      "latency_ms": 32926.14,
+      "reported_j": 351.2452,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_07_sympy__sympy-24213",
+      "instance_id": "sympy__sympy-24213",
+      "wave": 1,
+      "resolved_by": "Rung3cd_Qwen3.6_35B_Think->Crystallized_GitDiffSkill#4",
+      "latency_ms": 47940.51,
+      "reported_j": 844.988,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_08_sympy__sympy-24443",
+      "instance_id": "sympy__sympy-24443",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 231521.32,
+      "reported_j": 2638.3751,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_01_sympy__sympy-23262_backport",
+      "instance_id": "sympy__sympy-23262",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 24596.69,
+      "reported_j": 443.6238,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_02_sympy__sympy-23413_backport",
+      "instance_id": "sympy__sympy-23413",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 26174.66,
+      "reported_j": 335.2107,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_03_sympy__sympy-23534_backport",
+      "instance_id": "sympy__sympy-23534",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->GitDiffSkill#1",
+      "latency_ms": 1590.34,
+      "reported_j": 0.4104,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_04_sympy__sympy-23824_backport",
+      "instance_id": "sympy__sympy-23824",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 41181.57,
+      "reported_j": 570.7987,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_05_sympy__sympy-23950_backport",
+      "instance_id": "sympy__sympy-23950",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->GitDiffSkill#2",
+      "latency_ms": 1659.05,
+      "reported_j": 0.4441,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_06_sympy__sympy-24066_backport",
+      "instance_id": "sympy__sympy-24066",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->GitDiffSkill#4",
+      "latency_ms": 1642.52,
+      "reported_j": 0.3271,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_07_sympy__sympy-24213_backport",
+      "instance_id": "sympy__sympy-24213",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->GitDiffSkill#4",
+      "latency_ms": 1719.95,
+      "reported_j": 0.4278,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_08_sympy__sympy-24443_backport",
+      "instance_id": "sympy__sympy-24443",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 39152.68,
+      "reported_j": 344.3688,
+      "verified": false
+    }
+  ]
+}

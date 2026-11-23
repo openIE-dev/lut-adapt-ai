@@ -1,0 +1,23 @@
+{
+  "binary": "sys/rust/src/bin/bench_cubecl_moe_deltanet.rs",
+  "burn_version": "0.22.1",
+  "portable_targets": [
+    "Metal (MSL)",
+    "Vulkan (SPIR-V)",
+    "CUDA (PTX)",
+    "ROCm (HIP)",
+    "LLVM SIMD (CPU)"
+  ],
+  "suite_elapsed_ms": 1386.58,
+  "suite_reported_j": 2.257959789,
+  "reported_channels": {
+    "l3_proc_cpu_j": 0.022599,
+    "l2_gpu_j": 2.235361,
+    "l2_dram_j": 0.0,
+    "l2_ane_j": 0.0,
+    "cpu_instructions": 49072566,
+    "cpu_cycles": 44524601
+  },
+  "measured_j": null,
+  "board_metered": false
+}

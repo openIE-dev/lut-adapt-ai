@@ -13,12 +13,13 @@ use burn::backend::{
     tensor::{FloatTensor, IntTensor},
 };
 use burn::tensor::{DType, Int, Shape, Tensor};
-use burn_backend::TensorMetadata;
+use burn_backend::{AutodiffBackend, TensorMetadata};
 use burn_cubecl::CubeBackend;
 
 use crate::kernels::{
     lut6_cube::launch_rung0_lut6_chain,
     mamba3_ssd_cube::{launch_mamba3_ssd_backward, launch_mamba3_ssd_forward},
+    q4_moe_deltanet_cube::{launch_gated_delta_recurrent_k128, launch_q4_moe_ffn_pairs},
 };
 
 fn lut6_votes_meta(
@@ -89,6 +90,36 @@ fn ssd_bwd_meta(
     )
 }
 
+#[allow(clippy::too_many_arguments)]
+fn q4_moe_meta(
+    _packed_u32: &TensorSpec,
+    _mins_all: &TensorSpec,
+    _scales_all: &TensorSpec,
+    flat_h: &TensorSpec,
+    pair_tok: &TensorSpec,
+    _pair_slot: &TensorSpec,
+    _pair_rw: &TensorSpec,
+    _i_dim: &usize,
+) -> TensorSpec {
+    let [_t, d_model] = flat_h.shape.dims::<2>();
+    let [p_pairs] = pair_tok.shape.dims::<1>();
+    TensorSpec {
+        shape: Shape::new([p_pairs, d_model]),
+        dtype: flat_h.dtype,
+    }
+}
+
+fn deltanet_meta(
+    _q_all: &TensorSpec,
+    _k_all: &TensorSpec,
+    v_all: &TensorSpec,
+    _g_all: &TensorSpec,
+    _beta_all: &TensorSpec,
+    state_in: &TensorSpec,
+) -> (TensorSpec, TensorSpec) {
+    (v_all.clone(), state_in.clone())
+}
+
 #[backend_extension(Cube, Fusion, Autodiff)]
 pub trait CentralLimitOps: Backend {
     /// Rung 0: 64-lane zero-float LUT6 hardware evaluation across two layers + voter.
@@ -148,6 +179,31 @@ pub trait CentralLimitOps: Backend {
         FloatTensor<Self>,
         FloatTensor<Self>,
     );
+
+    /// Rung 3: Cross-platform fused INT4 Block-64 Sparse-MoE Gate+Up+SiLU + Weighted Down-Projection.
+    #[fusion(meta = q4_moe_meta)]
+    #[allow(clippy::too_many_arguments)]
+    fn q4_moe_ffn_pairs(
+        packed_u32: IntTensor<Self>,
+        mins_all: FloatTensor<Self>,
+        scales_all: FloatTensor<Self>,
+        flat_h: FloatTensor<Self>,
+        pair_tok: IntTensor<Self>,
+        pair_slot: IntTensor<Self>,
+        pair_rw: FloatTensor<Self>,
+        i_dim: usize,
+    ) -> FloatTensor<Self>;
+
+    /// Rung 3: Cross-platform fused Multi-Step Gated-DeltaNet Linear-Attention Recurrence (`K_dim=128`).
+    #[fusion(meta = deltanet_meta)]
+    fn gated_delta_recurrent_k128(
+        q_all: FloatTensor<Self>,
+        k_all: FloatTensor<Self>,
+        v_all: FloatTensor<Self>,
+        g_all: FloatTensor<Self>,
+        beta_all: FloatTensor<Self>,
+        state_in: FloatTensor<Self>,
+    ) -> (FloatTensor<Self>, FloatTensor<Self>);
 }
 
 impl CentralLimitOps for CubeBackend {
@@ -232,6 +288,32 @@ impl CentralLimitOps for CubeBackend {
         launch_mamba3_ssd_backward(
             x_hat, b_hat, c_rot, cum_a, chunk_dec, prev_h, h_final, dy, dh_zero,
         )
+    }
+
+    fn q4_moe_ffn_pairs(
+        packed_u32: IntTensor<Self>,
+        mins_all: FloatTensor<Self>,
+        scales_all: FloatTensor<Self>,
+        flat_h: FloatTensor<Self>,
+        pair_tok: IntTensor<Self>,
+        pair_slot: IntTensor<Self>,
+        pair_rw: FloatTensor<Self>,
+        i_dim: usize,
+    ) -> FloatTensor<Self> {
+        launch_q4_moe_ffn_pairs(
+            packed_u32, mins_all, scales_all, flat_h, pair_tok, pair_slot, pair_rw, i_dim,
+        )
+    }
+
+    fn gated_delta_recurrent_k128(
+        q_all: FloatTensor<Self>,
+        k_all: FloatTensor<Self>,
+        v_all: FloatTensor<Self>,
+        g_all: FloatTensor<Self>,
+        beta_all: FloatTensor<Self>,
+        state_in: FloatTensor<Self>,
+    ) -> (FloatTensor<Self>, FloatTensor<Self>) {
+        launch_gated_delta_recurrent_k128(q_all, k_all, v_all, g_all, beta_all, state_in)
     }
 }
 
@@ -385,6 +467,92 @@ impl<B: Backend + CentralLimitOps, C: CheckpointStrategy> CentralLimitOps for Au
         let _ = (x_hat, b_hat, c_rot, cum_a, end_decay, chunk_dec, h0, dy);
         unreachable!("mamba3_chunk_ssd_bwd_raw is an inner primitive called inside Backward")
     }
+
+    fn q4_moe_ffn_pairs(
+        packed_u32: IntTensor<Self>,
+        mins_all: FloatTensor<Self>,
+        scales_all: FloatTensor<Self>,
+        flat_h: FloatTensor<Self>,
+        pair_tok: IntTensor<Self>,
+        pair_slot: IntTensor<Self>,
+        pair_rw: FloatTensor<Self>,
+        i_dim: usize,
+    ) -> FloatTensor<Self> {
+        Autodiff::<B, C>::from_inner(B::q4_moe_ffn_pairs(
+            packed_u32,
+            mins_all.into_primitive(),
+            scales_all.into_primitive(),
+            flat_h.into_primitive(),
+            pair_tok,
+            pair_slot,
+            pair_rw.into_primitive(),
+            i_dim,
+        ))
+    }
+
+    fn gated_delta_recurrent_k128(
+        q_all: FloatTensor<Self>,
+        k_all: FloatTensor<Self>,
+        v_all: FloatTensor<Self>,
+        g_all: FloatTensor<Self>,
+        beta_all: FloatTensor<Self>,
+        state_in: FloatTensor<Self>,
+    ) -> (FloatTensor<Self>, FloatTensor<Self>) {
+        let (out_p, st_p) = B::gated_delta_recurrent_k128(
+            q_all.into_primitive(),
+            k_all.into_primitive(),
+            v_all.into_primitive(),
+            g_all.into_primitive(),
+            beta_all.into_primitive(),
+            state_in.into_primitive(),
+        );
+        (
+            Autodiff::<B, C>::from_inner(out_p),
+            Autodiff::<B, C>::from_inner(st_p),
+        )
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn q4_moe_ffn_pairs_gpu(
+    packed_u32: Tensor<3, Int>,
+    mins_all: Tensor<2>,
+    scales_all: Tensor<2>,
+    flat_h: Tensor<2>,
+    pair_tok: Tensor<1, Int>,
+    pair_slot: Tensor<1, Int>,
+    pair_rw: Tensor<1>,
+    i_dim: usize,
+) -> Tensor<2> {
+    Tensor::from_dispatch(<Dispatch as CentralLimitOps>::q4_moe_ffn_pairs(
+        packed_u32.into_dispatch(),
+        mins_all.into_dispatch(),
+        scales_all.into_dispatch(),
+        flat_h.into_dispatch(),
+        pair_tok.into_dispatch(),
+        pair_slot.into_dispatch(),
+        pair_rw.into_dispatch(),
+        i_dim,
+    ))
+}
+
+pub fn gated_delta_recurrent_k128_gpu(
+    q_all: Tensor<4>,
+    k_all: Tensor<4>,
+    v_all: Tensor<4>,
+    g_all: Tensor<3>,
+    beta_all: Tensor<3>,
+    state_in: Tensor<4>,
+) -> (Tensor<4>, Tensor<4>) {
+    let (out_d, st_d) = <Dispatch as CentralLimitOps>::gated_delta_recurrent_k128(
+        q_all.into_dispatch(),
+        k_all.into_dispatch(),
+        v_all.into_dispatch(),
+        g_all.into_dispatch(),
+        beta_all.into_dispatch(),
+        state_in.into_dispatch(),
+    );
+    (Tensor::from_dispatch(out_d), Tensor::from_dispatch(st_d))
 }
 
 /// Ergonomic generic-free Burn 0.22.1 Tensor<D> wrappers dispatching through `Dispatch`.

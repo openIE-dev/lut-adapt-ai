@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "num_skills": 4,
+  "skills": [
+    {
+      "skill_id": 1,
+      "fn_name": "sympy__core__symbol",
+      "normalized_code": "diff --git a/sympy/core/symbol.py b/sympy/core/symbol.py\nindex f4a555c13f..2aca8bab27 100644\n--- a/sympy/core/symbol.py\n+++ b/sympy/core/symbol.py\n@@ -791,7 +791,7 @@ def literal(s):\n         return tuple(result)\n     else:\n         for name in names:\n-            result.append(symbols(name, **args))\n+            result.append(symbols(name, cls=cls, **args))\n \n         return type(names)(result)\n \n",
+      "source_model": "Rung3cd_Qwen3.6_35B_Think",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 2,
+      "fn_name": "sympy__sets__contains",
+      "normalized_code": "diff --git a/sympy/sets/contains.py b/sympy/sets/contains.py\nindex b2d4268d12..3de5c2b145 100644\n--- a/sympy/sets/contains.py\n+++ b/sympy/sets/contains.py\n@@ -45,4 +45,6 @@ def binary_symbols(self):\n             isinstance(i, (Eq, Ne))])\n \n     def as_set(self):\n-        raise NotImplementedError()\n+        if isinstance(self.args[1], Set):\n+            return self.args[1]\n+        return self\n",
+      "source_model": "Rung3a_Gemma4_CxRepair",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 3,
+      "fn_name": "sympy__physics__units__unitsystem",
+      "normalized_code": "diff --git a/sympy/physics/units/unitsystem.py b/sympy/physics/units/unitsystem.py\nindex 3daf84c108..b66e1ba9f0 100644\n--- a/sympy/physics/units/unitsystem.py\n+++ b/sympy/physics/units/unitsystem.py\n@@ -192,6 +192,10 @@ def _collect_factor_and_dimension(self, expr):\n         elif isinstance(expr, Function):\n             fds = [self._collect_factor_and_dimension(\n                 arg) for arg in expr.args]\n+            # Check if all arguments are dimensionless. If so, the function result is dimensionless.\n+            # This handles cases like exp(x) where x must be dimensionless.\n+            if all(self.get_dimension_system().is_dimensionless(d[1]) for d in fds):\n+                return (expr.func(*(f[0] for f in fds)), Dimension(1))\n             return (expr.func(*(f[0] for f in fds)),\n                     *(d[1] for d in fds))\n         elif isinstance(expr, Dimension):\n",
+      "source_model": "Rung3cd_Qwen3.6_35B_Think",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 4,
+      "fn_name": "sympy__physics__units__unitsystem",
+      "normalized_code": "diff --git a/sympy/physics/units/unitsystem.py b/sympy/physics/units/unitsystem.py\nindex a436880c4b..af1d18f243 100644\n--- a/sympy/physics/units/unitsystem.py\n+++ b/sympy/physics/units/unitsystem.py\n@@ -175,7 +175,7 @@ def _collect_factor_and_dimension(self, expr):\n             for addend in expr.args[1:]:\n                 addend_factor, addend_dim = \\\n                     self._collect_factor_and_dimension(addend)\n-                if dim != addend_dim:\n+                if not self.get_dimension_system().is_dimensionless(dim / addend_dim):\n                     raise ValueError(\n                         'Dimension of \"{}\" is {}, '\n                         'but it should be {}'.format(\n",
+      "source_model": "Rung3cd_Qwen3.6_35B_Think",
+      "hits": 0,
+      "num_exemplars": 1
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "verilator_zero_bubble_stream": {
+    "checked_beats": 256,
+    "errors": 0,
+    "max_zero_bubble_streak": 256,
+    "steady_state_cpi": 1.0,
+    "parity_pct": 100.0,
+    "page_hits": 212,
+    "cam_fallbacks": 44
+  },
+  "xck26_part": "xck26-sfvc784-2LV-c",
+  "xck26_limits": {
+    "clb_luts": 117120,
+    "clb_ffs": 234240,
+    "ramb36e2": 144,
+    "dsp48e2": 1248,
+    "user_iobs": 189
+  },
+  "ltp_reduction_ratio": 4.0,
+  "board_metered": false,
+  "measured_j": null
+}

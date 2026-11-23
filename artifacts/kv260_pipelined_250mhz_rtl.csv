@@ -1,0 +1,5 @@
+design_id,top_module,pipeline_stages,steady_state_cpi,latency_cycles,latency_ns_at_250mhz,ltp_combinational_levels,top_iob_ports,fits_xck26_189_iobs,xcup_clb_luts,xcup_lut_pct,xcup_ffs,xcup_ff_pct,ramb36e2_blocks,ramb36_pct,dsp48e2_slices,verilator_stream_parity_pct,host_synth_reported_j,host_synth_sec
+U1_Unpipelined_Paged_OOC,clai_benes_paged_hotswap_core,1,1.0,1,4.0,52,1600,False,41186,35.17,36464,15.57,81,56.25,0,100.0,34.703,77.01
+U2_Unpipelined_AXI4_Rung0,clai_kv260_axi_top,1,1.0,1,4.0,60,127,True,67366,57.52,16619,7.09,4,2.78,0,100.0,42.744,116.59
+P4_Pipelined_250MHz_OOC_Ours,clai_benes_paged_pipelined_250mhz,4,1.0,4,16.0,13,1600,False,41439,35.38,47922,20.46,81,56.25,0,100.0,17.339,68.75
+P4_AXIS_IOBSafe_250MHz_Top_Ours,clai_benes_axi_stream_250mhz_top,5,1.0,5,20.0,13,170,True,41459,35.4,48979,20.91,81,56.25,0,100.0,22.632,78.16

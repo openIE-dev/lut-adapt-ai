@@ -1,0 +1,9 @@
+benchmark,arm,wave1_cold_pass_pct,wave2_paraphrase_or_warm_pass_pct,overall_verified_pass_pct,broken_outputs_admitted_pct,wave2_mol_fast_path_pct,frontier_35b_calls_pct,mean_latency_ms_wave1,mean_latency_ms_wave2,est_joules_per_verified_solve,reported_joules_per_verified_solve
+BigCodeBench_v0.1.3_32Evals,A_LiquidAI_LFM3_1.7B_1Shot,50.0,37.5,43.75,56.25,0.0,0.0,5471.04,5715.69,409.11,169.669
+BigCodeBench_v0.1.3_32Evals,B_Google_Gemma4_E2B_it_1Shot,31.25,43.75,37.5,62.5,0.0,0.0,12186.59,9791.32,1230.76,190.908
+BigCodeBench_v0.1.3_32Evals,C_Qwen3.6_35B_A3B_MetalAirMoL_1Shot,75.0,81.25,78.12,21.88,0.0,100.0,28365.43,10925.56,2388.89,277.453
+BigCodeBench_v0.1.3_32Evals,D_OpenIE_MoL_MCP_Agent_OURS,87.5,93.75,90.62,0.0,81.25,25.0,47321.04,6000.99,1917.44,263.543
+SWE_bench_Verified_SymPy_16Evals,A_LiquidAI_LFM3_1.7B_1Shot,0.0,0.0,0.0,100.0,0.0,0.0,5449.27,5486.08,2799.45,869.839
+SWE_bench_Verified_SymPy_16Evals,B_Google_Gemma4_E2B_it_1Shot,0.0,0.0,0.0,100.0,0.0,0.0,8304.26,5040.43,4483.82,1015.22
+SWE_bench_Verified_SymPy_16Evals,C_Qwen3.6_35B_A3B_MetalAirMoL_1Shot,25.0,25.0,25.0,75.0,0.0,100.0,18383.91,19897.55,7273.48,1280.082
+SWE_bench_Verified_SymPy_16Evals,D_OpenIE_MoL_MCP_Agent_OURS,50.0,50.0,50.0,0.0,50.0,68.75,131976.35,17214.68,12107.26,6130.89

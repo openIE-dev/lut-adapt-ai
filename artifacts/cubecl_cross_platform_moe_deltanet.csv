@@ -1,0 +1,7 @@
+kernel_family,shape_spec,backend_target,latency_ms,speedup_vs_host_ref,max_abs_fp32_err,portable_targets
+q4_moe_gate_up_silu_down,D=2048_I=512_K=28_P=32,Host_Scalar_FP32_Ref,27.2480,1.0000,0.0e0,Rust_Std
+q4_moe_gate_up_silu_down,D=2048_I=512_K=28_P=32,CubeCL_LLVM_CPU,10.2213,2.6658,1.490e-7,Metal+Vulkan+CUDA+ROCm+CPU
+q4_moe_gate_up_silu_down,D=2048_I=512_K=28_P=32,CubeCL_Metal_GPU,0.7765,35.0893,1.788e-7,Metal+Vulkan+CUDA+ROCm+CPU
+gated_delta_recurrent_k128,B=1_Hk=16_Hv=32_T=256_K=128_V=128,Host_Scalar_FP32_Ref,166.8918,1.0000,0.0e0,Rust_Std
+gated_delta_recurrent_k128,B=1_Hk=16_Hv=32_T=256_K=128_V=128,CubeCL_LLVM_CPU,11.2224,14.8714,1.490e-8,Metal+Vulkan+CUDA+ROCm+CPU
+gated_delta_recurrent_k128,B=1_Hk=16_Hv=32_T=256_K=128_V=128,CubeCL_Metal_GPU,2.4118,69.1993,2.235e-8,Metal+Vulkan+CUDA+ROCm+CPU

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "central-limit-ai"
-version = "0.3.0"
+version = "0.4.0"
 authors = [{ name = "David Charlot" }]
 description = "Mixture of Limits: 64-lane Engram/DiffLUT-Net LUT6, Mamba-3 Complex MIMO SSD, HC-SOINN, and JEPA-EBRM with downward Verilog compilation (Open Interface Engineering)"
 readme = "README.md"
@@ -20,6 +20,7 @@ dependencies = [
     "safetensors>=0.4.5",
     "tokenizers>=0.21.0",
     "huggingface-hub>=1.0.0",
+    "pyarrow>=20.0.0",
 ]
 
 [project.optional-dependencies]

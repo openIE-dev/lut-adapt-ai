@@ -1009,14 +1009,20 @@ class ExpertAirMoL35BRunner:
         return logits[:, 0], bytes_streamed
 
     @torch.no_grad()
-    def generate_code(self, user_prompt: str, max_new_tokens: int = 768) -> tuple[str, int, float, float]:
+    def generate_code(
+        self,
+        user_prompt: str,
+        max_new_tokens: int = 768,
+        enable_thinking: bool = False,
+        thinking_budget_tokens: int = 1408,
+    ) -> tuple[str, int, float, float]:
         """Returns `(generated_text, generated_tokens, expert_gb_streamed, active_ram_mb)`."""
         msgs = [
             {"role": "system", "content": SYSTEM_CODE_PROMPT},
             {"role": "user", "content": user_prompt},
         ]
         chat_txt = self.tokenizer.apply_chat_template(
-            msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False
+            msgs, tokenize=False, add_generation_prompt=True, enable_thinking=enable_thinking
         )
         p_ids = self.tokenizer.encode(chat_txt, add_special_tokens=False)
 
@@ -1025,10 +1031,29 @@ class ExpertAirMoL35BRunner:
         nxt = int(lg[0].argmax().item())
         emitted = [nxt]
         acc_txt = self.tokenizer.decode(emitted, skip_special_tokens=False)
+        forced_close = False
 
         while len(emitted) < max_new_tokens and nxt not in self.stop_ids:
-            if acc_txt.count("```") >= 2 and acc_txt.rstrip().endswith("```"):
-                break
+            if enable_thinking:
+                if "</think>" in acc_txt:
+                    post_think = acc_txt.split("</think>", 1)[1]
+                    if post_think.count("```") >= 2 and post_think.rstrip().endswith("```"):
+                        break
+                elif not forced_close and len(emitted) >= thinking_budget_tokens:
+                    close_ids = self.tokenizer.encode("\n</think>\n\n```python\n", add_special_tokens=False)
+                    lg, b_s = self._forward_step(
+                        torch.tensor([close_ids], device=self.device, dtype=torch.long), cache
+                    )
+                    b_tot += b_s
+                    emitted.extend(close_ids)
+                    nxt = int(lg[0].argmax().item())
+                    emitted.append(nxt)
+                    acc_txt = self.tokenizer.decode(emitted, skip_special_tokens=False)
+                    forced_close = True
+                    continue
+            else:
+                if acc_txt.count("```") >= 2 and acc_txt.rstrip().endswith("```"):
+                    break
             lg, b_s = self._forward_step(torch.tensor([[nxt]], device=self.device, dtype=torch.long), cache)
             b_tot += b_s
             nxt = int(lg[0].argmax().item())
