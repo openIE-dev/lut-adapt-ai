@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "num_skills": 5,
+  "skills": [
+    {
+      "skill_id": 1,
+      "fn_name": "merge_weighted_intervals",
+      "normalized_code": "def merge_weighted_intervals(intervals: list[tuple[int, int, int]]) -> list[tuple[int, int, int]]:\n    valid_intervals = []\n    for start, end, weight in intervals:\n        if start < end and weight != 0:\n            valid_intervals.append((start, end, weight))\n    if not valid_intervals:\n        return []\n    points = set()\n    for start, end, _ in valid_intervals:\n        points.add(start)\n        points.add(end)\n    sorted_points = sorted(points)\n    segments = []\n    active_weights = {}\n    i = 0\n    n = len(sorted_points)\n    while i < n - 1:\n        current_start = sorted_points[i]\n        current_end = sorted_points[i + 1]\n        total_weight = 0\n        for start, end, weight in valid_intervals:\n            if start <= current_start and current_end <= end:\n                total_weight += weight\n        if total_weight != 0:\n            segments.append((current_start, current_end, total_weight))\n        i += 1\n    if not segments:\n        return []\n    merged = [segments[0]]\n    for current_start, current_end, current_weight in segments[1:]:\n        last_start, last_end, last_weight = merged[-1]\n        if last_end == current_start and last_weight == current_weight:\n            merged[-1] = (last_start, current_end, last_weight)\n        else:\n            merged.append((current_start, current_end, current_weight))\n    return merged",
+      "source_model": "Rung3d_Devstral2_24B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 2,
+      "fn_name": "simulate_token_bucket",
+      "normalized_code": "def simulate_token_bucket(capacity: int, rate_per_sec: int, events: list[tuple[int, int]]) -> list[bool]:\n    if not events:\n        return []\n    nano_capacity = capacity * 1000000000\n    tokens = nano_capacity\n    prev_ns = 0\n    results = []\n    for timestamp_ns, cost_tokens in events:\n        delta_ns = timestamp_ns - prev_ns\n        tokens += delta_ns * rate_per_sec\n        if tokens > nano_capacity:\n            tokens = nano_capacity\n        prev_ns = timestamp_ns\n        nano_cost = cost_tokens * 1000000000\n        if tokens >= nano_cost:\n            tokens -= nano_cost\n            results.append(True)\n        else:\n            results.append(False)\n    return results",
+      "source_model": "Rung3d_Devstral2_24B_CxRepair",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 3,
+      "fn_name": "shortest_path_at_most_k_edges",
+      "normalized_code": "import heapq\n\ndef shortest_path_at_most_k_edges(n: int, edges: list[tuple[int, int, int]], src: int, dst: int, max_edges: int) -> int:\n    if src == dst:\n        return 0\n    if max_edges == 0:\n        return -1\n    adj = [[] for _ in range(n)]\n    for u, v, w in edges:\n        adj[u].append((v, w))\n    heap = []\n    heapq.heappush(heap, (0, src, 0))\n    visited = {}\n    while heap:\n        current_weight, u, edges_used = heapq.heappop(heap)\n        if u == dst:\n            return current_weight\n        if edges_used >= max_edges:\n            continue\n        if (u, edges_used) in visited and visited[u, edges_used] < current_weight:\n            continue\n        visited[u, edges_used] = current_weight\n        for v, w in adj[u]:\n            new_weight = current_weight + w\n            new_edges = edges_used + 1\n            if new_edges <= max_edges:\n                heapq.heappush(heap, (new_weight, v, new_edges))\n    return -1",
+      "source_model": "Rung3d_Devstral2_24B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 4,
+      "fn_name": "consistent_hash_assign",
+      "normalized_code": "import hashlib\n\ndef consistent_hash_assign(nodes: list[str], vnodes: int, keys: list[str]) -> dict[str, str]:\n    if not nodes or vnodes <= 0:\n        return {}\n    unique_nodes = list(dict.fromkeys(nodes))\n    ring = []\n    for node in unique_nodes:\n        for v in range(vnodes):\n            token = int.from_bytes(hashlib.sha256(f'{node}#{v}'.encode('utf-8')).digest()[:8], 'big')\n            ring.append((token, node))\n    ring.sort()\n    result = {}\n    for k in keys:\n        kt = int.from_bytes(hashlib.sha256(k.encode('utf-8')).digest()[:8], 'big')\n        for token, node in ring:\n            if token >= kt:\n                result[k] = node\n                break\n        else:\n            if ring:\n                result[k] = ring[0][1]\n    return result",
+      "source_model": "Rung3d_Devstral2_24B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 5,
+      "fn_name": "task_func",
+      "normalized_code": "from collections import Counter\nimport itertools\nfrom random import randint\nfrom collections import Counter\nimport itertools\nfrom random import randint\n\ndef task_func(T1, RANGE=100):\n    \"\"\"\n    Convert elements in 'T1' to integers and create a list of random integers where the number of integers\n    is determined by the sum of the integers in `T1`. Random integers are generated between 0 and `RANGE`\n    (default is 100). Count the occurrences of each number in the generated list using a Counter.\n\n    Parameters:\n    T1 (tuple of tuples): Each inner tuple contains string representations of numbers that are converted to integers.\n    RANGE (int, optional): The upper limit for the random number generation. Defaults to 100.\n\n    Returns:\n    Counter: A Counter object representing the count of each number appearing in the list of generated random integers.\n\n    Requirements:\n    - collections.Counter\n    - itertools\n    - random.randint\n\n    Example:\n    >>> import random\n    >>> random.seed(42)\n    >>> T1 = (('13', '17', '18', '21', '32'), ('07', '11', '13', '14', '28'), ('01', '05', '06', '08', '15', '16'))\n    >>> counts = task_func(T1)\n    >>> print(counts)  # Output will be a Counter object with random counts.\n    Counter({20: 6, 81: 5, 14: 5, 97: 5, 48: 5, 68: 5, 87: 5, 35: 4, 28: 4, 11: 4, 54: 4, 27: 4, 29: 4, 64: 4, 77: 4, 33: 4, 58: 4, 10: 4, 46: 4, 8: 4, 98: 4, 34: 4, 3: 3, 94: 3, 31: 3, 17: 3, 13: 3, 69: 3, 71: 3, 89: 3, 0: 3, 43: 3, 19: 3, 93: 3, 37: 3, 80: 3, 82: 3, 76: 3, 92: 3, 75: 2, 4: 2, 25: 2, 91: 2, 83: 2, 12: 2, 45: 2, 5: 2, 70: 2, 84: 2, 47: 2, 59: 2, 41: 2, 99: 2, 7: 2, 40: 2, 51: 2, 72: 2, 63: 2, 95: 2, 74: 2, 96: 2, 67: 2, 62: 2, 30: 2, 16: 2, 86: 1, 53: 1, 57: 1, 44: 1, 15: 1, 79: 1, 73: 1, 24: 1, 90: 1, 26: 1, 85: 1, 9: 1, 21: 1, 88: 1, 50: 1, 18: 1, 65: 1, 6: 1, 49: 1, 32: 1, 1: 1, 55: 1, 22: 1, 38: 1, 2: 1, 39: 1})\n    \"\"\"\n    total = sum((int(num) for inner_tuple in T1 for num in inner_tuple))\n    random_numbers = [randint(0, RANGE) for _ in range(total)]\n    return Counter(random_numbers)",
+      "source_model": "Rung3d_Devstral2_24B_CxRepair",
+      "hits": 0,
+      "num_exemplars": 1
+    }
+  ]
+}

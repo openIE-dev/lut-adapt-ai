@@ -1,0 +1,4 @@
+arm_id,checkpoint_family,total_params_b,active_params_b,peak_resident_rss_mb,peak_phys_footprint_mb,mean_decode_tok_per_s,mean_reported_j_per_tok,wave1_hard8_verified_pct,wave2_warm_verified_pct,overall_verified_pct,broken_commits_admitted_pct,wave2_mol_fast_path_pct,mean_wave1_latency_ms,mean_wave2_latency_ms,reported_j_per_verified_solve
+A_Devstral_Small_2_24B_Instruct_1Shot,Mistral_Devstral2_24B_Dense_Q4,24.0,24.0,16797.3,3407.8,22.37,0.7155,37.5,25.0,31.25,68.75,0.0,20734.44,17890.23,914.55
+B_NVIDIA_Nemotron3_Super_120B_A12B_1Shot,NVIDIA_Nemotron3_Hybrid_Mamba_MoE_Q3,120.0,12.0,58075.4,9674.2,22.17,2.1013,50.0,37.5,43.75,56.25,0.0,21830.61,23204.55,2260.126
+C_OpenIE_MoL_Apex_24B_120B_Cascade_OURS,BenesLUT6+.mol+Devstral24B+Nemotron120B_A12B,120.0,12.0,58075.4,9674.2,22.17,2.1013,62.5,62.5,62.5,0.0,62.5,53493.17,19642.37,1932.713

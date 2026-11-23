@@ -267,8 +267,8 @@ class AppleSiliconReportedJReader:
                         if val > 0:
                             scale = _UNIT_TO_JOULES.get(un, 1e-3)
                             joules = val * scale
-                            # Guard against narrow SMC/IOReport hardware-accumulator rollover (> 450 W on M-series)
-                            if dt_s >= 0.02 and (joules / dt_s) > 450.0:
+                            # Guard against narrow SMC/IOReport hardware-accumulator rollover (> 175 W on M-series laptop SoC)
+                            if dt_s >= 0.02 and (joules / dt_s) > 175.0:
                                 continue
                             if nm == "GPU Energy":
                                 gpu_j += joules

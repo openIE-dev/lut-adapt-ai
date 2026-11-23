@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "num_skills": 3,
+  "skills": [
+    {
+      "skill_id": 1,
+      "fn_name": "django__django__django__apps__registry",
+      "normalized_code": "diff --git a/django/apps/registry.py b/django/apps/registry.py\nindex 0683f3ad3c..481dd1fc86 100644\n--- a/django/apps/registry.py\n+++ b/django/apps/registry.py\n@@ -376,6 +376,7 @@ class Apps:\n         # Call expire cache on each model. This will purge\n         # the relation tree and the fields cache.\n         self.get_models.cache_clear()\n+        self.get_swappable_settings_name.cache_clear()\n         if self.ready:\n             # Circumvent self.get_models() to prevent that the cache is refilled.\n             # This particularly prevents that an empty value is cached while cloning.\n",
+      "source_model": "Rung3a_Gemma4_E2B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 2,
+      "fn_name": "psf__requests__requests__utils",
+      "normalized_code": "diff --git a/requests/utils.py b/requests/utils.py\nindex 1c2ae4e0..ceec3420 100644\n--- a/requests/utils.py\n+++ b/requests/utils.py\n@@ -957,29 +957,16 @@ def guess_json_utf(data):\n     return None\n \n \n-def prepend_scheme_if_needed(url, new_scheme):\n-    \"\"\"Given a URL that may or may not have a scheme, prepend the given scheme.\n-    Does not replace a present scheme with the one provided as an argument.\n+def prepend_scheme_if_needed(url, scheme, append_slash_noproc=False):\n+    \"\"\"Prepend a scheme to a host:port and the path of the url if only a host:port is given\"\"\"\n+    scheme, netloc, path, params, query, fragment = urlparse(url, scheme)\n \n-    :rtype: str\n-    \"\"\"\n-    parsed = parse_url(url)\n-    scheme, auth, host, port, path, query, fragment = parsed\n-\n-    # A defect in urlparse determines that there isn't a netloc present in some\n-    # urls. We previously assumed parsing was overly cautious, and swapped the\n-    # netloc and path. Due to a lack of tests on the original defect, this is\n-    # maintained with parse_url for backwards compatibility.\n-    netloc = parsed.netloc\n+    # If the URL is now a relative URL and the base has been set, apply it\n     if not netloc:\n-        netloc, path = path, netloc\n-\n-    if scheme is None:\n-        scheme = new_scheme\n-    if path is None:\n-        path = ''\n-\n-    return urlunparse((scheme, netloc, path, '', query, fragment))\n+        if path and path != '/':\n+            return '{}{}'.format(scheme, path)\n+        return url\n+    return url\n \n \n def get_auth_from_url(url):\n",
+      "source_model": "Rung3d_Qwen3.6_35B_ThinkCx",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 3,
+      "fn_name": "sympy__sympy__sympy__physics__units__unitsystem",
+      "normalized_code": "diff --git a/sympy/physics/units/unitsystem.py b/sympy/physics/units/unitsystem.py\nindex a436880c4b..de8209dea0 100644\n--- a/sympy/physics/units/unitsystem.py\n+++ b/sympy/physics/units/unitsystem.py\n@@ -176,10 +176,7 @@ def _collect_factor_and_dimension(self, expr):\n                 addend_factor, addend_dim = \\\n                     self._collect_factor_and_dimension(addend)\n                 if dim != addend_dim:\n-                    raise ValueError(\n-                        'Dimension of \"{}\" is {}, '\n-                        'but it should be {}'.format(\n-                            addend, addend_dim, dim))\n+                    pass\n                 factor += addend_factor\n             return factor, dim\n         elif isinstance(expr, Derivative):\n",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 0,
+      "num_exemplars": 1
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "binary": "mol_agent",
+  "zero_python_runtime": true,
+  "gpu_backend": "CubeCL_Metal_GPU",
+  "loaded_crystallized_skills": 17,
+  "warmup_cubecl_verify_us": 159530.75,
+  "warmup_cubecl_l2_norm": 25.599371,
+  "python_mcp_loopback_ms": 2.6503,
+  "rust_mcp_loopback_ms": 0.1540,
+  "rust_chat_loopback_ms": 0.1504,
+  "rust_speedup_vs_python_x": 17.21,
+  "measured_j": null,
+  "board_metered": false
+}

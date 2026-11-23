@@ -1,0 +1,7 @@
+design_variant,workload,cycles,ramb36e2_blocks,ltp_sync_levels,top_iob_ports,vcd_signal_transitions_per_cyc,ramb36e2_active_read_duty_pct,est_pj_per_cycle_nom,est_mw_at_250mhz_nom,est_mw_low_bound,est_mw_high_bound,power_reduction_vs_ungated_x,verilator_parity_pct
+P4_AXIS_Ungated_ENARDEN1,idle_quiescent_256,256,81,13,170,0.07,0.0,255.96,63.99,48.0,82.22,1.0,100.0
+P4_AXIS_Ungated_ENARDEN1,axis_beat_shift_512,512,81,13,170,3852.19,12.5,278.47,69.62,51.84,90.1,1.0,100.0
+P4_AXIS_Ungated_ENARDEN1,zero_bubble_burst_256,256,81,13,170,12134.41,100.0,392.2,98.05,72.38,127.68,1.0,100.0
+P4_AXIS_CE_Gated_Ours,idle_quiescent_256,256,81,13,170,0.07,0.0,62.37,15.59,10.34,21.88,4.1,100.0
+P4_AXIS_CE_Gated_Ours,axis_beat_shift_512,512,81,13,170,1413.22,12.5,103.35,25.84,18.06,35.0,2.69,100.0
+P4_AXIS_CE_Gated_Ours,zero_bubble_burst_256,256,81,13,170,4451.65,100.0,374.15,93.54,69.76,120.44,1.05,100.0

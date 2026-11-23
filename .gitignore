@@ -9,12 +9,14 @@ __pycache__/
 sys/rust/target/
 sys/zig/.zig-cache/
 sys/zig/zig-out/
+proofs/.lake/
 
 # Large model checkpoints, NVMe shard caches, and Verilator C++ build objects
 artifacts/*.pt
 artifacts/*_shards/
 artifacts/verilator_*/
 artifacts/paged_bram_rtl_sim/
+artifacts/*_sim/
 
 # OS / editor
 .DS_Store

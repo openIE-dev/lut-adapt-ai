@@ -1,0 +1,28 @@
+{
+  "target_part": "xck26-sfvc784-2LV-c",
+  "clock_mhz": 250.0,
+  "vccint_volts": 0.72,
+  "synthesis_ce0": {
+    "luts": 41456,
+    "ffs": 48979,
+    "ramb36": 81,
+    "dsps": 0,
+    "iobs": 170,
+    "ltp": 13,
+    "reported_j": 51.46
+  },
+  "synthesis_ce1": {
+    "luts": 41465,
+    "ffs": 48979,
+    "ramb36": 81,
+    "dsps": 0,
+    "iobs": 170,
+    "ltp": 13,
+    "reported_j": 49.268
+  },
+  "verilator_checked_valid_outputs": 320,
+  "bit_exact_ce0_vs_ce1_parity": true,
+  "energy_class": "est_j (AMD DS925 + Verilator VCD toggle rate; excludes static leakage)",
+  "measured_j": null,
+  "board_metered": false
+}

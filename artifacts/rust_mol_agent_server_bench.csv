@@ -1,0 +1,5 @@
+endpoint_arm,runtime_stack,mean_loopback_latency_ms,speedup_vs_python_mcp,darwin_l3_reported_j_per_req,zero_python_deps
+MCP_JSONRPC_SkillLookup_PythonRef,Python_3.13_http.server,2.6503,1.0000,0.000450,false
+MCP_JSONRPC_SkillLookup_Rust_Ours,Rust_1.100_std_net+BenesLUT6,0.1540,17.2140,0.000272,true
+OpenAI_v1_ChatCompletions_Rust_Ours,Rust_1.100_std_net+BenesLUT6,0.1504,17.6232,0.000272,true
+MCP_CubeCL_GPU_Verify_Rust_Ours,Rust_1.100+Burn_0.22.1_CubeCL_Metal_GPU,0.9887,1.0000,0.000272,true

@@ -1,0 +1,286 @@
+{
+  "meta": {
+    "swebench_verified_parquet_sha256": "a45b1fe4e2f0c8390b2b2938ac83e92ed5979000856808f3679c07812e9e6dcd",
+    "repositories": [
+      "django/django",
+      "pytest-dev/pytest",
+      "psf/requests",
+      "sympy/sympy"
+    ],
+    "instance_ids": [
+      "django__django-17087",
+      "django__django-17084",
+      "django__django-17029",
+      "django__django-16950",
+      "pytest-dev__pytest-10051",
+      "pytest-dev__pytest-10081",
+      "pytest-dev__pytest-10356",
+      "psf__requests-6028",
+      "psf__requests-5414",
+      "sympy__sympy-23413",
+      "sympy__sympy-23824",
+      "sympy__sympy-24213"
+    ],
+    "localized_files": {
+      "django__django-17087": "django/db/utils.py",
+      "django__django-17084": "django/db/models/query.py",
+      "django__django-17029": "django/apps/registry.py",
+      "django__django-16950": "django/forms/models.py",
+      "pytest-dev__pytest-10051": "src/_pytest/logging.py",
+      "pytest-dev__pytest-10081": "src/_pytest/unittest.py",
+      "pytest-dev__pytest-10356": "src/_pytest/mark/structures.py",
+      "psf__requests-6028": "requests/utils.py",
+      "psf__requests-5414": "requests/models.py",
+      "sympy__sympy-23413": "sympy/polys/matrices/normalforms.py",
+      "sympy__sympy-23824": "sympy/physics/hep/gamma_matrices.py",
+      "sympy__sympy-24213": "sympy/physics/units/unitsystem.py"
+    },
+    "zero_gold_leakage_enforced": true,
+    "multi_window_ast_callgraph_localizer": true,
+    "measured_j": null,
+    "board_metered": false,
+    "apple_pmu_system_energy_delta_j": 60935.1
+  },
+  "traces": [
+    {
+      "eval_id": "W1_01_django__django-17087",
+      "repo": "django/django",
+      "instance_id": "django__django-17087",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 293830.31,
+      "reported_j": 10756.3068,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_02_django__django-17084",
+      "repo": "django/django",
+      "instance_id": "django__django-17084",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 230058.64,
+      "reported_j": 2033.2972,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_03_django__django-17029",
+      "repo": "django/django",
+      "instance_id": "django__django-17029",
+      "wave": 1,
+      "resolved_by": "Rung3a_Gemma4_E2B->Crystallized_GitDiffSkill#1",
+      "latency_ms": 24339.26,
+      "reported_j": 135.427,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_04_django__django-16950",
+      "repo": "django/django",
+      "instance_id": "django__django-16950",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 243427.63,
+      "reported_j": 10361.0,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_05_pytest-dev__pytest-10051",
+      "repo": "pytest-dev/pytest",
+      "instance_id": "pytest-dev__pytest-10051",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 108125.55,
+      "reported_j": 1347.5043,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_06_pytest-dev__pytest-10081",
+      "repo": "pytest-dev/pytest",
+      "instance_id": "pytest-dev__pytest-10081",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 240653.94,
+      "reported_j": 3824.0412,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_07_pytest-dev__pytest-10356",
+      "repo": "pytest-dev/pytest",
+      "instance_id": "pytest-dev__pytest-10356",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 189334.89,
+      "reported_j": 2047.2977,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_08_psf__requests-6028",
+      "repo": "psf/requests",
+      "instance_id": "psf__requests-6028",
+      "wave": 1,
+      "resolved_by": "Rung3d_Qwen3.6_35B_ThinkCx->Crystallized_GitDiffSkill#2",
+      "latency_ms": 139161.7,
+      "reported_j": 1515.9124,
+      "verified": true
+    },
+    {
+      "eval_id": "W1_09_psf__requests-5414",
+      "repo": "psf/requests",
+      "instance_id": "psf__requests-5414",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 151878.37,
+      "reported_j": 1662.0934,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_10_sympy__sympy-23413",
+      "repo": "sympy/sympy",
+      "instance_id": "sympy__sympy-23413",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 174184.34,
+      "reported_j": 1881.1771,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_11_sympy__sympy-23824",
+      "repo": "sympy/sympy",
+      "instance_id": "sympy__sympy-23824",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 262573.69,
+      "reported_j": 16584.6038,
+      "verified": false
+    },
+    {
+      "eval_id": "W1_12_sympy__sympy-24213",
+      "repo": "sympy/sympy",
+      "instance_id": "sympy__sympy-24213",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 161307.45,
+      "reported_j": 1559.6638,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_01_django__django-17087_backport",
+      "repo": "django/django",
+      "instance_id": "django__django-17087",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 72847.73,
+      "reported_j": 1098.4687,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_02_django__django-17084_backport",
+      "repo": "django/django",
+      "instance_id": "django__django-17084",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 80207.64,
+      "reported_j": 79.0356,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_03_django__django-17029_backport",
+      "repo": "django/django",
+      "instance_id": "django__django-17029",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->GitDiffSkill#1",
+      "latency_ms": 2028.24,
+      "reported_j": 5.4954,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_04_django__django-16950_backport",
+      "repo": "django/django",
+      "instance_id": "django__django-16950",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 86163.62,
+      "reported_j": 995.1406,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_05_pytest-dev__pytest-10051_backport",
+      "repo": "pytest-dev/pytest",
+      "instance_id": "pytest-dev__pytest-10051",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 44593.68,
+      "reported_j": 545.0287,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_06_pytest-dev__pytest-10081_backport",
+      "repo": "pytest-dev/pytest",
+      "instance_id": "pytest-dev__pytest-10081",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 84851.22,
+      "reported_j": 1003.0738,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_07_pytest-dev__pytest-10356_backport",
+      "repo": "pytest-dev/pytest",
+      "instance_id": "pytest-dev__pytest-10356",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 75797.36,
+      "reported_j": 1009.9121,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_08_psf__requests-6028_backport",
+      "repo": "psf/requests",
+      "instance_id": "psf__requests-6028",
+      "wave": 2,
+      "resolved_by": "MCP_Rung0_BenesLUT6->GitDiffSkill#2",
+      "latency_ms": 592.87,
+      "reported_j": 1.1223,
+      "verified": true
+    },
+    {
+      "eval_id": "W2_09_psf__requests-5414_backport",
+      "repo": "psf/requests",
+      "instance_id": "psf__requests-5414",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 39402.39,
+      "reported_j": 519.6511,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_10_sympy__sympy-23413_backport",
+      "repo": "sympy/sympy",
+      "instance_id": "sympy__sympy-23413",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 71097.74,
+      "reported_j": 764.1462,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_11_sympy__sympy-23824_backport",
+      "repo": "sympy/sympy",
+      "instance_id": "sympy__sympy-23824",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 98234.18,
+      "reported_j": 1122.3165,
+      "verified": false
+    },
+    {
+      "eval_id": "W2_12_sympy__sympy-24213_backport",
+      "repo": "sympy/sympy",
+      "instance_id": "sympy__sympy-24213",
+      "wave": 2,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_GitDiffSkill#3",
+      "latency_ms": 7227.08,
+      "reported_j": 30.8286,
+      "verified": true
+    }
+  ]
+}

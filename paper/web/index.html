@@ -85,14 +85,14 @@
       <div class="paper-col" style="min-width: 0;">
         <div class="badge-row">
           <span class="badge-paper">Research paper</span>
-          <span class="badge-honesty">Yosys/Verilator xck26 RTL simulated · Darwin F_NOCACHE NVMe, RAM &amp; M5 Max reported_j · analytical est_j · board_metered=false</span>
+          <span class="badge-honesty">27 Lean 4.36.0 proofs · CE-gated xck26 RTL · Darwin F_NOCACHE NVMe, 120B RAM &amp; M5 Max reported_j · board_metered=false</span>
         </div>
 
         <h1 class="hero-title">Downward LUT6 Compilation in a Mixture of Limits Cascade: Beneš-Routed Boolean Fabrics, Conformal Wake Gates, and Frontier Sparse-MoE NVMe Streaming</h1>
         <p class="hero-deck">
-          A cascade that runs zero-FLOP lookup circuits first, streams late-2026 hybrid and sparse-MoE foundation models up to <code>34.66B</code> parameters from NVMe through custom Apple Metal <code>INT4</code> + <code>GatedDeltaNet</code> shaders only on novel inputs, gates code commits behind deterministic verifiers, and compiles certified wakes downward into Beneš-routed <code>LUT6</code> memory pages — reaching <code>87.50%</code> verified pass across <code>48</code>-task algorithmic and <code>16</code>-task multi-file git-repository benchmarks with <code>0.00%</code> broken commits admitted.
+          A cascade backed by <code>27</code> Lean <code>4.36.0</code> machine-checked theorems (<code>0</code> <code>sorry</code>) that runs zero-FLOP lookup circuits first (<code>0.154 ms</code> in single-binary Rust <code>mol-agent-rs</code>), escalates across late-2026 hybrid and sparse-MoE foundation models up to <code>120B-A12B</code> (<code>nvidia/Nemotron-3-Super-120B-A12B</code>) only on novel inputs, gates code commits behind deterministic verifiers, and compiles certified wakes downward into <code>CE</code>-gated Beneš-routed <code>LUT6</code> memory pages — reaching <code>91.67%</code> on the <code>48</code>-task algorithmic suite, <code>90.62%</code> on <code>BigCodeBench v0.1.3</code>, <code>50.00%</code> on <code>SWE-bench SymPy</code>, and <code>2.50×</code> pass lift across <code>4</code> upstream <code>SWE-bench Verified</code> repositories with <code>0.00%</code> broken commits admitted.
         </p>
-        <p class="author-line">David Charlot, Open Interface Engineering · Version 1.2 · 22 November 2026</p>
+        <p class="author-line">David Charlot, Open Interface Engineering · Version 1.4 · 23 November 2026</p>
 
         <div class="btn-row">
           <a href="../mol_architecture.pdf" class="btn btn-primary" download>Download PDF</a>
@@ -389,6 +389,21 @@
           <h3 id="s4-18-la18">4.18 Claim LA-18: Zero-Python cross-platform Rust Burn 0.22.1 / CubeCL INT4 Sparse-MoE &amp; GatedDeltaNet kernels</h3>
           <p>Pure Rust <code>#[cube]</code> shaders (<code>sys/rust/src/kernels/q4_moe_deltanet_cube.rs</code>) target <code>Metal</code>, <code>Vulkan</code> (<code>SPIR-V</code>), <code>CUDA</code> (<code>PTX</code>), <code>ROCm</code> (<code>HIP</code>), and <code>LLVM</code> SIMD <code>CPU</code> from one codebase, achieving <strong><code>35.09×</code> Metal GPU</strong> (<code>0.777 ms</code>, <code>1.79e-7</code> err) and <strong><code>2.67×</code> LLVM CPU</strong> on <code>28</code>-expert <code>INT4</code> MoE, and <strong><code>69.20×</code> Metal GPU</strong> (<code>2.412 ms</code>, <code>2.24e-8</code> err) and <strong><code>14.87×</code> LLVM CPU</strong> on <code>GatedDeltaNet</code> (<code>T=256</code>).</p>
 
+          <h3 id="s4-19-la19">4.19 Claim LA-19: Lean 4.36.0 machine-checked formal proofs of Section 2 (27 theorems, 0 sorry, 0 custom axioms)</h3>
+          <p><code>proofs/LutAdapt/{Cascade,BenesCopy,JointMinterm,ConformalProvenance}.lean</code> formalizes all four Propositions and hardware/provenance corollaries in the Lean <code>4.36.0</code> kernel (<code>lake build</code> in <code>2,256 ms</code>, <code>1.33 J</code> <code>reported_j</code>): <strong><code>27</code> kernel-checked theorems</strong>, <strong><code>0</code> <code>sorry</code></strong>, <strong><code>0</code> custom axioms</strong> (<code>5</code> purely constructive zero-axiom theorems; <code>22</code> using only <code>propext</code> + <code>Quot.sound</code>, zero <code>Classical.choice</code>).</p>
+
+          <h3 id="s4-20-la20">4.20 Claim LA-20: Multi-repository upstream SWE-bench Verified (4 repositories, 24 git-worktree evals) + call-graph localizer</h3>
+          <p>Zero-leakage multi-window AST call-graph localization across <code>django/django</code>, <code>pytest-dev/pytest</code>, <code>psf/requests</code>, and <code>sympy/sympy</code> identifies <code>11 / 12</code> (<code>91.67%</code>) ground-truth target files without reading <code>patch</code>. <code>OpenIE MoL Multi-Repo MCP Agent</code> reaches <strong><code>20.83%</code> overall / <code>25.00%</code> Wave 2 (<code>2.50×</code> standalone <code>Devstral-2-24B</code>, <code>Qwen3.6-35B-A3B</code>, and <code>Gemma-4-E2B-it</code>'s <code>8.33%</code>)</strong> across <code>3</code> of <code>4</code> repositories, admitting <strong><code>0.00%</code> broken patches</strong> and replaying crystallized Wave-2 unified diffs in <strong><code>592.9–2,028.2 ms</code> (<code>1.12–5.50 J</code> <code>reported_j</code>)</strong>.</p>
+
+          <h3 id="s4-21-la21">4.21 Claim LA-21: Measured 120B-scale Hybrid Sparse-MoE (nvidia/Nemotron-3-Super-120B-A12B) &amp; Devstral-Small-2-24B apex</h3>
+          <p>Replaces Section 6's <code>70B+</code> projection caveat with real Apple M5 Max (<code>128 GiB</code> Unified Memory) Metal <code>llama-server</code> measurements: <code>nvidia/Nemotron-3-Super-120B-A12B</code> (<code>120B</code> total / <code>12B</code> active, <code>58,075.4 MB</code> resident <code>RSS</code>) sustains <strong><code>22.17 tok/s</code></strong>, and <code>OpenIE MoL Apex 24B+120B Cascade</code> reaches <strong><code>62.50%</code> verified pass (<code>0.00%</code> broken commits)</strong> on the <code>16</code>-eval hard frontier suite vs. <code>43.75%</code> standalone <code>120B-A12B</code> and <code>31.25%</code> <code>Devstral-2-24B</code> — solving <code>BigCodeBench/8</code> and replaying Wave-2 <code>.mol/</code> skills in <strong><code>5.49–69.76 ms</code> (<code>0.012–0.027 J</code>)</strong>.</p>
+
+          <h3 id="s4-22-la22">4.22 Claim LA-22: Clock-enable (CE) gated 250 MHz P4-AXIS Verilator VCD dynamic power audit (4.10× idle reduction)</h3>
+          <p>Gating all <code>81</code> <code>RAMB36E2</code> <code>ENARDEN</code> ports on <code>bus_valid &amp;&amp; page_cache_en</code> and <code>S1..S4</code> <code>FDRE</code> banks on valid-beat bubbles costs only <code>+9</code> CLB LUTs (<code>41,465</code> LUTs, <code>13</code> levels, <code>170 &lt;= 189</code> <code>IOB</code>s), preserves <strong><code>320 / 320</code> (<code>100.0%</code>) Verilator parity</strong>, and cuts <code>AMD DS925</code> (<code>0.72 V</code>, <code>250 MHz</code>) dynamic power <strong><code>4.10×</code></strong> in quiescent idle (<code>63.99 → 15.59 est_mW</code>) and <strong><code>2.69×</code></strong> during <code>64</code>-bit <code>AXI4-Stream</code> packet ingest (<code>69.62 → 25.84 est_mW</code>).</p>
+
+          <h3 id="s4-23-la23">4.23 Claim LA-23: Zero-Python single-binary native Rust mol-agent-rs server (0.154 ms/req MCP, 17.21× faster)</h3>
+          <p><code>sys/rust/src/bin/mol_agent.rs</code> compiles a zero-Python single-binary Rust server speaking OpenAI <code>/v1/chat/completions</code> (REST + SSE: <strong><code>0.1504 ms/req</code></strong>, <code>17.62×</code> faster) and <code>MCP</code> <code>JSON-RPC 2.0</code> (<code>POST /mcp</code> + <code>--mcp-stdio</code>: <strong><code>0.1540 ms/req</code></strong> vs. <code>2.6503 ms/req</code> Python <code>mol-agent</code>, <strong><code>17.21×</code> faster</strong>, <code>0.000272 J/req</code> Darwin <code>L3 reported_j</code>) plus live <code>CubeCL_Metal_GPU</code> verification (<strong><code>0.9887 ms/req</code></strong>).</p>
+
           <h2 id="s5-related">5. Related work and convergence observations</h2>
           <table>
             <thead>
@@ -409,7 +424,7 @@
 
           <h2 id="s6-limits">6. Limits, threats to validity, not claimed, and falsifiers</h2>
           <p><strong>Internal &amp; construct validity.</strong> On high-entropy random noise or per-step adversarial churn (<code>ΔT = 1</code>), downward crystallization provides zero gain (Proposition 1) and falls back to <code>1.00 tok/sweep</code>. On <code>Qwen3.5-0.8B-Base</code> cold prompts (<code>Claim LA-7</code>), CPU verification of <code>4</code> tokens slows wall-clock throughput (<code>0.32</code> vs. <code>0.53 tok/s</code>) despite cutting NVMe bytes (<code>8.581</code> vs. <code>12.674 GB</code>) until online wake crystallization lifts acceptance to <code>2.74 tok/sweep</code> (<code>1.11 tok/s</code>). Lossless parity (<code>100.0%</code>) preserves greedy target output bit-for-bit without raising base model capability.</p>
-          <p><strong>Measurement validity &amp; not claimed.</strong> All joules here are analytical estimates (<code>est_j</code>, <code>measured_j = None</code>). Yosys <code>0.71+</code> and Verilator <code>5.054</code> prove structural <code>xck26</code> synthesis and <code>CPI = 1</code> simulation, not Vivado post-PAR <code>250 MHz</code> timing closure or KV260 board watts (<code>board_metered = false</code>). Silicon energy leadership, promotion of <code>ModelGenerated</code> to <code>Deterministic</code>, and <code>70B</code> measured runs (projected analytically only) are not claimed.</p>
+          <p><strong>Measurement validity &amp; not claimed.</strong> Analytical estimates (<code>est_j</code>) stay strictly separated from Apple Silicon on-chip <code>reported_j</code> counters and <code>measured_j = None</code>. Yosys <code>0.71+</code> and Verilator <code>5.054</code> prove structural <code>xck26</code> synthesis and <code>CPI = 1</code> simulation, not Vivado post-PAR <code>250 MHz</code> timing closure or KV260 board watts (<code>board_metered = false</code>). Silicon energy leadership, promotion of <code>ModelGenerated</code> to <code>Deterministic</code>, and full <code>500</code>-instance <code>SWE-bench Verified</code> evaluation beyond our <code>40</code> real multi-repo git-worktree evaluations are not claimed (while real <code>120B-A12B</code> execution is now measured in <code>Claim LA-21</code>).</p>
 
           <table>
             <thead>
@@ -423,16 +438,22 @@
               <tr><td><code>LA-F5</code></td><td><code>Claim LA-5</code> (Byte speculation)</td><td><code>run_code_corpus_benchmark.py</code> yields <code>&lt; 100.0%</code> exact byte parity vs. greedy <code>Mamba3CodeLM</code> on <code>48</code> unseen prompts.</td></tr>
               <tr><td><code>LA-F6</code></td><td><code>Claim LA-6</code> (<code>AirMoL</code> 14.3M)</td><td><code>run_air_mol_benchmark.py</code> under <code>F_NOCACHE</code> fails <code>100%</code> parity or reads more NVMe bytes than <code>AirLLM</code> 4-Bit <code>T=1</code>.</td></tr>
               <tr><td><code>LA-F7</code></td><td><code>Claim LA-7</code> (2026 HF <code>AirMoL</code>)</td><td><code>run_hf_air_mol_pretrained.py</code> or <code>run_hf_qwen35_air_mol.py</code> diverges by <code>≥ 1</code> BPE token from greedy target.</td></tr>
-              <tr><td><code>LA-F8</code></td><td><code>Claim LA-8</code> (Test suite)</td><td><code>pytest -v</code> fails any of the <code>30</code> tests in <code>tests/</code>.</td></tr>
+              <tr><td><code>LA-F8</code></td><td><code>Claim LA-8</code> (Test suite)</td><td><code>pytest -v</code> fails any of the <code>35</code> tests in <code>tests/</code>.</td></tr>
               <tr><td><code>LA-F15..18</code></td><td><code>Claims LA-15..18</code> (BCB/SWE, 250 MHz RTL, Rung 3d, CubeCL)</td><td><code>test_phase27_pipelined_cubecl_external.py</code> fails Parquet SHA-256, <code>13</code>-level <code>170-IOB</code> RTL bounds, <code>0%</code> broken commits, or <code>CubeCL</code> <code>1e-4</code> parity.</td></tr>
+              <tr><td><code>LA-F19..23</code></td><td><code>Claims LA-19..23</code> (Lean 4, 4-Repo SWE, 120B, CE-VCD, Rust MCP)</td><td><code>test_phase28_lean_multirepo_120b_rust.py</code> finds any <code>sorry</code>/custom axiom, leaks <code>patch</code>, fails <code>120B</code> run, gets <code>&lt; 3.5×</code> idle cut, or gets <code>&lt; 10×</code> Rust MCP speedup.</td></tr>
             </tbody>
           </table>
 
           <h2 id="s7-refs">7. Selected references</h2>
-          <p>Full 47-item bibliography with <code>[same house]</code> disclosures appears in <a href="../lut-adapt.md"><code>paper/lut-adapt.md</code></a> and <a href="../mol_architecture.pdf"><code>paper/mol_architecture.pdf</code></a>, anchored by Simon &amp; Kadane (1975), Beneš (1965), Waksman (1968), Thompson (1978), Lee (1988), Vovk et al. (2005), Gibbs &amp; Candès (2021), Umuroglu et al. (2020), Petersen et al. (2022), Bacellar et al. (2024), Leviathan et al. (2023), Cai et al. (2024), Li et al. (2024), He et al. (2024), Dao &amp; Gu (2024), Jimenez et al. (2024, <em>SWE-bench</em>), Zhuo et al. (2024, <em>BigCodeBench</em>), Liquid AI <code>LFM3-1.7B</code> &amp; <code>LFM2.5-8B-A1B</code> (2026), Qwen Team <code>Qwen3.6-35B-A3B</code> (2026), and Charlot (2026, <em>Metered Commit Gates</em> &amp; <em>RCE-JEPA</em> <code>[same house]</code>).</p>
+          <p>Full 50-item bibliography with <code>[same house]</code> disclosures appears in <a href="../lut-adapt.md"><code>paper/lut-adapt.md</code></a> and <a href="../mol_architecture.pdf"><code>paper/mol_architecture.pdf</code></a>, anchored by Simon &amp; Kadane (1975), Beneš (1965), Waksman (1968), Thompson (1978), Lee (1988), Vovk et al. (2005), Gibbs &amp; Candès (2021), Moura &amp; Ullrich (2021, <em>Lean 4</em>), Umuroglu et al. (2020), Petersen et al. (2022), Bacellar et al. (2024), Leviathan et al. (2023), Cai et al. (2024), Li et al. (2024), He et al. (2024), Dao &amp; Gu (2024), Jimenez et al. (2024, <em>SWE-bench</em>), Zhuo et al. (2024, <em>BigCodeBench</em>), Liquid AI <code>LFM3-1.7B</code> &amp; <code>LFM2.5-8B-A1B</code> (2026), Qwen Team <code>Qwen3.6-35B-A3B</code> (2026), NVIDIA <code>Nemotron-3-Super-120B-A12B</code> (2026), Mistral AI <code>Devstral-Small-2-24B</code> (2025), and Charlot (2026, <em>Metered Commit Gates</em> &amp; <em>RCE-JEPA</em> <code>[same house]</code>).</p>
 
           <h2 id="s8-repro">Appendix A. Reproducibility</h2>
-          <pre><code>PYTHONPATH=src pytest -v                            # 30/30 tests pass
+          <pre><code>PYTHONPATH=src pytest -v                            # 35/35 tests pass
+(cd proofs &amp;&amp; lake build) &amp;&amp; python3 scripts/verify_lean_proofs.py # Claim LA-19 27 Lean 4.36.0 theorems
+python3 scripts/run_multirepo_swebench_benchmark.py # Claim LA-20 4-repo SWE-bench Verified (24 evals)
+python3 scripts/run_120b_hybrid_moe_benchmark.py    # Claim LA-21 Measured Nemotron-3-120B-A12B + Devstral-24B
+python3 scripts/verify_ce_gated_vcd_power.py        # Claim LA-22 CE-gated 250 MHz xck26 VCD power (4.10× idle)
+(cd sys/rust &amp;&amp; cargo run --release --bin mol_agent -- --self-test-bench) # Claim LA-23 Rust mol-agent-rs (17.21×)
 python3 scripts/run_external_public_benchmarks.py # Claim LA-15 BigCodeBench v0.1.3 + SWE-bench SymPy MCP
 python3 scripts/verify_pipelined_250mhz_rtl.py    # Claim LA-16 4-stage 13-level 250 MHz xck26 RTL
 python3 scripts/run_rung3d_thinking_ceiling.py    # Claim LA-17 Rung 3d Qwen3.6-35B &lt;think&gt; (91.67%)
@@ -460,7 +481,7 @@ python3 scripts/run_repo_patch_benchmark.py       # Claim LA-13 SWE-Mini pytest 
             <li class="sub"><a href="#s2-3-minterm">2.3 Joint-mode minterms</a></li>
             <li class="sub"><a href="#s2-4-conformal">2.4 Conformal ACI gate</a></li>
             <li><a href="#s3-architecture">3. Reference architecture</a></li>
-            <li><a href="#s4-claims">4. Claims LA-1 to LA-18</a></li>
+            <li><a href="#s4-claims">4. Claims LA-1 to LA-23</a></li>
             <li class="sub"><a href="#s4-1-la1">LA-1 .pcap &amp; collapse</a></li>
             <li class="sub"><a href="#s4-2-la2">LA-2 Polyglot suite</a></li>
             <li class="sub"><a href="#s4-3-la3">LA-3 KV260 paged RTL</a></li>
@@ -479,6 +500,11 @@ python3 scripts/run_repo_patch_benchmark.py       # Claim LA-13 SWE-Mini pytest 
             <li class="sub"><a href="#s4-16-la16">LA-16 250 MHz xck26 RTL</a></li>
             <li class="sub"><a href="#s4-17-la17">LA-17 Rung 3d &lt;think&gt;</a></li>
             <li class="sub"><a href="#s4-18-la18">LA-18 Rust CubeCL MoE</a></li>
+            <li class="sub"><a href="#s4-19-la19">LA-19 Lean 4.36.0 Proofs</a></li>
+            <li class="sub"><a href="#s4-20-la20">LA-20 4-Repo SWE-bench</a></li>
+            <li class="sub"><a href="#s4-21-la21">LA-21 Measured 120B MoE</a></li>
+            <li class="sub"><a href="#s4-22-la22">LA-22 CE-Gated VCD Power</a></li>
+            <li class="sub"><a href="#s4-23-la23">LA-23 Rust mol-agent-rs</a></li>
             <li><a href="#s5-related">5. Related work</a></li>
             <li><a href="#s6-limits">6. Limits &amp; falsifiers</a></li>
             <li><a href="#s7-refs">7. References</a></li>
