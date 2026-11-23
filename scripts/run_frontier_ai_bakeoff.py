@@ -51,21 +51,22 @@ def main() -> None:
     out_json = art_dir / "frontier_ai_head_to_head_traces.json"
     out_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
-    print("-" * 144)
+    print("-" * 156)
     print(
         f"{'System Arm (48 Tasks = 3 Waves)':<40} | {'W1 Cold':>7} | {'W2 Adpt':>7} | {'W3 Warm':>7} | "
-        f"{'AllPass':>7} | {'Broken%':>7} | {'W3 R0/1':>7} | {'W1 ms':>8} | {'W3 ms':>8} | {'estJ/ok':>7}"
+        f"{'AllPass':>7} | {'Broken%':>7} | {'W3 R0/1':>7} | {'W1 ms':>8} | {'W3 ms':>8} | {'estJ/ok':>7} | {'repJ/ok':>8}"
     )
-    print("-" * 144)
+    print("-" * 156)
     for r in rows:
+        rep_s = f"{r.reported_joules_per_verified_solve:>8.2f}" if r.reported_joules_per_verified_solve is not None else "    None"
         print(
             f"{r.arm:<40} | {r.wave1_cold_pass_pct:>6.1f}% | {r.wave2_adapt_pass_pct:>6.1f}% | "
             f"{r.wave3_warm_pass_pct:>6.1f}% | {r.overall_verified_pass_pct:>6.1f}% | "
             f"{r.broken_commits_admitted_pct:>6.1f}% | {r.rung0_rung1_hit_pct_wave3:>6.1f}% | "
             f"{r.mean_latency_ms_wave1:>8.2f} | {r.mean_latency_ms_wave3:>8.2f} | "
-            f"{r.est_joules_per_verified_solve:>7.2f}"
+            f"{r.est_joules_per_verified_solve:>7.2f} | {rep_s}"
         )
-    print("-" * 144)
+    print("-" * 156)
     print("  Meta:", json.dumps(payload["meta"], indent=2))
     print(f"Saved {out_csv} and {out_json}.")
     print("=" * 144)

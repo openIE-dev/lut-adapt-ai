@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "num_skills": 16,
+  "skills": [
+    {
+      "skill_id": 1,
+      "fn_name": "serial_lt",
+      "normalized_code": "def serial_lt(s1: int, s2: int, bits: int=32) -> bool:\n    \"\"\"\n    Compares two serial numbers s1 and s2 according to RFC 1982 Serial Number Arithmetic modulo 2**bits.\n    \"\"\"\n    modulus = 1 << bits\n    s1_wrapped = s1 % modulus\n    s2_wrapped = s2 % modulus\n    if s1_wrapped == s2_wrapped:\n        return False\n    diff = (s2_wrapped - s1_wrapped) % modulus\n    midpoint = 1 << bits - 1\n    if diff == midpoint:\n        return False\n    return diff < midpoint",
+      "source_model": "Rung3a_Google_Gemma4_E2B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 2,
+      "fn_name": "merge_weighted_intervals",
+      "normalized_code": "def merge_weighted_intervals(intervals: list[tuple[int, int, int]]) -> list[tuple[int, int, int]]:\n    \"\"\"\n    Merge weighted intervals according to the specified rules.\n    \n    Args:\n        intervals: List of tuples (start, end, weight) representing half-open intervals [start, end)\n    \n    Returns:\n        List of merged tuples (start, end, total_weight) where adjacent segments with equal weights are coalesced.\n    \"\"\"\n    if not intervals:\n        return []\n    valid_intervals = []\n    for start, end, weight in intervals:\n        if start < end and weight != 0:\n            valid_intervals.append((start, end, weight))\n    if not valid_intervals:\n        return []\n    points = set()\n    for start, end, weight in valid_intervals:\n        points.add(start)\n        points.add(end)\n    sorted_points = sorted(points)\n    segments = []\n    for i in range(len(sorted_points) - 1):\n        a = sorted_points[i]\n        b = sorted_points[i + 1]\n        total_w = 0\n        for start, end, weight in valid_intervals:\n            if start <= a and end > a:\n                total_w += weight\n        if total_w != 0:\n            segments.append((a, b, total_w))\n    if not segments:\n        return []\n    coalesced = []\n    current_start, current_end, current_weight = segments[0]\n    for i in range(1, len(segments)):\n        next_start, next_end, next_weight = segments[i]\n        if current_end == next_start and current_weight == next_weight:\n            current_end = next_end\n        else:\n            coalesced.append((current_start, current_end, current_weight))\n            current_start, current_end, current_weight = (next_start, next_end, next_weight)\n    coalesced.append((current_start, current_end, current_weight))\n    return coalesced",
+      "source_model": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 3,
+      "fn_name": "lex_toposort",
+      "normalized_code": "def lex_toposort(num_nodes: int, edges: list[tuple[int, int]]) -> list[int] | None:\n    \"\"\"\n    Return the lexicographically smallest topological ordering of nodes 0..num_nodes-1\n    given directed edges (u, v) meaning u must come before v.\n    Duplicate edges are ignored for in-degree counting.\n    If a cycle exists (including self-loops), return None.\n    For num_nodes == 0, return [].\n    \"\"\"\n    if num_nodes == 0:\n        return []\n    adj = [[] for _ in range(num_nodes)]\n    indeg = [0] * num_nodes\n    seen_edges = set()\n    for u, v in edges:\n        if u == v:\n            return None\n        key = (u, v)\n        if key not in seen_edges:\n            seen_edges.add(key)\n            adj[u].append(v)\n            indeg[v] += 1\n    import heapq\n    heap = [node for node in range(num_nodes) if indeg[node] == 0]\n    heapq.heapify(heap)\n    result = []\n    while heap:\n        node = heapq.heappop(heap)\n        result.append(node)\n        for neighbor in adj[node]:\n            indeg[neighbor] -= 1\n            if indeg[neighbor] == 0:\n                heapq.heappush(heap, neighbor)\n    if len(result) != num_nodes:\n        return None\n    return result",
+      "source_model": "Rung2_LiquidAI_LFM3_1.7B",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 4,
+      "fn_name": "simulate_token_bucket",
+      "normalized_code": "def simulate_token_bucket(capacity: int, rate_per_sec: int, events: list[tuple[int, int]]) -> list[bool]:\n    \"\"\"\n    Simulates a deterministic integer-exact nanosecond token bucket.\n    \n    Args:\n        capacity: Maximum number of tokens the bucket can hold.\n        rate_per_sec: Rate at which tokens are added (tokens per second).\n        events: List of (timestamp_ns, cost_tokens) tuples.\n        \n    Returns:\n        List of booleans indicating whether each event was served (True) or not (False).\n    \"\"\"\n    NANO_PER_TOKEN = 1000000000\n    max_nano_tokens = capacity * NANO_PER_TOKEN\n    current_nano_tokens = max_nano_tokens\n    prev_ns = 0\n    results = []\n    for timestamp_ns, cost_tokens in events:\n        elapsed_ns = timestamp_ns - prev_ns\n        if elapsed_ns > 0:\n            added = elapsed_ns * rate_per_sec\n            current_nano_tokens = min(current_nano_tokens + added, max_nano_tokens)\n            prev_ns = timestamp_ns\n        required_nano = cost_tokens * NANO_PER_TOKEN\n        if current_nano_tokens >= required_nano:\n            current_nano_tokens -= required_nano\n            results.append(True)\n        else:\n            results.append(False)\n    return results",
+      "source_model": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 5,
+      "fn_name": "crc8_check",
+      "normalized_code": "def crc8_check(data: bytes) -> int:\n    crc = 0\n    for b in data:\n        crc ^= b\n        for _ in range(8):\n            if crc & 128:\n                crc = (crc << 1 ^ 7) & 255\n            else:\n                crc = crc << 1 & 255\n    return crc",
+      "source_model": "Rung2_LiquidAI_LFM3_1.7B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 6,
+      "fn_name": "range_sum_updates",
+      "normalized_code": "def range_sum_updates(nums: list[int], ops: list[tuple[str, int, int]]) -> list[int]:\n    result = []\n    arr = nums.copy()\n    for op in ops:\n        op_type = op[0]\n        if op_type == 'add':\n            idx = op[1]\n            delta = op[2]\n            if 0 <= idx < len(arr):\n                arr[idx] += delta\n        elif op_type == 'set':\n            idx = op[1]\n            val = op[2]\n            if 0 <= idx < len(arr):\n                arr[idx] = val\n        elif op_type == 'sum':\n            l = op[1]\n            r = op[2]\n            left = max(0, l)\n            right = min(len(arr) - 1, r)\n            if left > right:\n                result.append(0)\n            else:\n                total = sum(arr[left:right + 1])\n                result.append(total)\n        else:\n            pass\n    return result",
+      "source_model": "Rung2_LiquidAI_LFM3_1.7B",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 7,
+      "fn_name": "resolve_json_pointer",
+      "normalized_code": "import re\n\ndef resolve_json_pointer(doc, pointer: str, default=None):\n    \"\"\"\n    Resolve a JSON pointer (RFC 6901) in `doc`.\n\n    Parameters:\n    - doc: The data structure (dict, list, or primitive). Supports dict and list indexing.\n    - pointer: A string representing the path, e.g., \"/key/subkey\" or \"a/b/c\".\n    - default: Value to return if the pointer cannot be resolved.\n\n    Returns:\n        The value at the given pointer, or `default` if not found / invalid.\n    \"\"\"\n    if pointer == '':\n        return doc\n    if not pointer.startswith('/'):\n        return default\n    tokens = pointer[1:].split('/')\n\n    def unescape(token):\n        token = token.replace('~1', '/')\n        token = token.replace('~0', '~')\n        return token\n    current = doc\n    for token in tokens:\n        token = unescape(token)\n        if isinstance(current, dict):\n            if token in current:\n                current = current[token]\n            else:\n                return default\n        elif isinstance(current, list):\n            if token.isdigit() and token != '0':\n                if token.startswith('0') and len(token) > 1:\n                    return default\n                idx = int(token)\n                if 0 <= idx < len(current):\n                    current = current[idx]\n                else:\n                    return default\n            else:\n                return default\n        else:\n            return default\n    return current",
+      "source_model": "Rung2_LiquidAI_LFM3_1.7B",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 8,
+      "fn_name": "shortest_path_at_most_k_edges",
+      "normalized_code": "import collections\nimport math\n\ndef shortest_path_at_most_k_edges(n: int, edges: list[tuple[int, int, int]], src: int, dst: int, max_edges: int) -> int:\n    \"\"\"\n    Return minimum total path weight from src to dst using AT MOST max_edges edges.\n    Directed weighted graph on `0 .. n - 1` where `(u, v, w)` has integer weight `w` (may be negative; no negative cycles).\n    Return `0` if `src == dst` and no negative path needed; if `max_edges == 0`, return `0` if `src == dst` else `-1`. Return `-1` if unreachable within `max_edges` edges.\n    \"\"\"\n    if max_edges < 0:\n        return -1\n    if max_edges == 0:\n        return 0 if src == dst else -1\n    adj = collections.defaultdict(list)\n    for u, v, w in edges:\n        adj[u].append((v, w))\n    INF = float('inf')\n    dp = [[INF] * n for _ in range(max_edges + 1)]\n    dp[0][src] = 0\n    for k in range(1, max_edges + 1):\n        for v in range(n):\n            if dp[k - 1][v] == INF:\n                continue\n            for u, weight in adj[v]:\n                new_weight = dp[k - 1][v] + weight\n                if new_weight < dp[k][u]:\n                    dp[k][u] = new_weight\n    min_w = INF\n    for k in range(1, max_edges + 1):\n        min_w = min(min_w, dp[k][dst])\n    if min_w == INF:\n        return -1\n    else:\n        return int(min_w)",
+      "source_model": "Rung3a_Google_Gemma4_E2B_CxRepair",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 9,
+      "fn_name": "sliding_window_medians_x2",
+      "normalized_code": "def sliding_window_medians_x2(nums: list[int], k: int) -> list[int]:\n    if k <= 0 or k > len(nums):\n        return []\n    result = []\n    n = len(nums)\n    for i in range(n - k + 1):\n        window = nums[i:i + k]\n        w_sorted = sorted(window)\n        if k % 2 == 1:\n            med = w_sorted[k // 2]\n        else:\n            med = (w_sorted[k // 2 - 1] + w_sorted[k // 2]) // 2\n        if k % 2 == 1:\n            val = w_sorted[k // 2]\n            result.append(2 * val)\n        else:\n            val1 = w_sorted[k // 2 - 1]\n            val2 = w_sorted[k // 2]\n            result.append(val1 + val2)\n    return result",
+      "source_model": "Rung2_LiquidAI_LFM3_1.7B",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 10,
+      "fn_name": "parameterize_sql_literals",
+      "normalized_code": "def parameterize_sql_literals(query: str) -> tuple[str, list[str]]:\n    \"\"\"\n    Scan query left-to-right:\n    1. Preserve '--' single-line comments completely unchanged.\n    2. Preserve double-quoted SQL identifiers \"...\" completely unchanged.\n    3. Replace every single-quoted SQL string literal '...' with $1, $2, ... and append the unescaped value to params.\n    \"\"\"\n    params: list[str] = []\n    result: list[str] = []\n    i = 0\n    n = len(query)\n    param_counter = 0\n    while i < n:\n        if i + 1 < n and query[i] == '-' and (query[i + 1] == '-'):\n            end = query.find('\\n', i)\n            if end == -1:\n                end = n\n            result.append(query[i:end])\n            i = end\n            continue\n        if query[i] == '\"':\n            j = i + 1\n            while j < n:\n                if query[j] == '\"':\n                    if j + 1 < n and query[j + 1] == '\"':\n                        j += 2\n                    else:\n                        j += 1\n                        break\n                else:\n                    j += 1\n            result.append(query[i:j])\n            i = j\n            continue\n        if query[i] == \"'\":\n            j = i + 1\n            literal_chars: list[str] = []\n            while j < n:\n                if query[j] == \"'\":\n                    if j + 1 < n and query[j + 1] == \"'\":\n                        literal_chars.append(\"'\")\n                        j += 2\n                    else:\n                        j += 1\n                        break\n                else:\n                    literal_chars.append(query[j])\n                    j += 1\n            param_counter += 1\n            result.append(f'${param_counter}')\n            params.append(''.join(literal_chars))\n            i = j\n            continue\n        result.append(query[i])\n        i += 1\n    return (''.join(result), params)",
+      "source_model": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 11,
+      "fn_name": "max_constrained_subseq_sum",
+      "normalized_code": "def max_constrained_subseq_sum(nums: list[int], k: int) -> int:\n    if not nums:\n        raise ValueError('nums must not be empty')\n    if k <= 0:\n        raise ValueError('k must be positive')\n    n = len(nums)\n    dp = [0] * n\n    from collections import deque\n    dq = deque()\n    dp[0] = nums[0]\n    dq.append(0)\n    for i in range(1, n):\n        while dq and dq[0] < i - k:\n            dq.popleft()\n        if dq:\n            best_prev = dp[dq[0]]\n            if best_prev > 0:\n                dp[i] = nums[i] + best_prev\n            else:\n                dp[i] = nums[i]\n        else:\n            dp[i] = nums[i]\n        while dq and dp[dq[-1]] <= dp[i]:\n            dq.pop()\n        dq.append(i)\n    return max(dp)",
+      "source_model": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 12,
+      "fn_name": "decode_sleb128",
+      "normalized_code": "def decode_sleb128(buf: bytes, offset: int=0) -> tuple[int, int]:\n    \"\"\"\n    Decodes one signed DWARF SLEB128 integer starting at offset.\n\n    Args:\n        buf: The byte buffer.\n        offset: The starting offset in the buffer.\n\n    Returns:\n        A tuple (decoded_int, next_offset).\n\n    Raises:\n        ValueError: If offset is out of bounds or if the buffer ends prematurely.\n    \"\"\"\n    if offset < 0 or offset >= len(buf):\n        raise ValueError('Offset out of bounds')\n    value = 0\n    shift = 0\n    i = offset\n    while True:\n        if i >= len(buf):\n            raise ValueError('Buffer ended before finding terminating byte')\n        byte = buf[i]\n        i += 1\n        payload = byte & 127\n        continuation = byte & 128 != 0\n        value |= (payload & 127) << shift\n        shift += 7\n        if not continuation:\n            if byte & 64 != 0:\n                if payload & 64 != 0:\n                    value |= ~((1 << shift) - 1)\n            break\n    return (value, i)",
+      "source_model": "Rung3a_Google_Gemma4_E2B",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 13,
+      "fn_name": "consistent_hash_assign",
+      "normalized_code": "import hashlib\n\ndef consistent_hash_assign(nodes: list[str], vnodes: int, keys: list[str]) -> dict[str, str]:\n    if not nodes or vnodes <= 0:\n        return {}\n    unique_nodes = list(dict.fromkeys(nodes))\n    ring = []\n    for node in unique_nodes:\n        for v in range(vnodes):\n            h = hashlib.sha256(f'{node}#{v}'.encode('utf-8')).digest()\n            token = int.from_bytes(h[:8], 'big')\n            ring.append((token, node))\n    ring.sort(key=lambda x: (x[0], x[1]))\n    result = {}\n    for k in keys:\n        kt = int.from_bytes(hashlib.sha256(k.encode('utf-8')).digest()[:8], 'big')\n        n = len(ring)\n        found = False\n        for idx in range(n):\n            t, node = ring[idx]\n            if t >= kt:\n                result[k] = node\n                found = True\n                break\n        if not found:\n            for idx in range(n):\n                t, node = ring[idx]\n                if t < kt:\n                    result[k] = node\n                    found = True\n                    break\n            if not found:\n                result[k] = ring[-1][1]\n    return result",
+      "source_model": "Rung2_LiquidAI_LFM3_1.7B",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 14,
+      "fn_name": "conformal_threshold",
+      "normalized_code": "import math\n\ndef conformal_threshold(scores: list[float], alpha: float) -> float:\n    \"\"\"\n    Compute the exact finite-sample split-conformal calibration quantile.\n\n    Parameters:\n    - scores: list of float values\n    - alpha: float in (0, 1)\n\n    Returns:\n        The k-th smallest element where k is determined by the formula.\n    Raises ValueError if scores is empty.\n    \"\"\"\n    if not scores:\n        raise ValueError('scores must not be empty')\n    n = len(scores)\n    if alpha <= 0.0:\n        return float('inf')\n    if alpha >= 1.0:\n        return float('-inf')\n    k = math.ceil((n + 1) * (1.0 - alpha))\n    if k <= 0:\n        return float('-inf')\n    if k > n:\n        return float('inf')\n    sorted_scores = sorted(scores)\n    return float(sorted_scores[k - 1])",
+      "source_model": "Rung2_LiquidAI_LFM3_1.7B",
+      "hits": 2,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 15,
+      "fn_name": "serial_lt",
+      "normalized_code": "def serial_lt(s1: int, s2: int, bits: int=32) -> bool:\n    \"\"\"\n    RFC 1982 Serial Number Less-or-Equal comparison modulo 2**bits.\n    \n    Returns True if s1 <= s2 in the circular serial number space of 'bits' width.\n    This is the inverse of the standard RFC 1982 \"less than\" comparison,\n    but with equal values also returning True (i.e., <= instead of <).\n    \n    The midpoint rule: when the difference is exactly 2**(bits-1), the result\n    depends on the direction. For standard RFC 1982 less-than, the midpoint\n    returns False (treating it as \"not less\"). For less-or-equal, we need to\n    determine if the midpoint should be True or False.\n    \n    Per the spec: \"Midpoint 2**(bits-1) still returns False\" for the less-than\n    comparison. For less-or-equal, we need to think about this carefully.\n    \n    Standard RFC 1982 less-than: s1 < s2 in modular arithmetic.\n    The midpoint (difference of 2^(bits-1)) is treated as NOT less-than.\n    \n    For less-or-equal: s1 <= s2.\n    - If s1 == s2 (mod 2^bits): True\n    - If s1 < s2 (mod 2^bits, not at midpoint): True  \n    - If s1 > s2 (mod 2^bits): False\n    - If at midpoint: The spec says midpoint \"still returns False\", so False.\n    \n    Let me implement using the standard RFC 1982 approach:\n    \n    The RFC 1982 less-than test:\n    half = 2**(bits-1)\n    diff = (s2 - s1) & (2**bits - 1)\n    return 0 < diff < half\n    \n    For less-or-equal, we want s1 <= s2, which means:\n    - s1 == s2: True\n    - s1 < s2 (standard): True\n    - s1 > s2: False\n    - midpoint: False (per spec)\n    \n    So: s1 <= s2 in modular space means the forward distance from s1 to s2\n    is in [0, half) where 0 means equal and (0, half) means less-than.\n    At exactly half, it's False.\n    \n    So the condition is: 0 <= diff < half, where diff\n    \"\"\"\n    half = 1 << bits - 1\n    mask = (1 << bits) - 1\n    diff = s2 - s1 & mask\n    return 0 <= diff < half",
+      "source_model": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 16,
+      "fn_name": "crc8_check",
+      "normalized_code": "def crc8_check(data: bytes) -> int:\n    \"\"\"\n    Computes the CRC-8/INV checksum for the given data.\n\n    Parameters:\n        data: The input data as a bytes object.\n\n    Returns:\n        The final CRC value as an integer (0-255).\n    \"\"\"\n    crc = 255\n    poly = 7\n    xorout = 255\n    for byte in data:\n        crc ^= byte\n        for _ in range(8):\n            if crc & 128 != 0:\n                crc = crc << 1 ^ poly\n            else:\n                crc = crc << 1\n            crc &= 255\n    return (crc ^ xorout) & 255",
+      "source_model": "Rung3a_Google_Gemma4_E2B",
+      "hits": 1,
+      "num_exemplars": 1
+    }
+  ]
+}

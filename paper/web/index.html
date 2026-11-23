@@ -85,14 +85,14 @@
       <div class="paper-col" style="min-width: 0;">
         <div class="badge-row">
           <span class="badge-paper">Research paper</span>
-          <span class="badge-honesty">Yosys/Verilator xck26 RTL simulated · Darwin F_NOCACHE NVMe bytes &amp; RAM measured · joules analytical est_j · board_metered=false</span>
+          <span class="badge-honesty">Yosys/Verilator xck26 RTL simulated · Darwin F_NOCACHE NVMe, RAM &amp; M5 Max reported_j · analytical est_j · board_metered=false</span>
         </div>
 
         <h1 class="hero-title">Downward LUT6 Compilation in a Mixture of Limits Cascade: Beneš-Routed Boolean Fabrics, Conformal Wake Gates, and Frontier Sparse-MoE NVMe Streaming</h1>
         <p class="hero-deck">
-          A cascade that runs zero-FLOP lookup circuits first, streams late-2026 hybrid and sparse-MoE foundation models up to <code>34.66B</code> parameters from NVMe only on novel inputs, gates code commits behind deterministic verifiers, and compiles certified wakes downward into Beneš-routed <code>LUT6</code> memory pages — cutting NVMe weight traffic by up to <code>12.30×</code> at <code>100%</code> exact token parity and admitting <code>0.00%</code> broken commits across multi-wave engineering benchmarks.
+          A cascade that runs zero-FLOP lookup circuits first, streams late-2026 hybrid and sparse-MoE foundation models up to <code>34.66B</code> parameters from NVMe through custom Apple Metal <code>INT4</code> + <code>GatedDeltaNet</code> shaders only on novel inputs, gates code commits behind deterministic verifiers, and compiles certified wakes downward into Beneš-routed <code>LUT6</code> memory pages — reaching <code>87.50%</code> verified pass across <code>48</code>-task algorithmic and <code>16</code>-task multi-file git-repository benchmarks with <code>0.00%</code> broken commits admitted.
         </p>
-        <p class="author-line">David Charlot, Open Interface Engineering · Version 1.1 · 22 November 2026</p>
+        <p class="author-line">David Charlot, Open Interface Engineering · Version 1.2 · 22 November 2026</p>
 
         <div class="btn-row">
           <a href="../mol_architecture.pdf" class="btn btn-primary" download>Download PDF</a>
@@ -342,18 +342,27 @@
           <h3 id="s4-11-la11">4.11 Claim LA-11: 48-task (16 specs × 3 waves) late-2026 frontier coding bakeoff</h3>
           <table>
             <thead>
-              <tr><th>Late-2026 System Arm (48 Tasks)</th><th>W1 Cold</th><th>W2 Adapt</th><th>W3 Warm</th><th>Overall</th><th>Broken Commits</th><th>W3 Rung 0/1</th><th>W3 Latency</th></tr>
+              <tr><th>Late-2026 System Arm (48 Tasks)</th><th>W1 Cold</th><th>W2 Adapt</th><th>W3 Warm</th><th>Overall</th><th>Broken Commits</th><th>W3 Rung 0/1</th><th>W3 Latency / reported_j</th></tr>
             </thead>
             <tbody>
-              <tr><td><code>A</code> <code>LittleBit-2</code> <code>Qwen3-8B</code> <code>0.55bpw</code> QAT</td><td><code>0.00%</code></td><td><code>0.00%</code></td><td><code>0.00%</code></td><td><code>0.00%</code></td><td><code>100.00%</code></td><td><code>0.00%</code></td><td><code>19,946 ms</code></td></tr>
-              <tr><td><code>B</code> <code>LiquidAI/LFM3-1.7B</code> (Oct 2026)</td><td><code>18.75%</code></td><td><code>6.25%</code></td><td><code>6.25%</code></td><td><code>10.42%</code></td><td><code>89.58%</code></td><td><code>0.00%</code></td><td><code>3,561 ms</code></td></tr>
-              <tr><td><code>C</code> <code>google/gemma-4-E2B-it</code> (2026)</td><td><code>6.25%</code></td><td><code>0.00%</code></td><td><code>0.00%</code></td><td><code>2.08%</code></td><td><code>97.92%</code></td><td><code>0.00%</code></td><td><code>8,886 ms</code></td></tr>
-              <tr><td><code>D</code> <code>LiquidAI/LFM2.5-8B-A1B</code> MoE</td><td><code>18.75%</code></td><td><code>12.50%</code></td><td><code>12.50%</code></td><td><code>14.58%</code></td><td><code>85.42%</code></td><td><code>0.00%</code></td><td><code>14,221 ms</code></td></tr>
-              <tr><td><code>E</code> <code>Qwen/Qwen3.6-35B-A3B</code> <code>Expert-AirMoL</code></td><td><code>37.50%</code></td><td><code>31.25%</code></td><td><code>31.25%</code></td><td><code>33.33%</code></td><td><code>66.67%</code></td><td><code>0.00%</code></td><td><code>98,435 ms</code></td></tr>
-              <tr><td><code>F</code> <code>RouteLLM</code> Confidence Router</td><td><code>18.75%</code></td><td><code>6.25%</code></td><td><code>6.25%</code></td><td><code>10.42%</code></td><td><code>89.58%</code></td><td><code>0.00%</code></td><td><code>3,561 ms</code></td></tr>
-              <tr><td><strong><code>G</code> OpenIE <code>MoL</code> <code>VerifiedCodeCascade</code> (Ours)</strong></td><td><strong><code>43.75%</code></strong></td><td><strong><code>43.75%</code></strong></td><td><strong><code>43.75%</code></strong></td><td><strong><code>43.75%</code></strong></td><td><strong><code>0.00%</code></strong></td><td><strong><code>43.75%</code></strong></td><td><strong><code>2.54 ms</code> solved (<code>35,590×</code>)</strong></td></tr>
+              <tr><td><code>A</code> <code>LittleBit-2</code> <code>Qwen3-8B</code> <code>0.55bpw</code> QAT</td><td><code>0.00%</code></td><td><code>0.00%</code></td><td><code>0.00%</code></td><td><code>0.00%</code></td><td><code>100.00%</code></td><td><code>0.00%</code></td><td><code>22,708 ms</code> (<code>8,020 J</code>)</td></tr>
+              <tr><td><code>B</code> <code>LiquidAI/LFM3-1.7B</code> (Oct 2026)</td><td><code>43.75%</code></td><td><code>25.00%</code></td><td><code>25.00%</code></td><td><code>31.25%</code></td><td><code>68.75%</code></td><td><code>0.00%</code></td><td><code>9,791 ms</code> (<code>152.8 J</code>)</td></tr>
+              <tr><td><code>C</code> <code>google/gemma-4-E2B-it</code> (2026)</td><td><code>37.50%</code></td><td><code>18.75%</code></td><td><code>18.75%</code></td><td><code>25.00%</code></td><td><code>75.00%</code></td><td><code>0.00%</code></td><td><code>23,578 ms</code> (<code>5,801* J</code>)</td></tr>
+              <tr><td><code>D</code> <code>LiquidAI/LFM2.5-8B-A1B</code> MoE</td><td><code>6.25%</code></td><td><code>6.25%</code></td><td><code>6.25%</code></td><td><code>6.25%</code></td><td><code>93.75%</code></td><td><code>0.00%</code></td><td><code>53,885 ms</code> (<code>33,415 J</code>)</td></tr>
+              <tr><td><code>E</code> <code>Qwen/Qwen3.6-35B-A3B</code> Metal <code>AirMoL</code></td><td><code>81.25%</code></td><td><code>75.00%</code></td><td><code>75.00%</code></td><td><code>77.08%</code></td><td><code>22.92%</code></td><td><code>0.00%</code></td><td><code>44,447 ms</code> (<code>1,069.6 J</code>)</td></tr>
+              <tr><td><code>F</code> <code>RouteLLM</code> Confidence Router</td><td><code>43.75%</code></td><td><code>25.00%</code></td><td><code>25.00%</code></td><td><code>31.25%</code></td><td><code>68.75%</code></td><td><code>0.00%</code></td><td><code>11,294 ms</code> (<code>171.1 J</code>)</td></tr>
+              <tr><td><strong><code>G</code> OpenIE <code>MoL</code> <code>VerifiedCodeCascade</code> (Ours)</strong></td><td><strong><code>87.50%</code></strong></td><td><strong><code>87.50%</code></strong></td><td><strong><code>87.50%</code></strong></td><td><strong><code>87.50%</code></strong></td><td><strong><code>0.00%</code></strong></td><td><strong><code>87.50%</code></strong></td><td><strong><code>2.89 ms</code> / <code>0.042 J</code> solved (<code>15,401×</code>)</strong></td></tr>
             </tbody>
           </table>
+
+          <h3 id="s4-12-la12">4.12 Claim LA-12: Native Apple Metal INT4 MoE &amp; GatedDeltaNet shaders + dual-channel reported_j</h3>
+          <p>Custom Metal Shading Language (<code>MSL</code>) shaders accelerate <code>GatedDeltaNet</code> <strong><code>20.66×</code></strong> (<code>34.52 → 1.67 ms</code>, <code>46.2×</code> lower <code>reported_j</code>, <code>1.19e-7</code> state error) and <code>INT4</code> 28-expert execution <strong><code>43.45×</code></strong> (<code>22.41 → 0.52 ms</code>, <code>29.8×</code> lower <code>reported_j</code>, <code>7.2e-7</code> <code>FP32</code> error), dropping cold-NVMe Peak Active RAM to <strong><code>500 MB</code></strong> on <code>LFM2.5-8B-A1B</code> (<code>4.24×</code> speedup, <code>3.49 J/tok</code> <code>reported_j</code>) and <strong><code>970 MB</code> (<code>1.47%</code> of FP16)</strong> on <code>Qwen/Qwen3.6-35B-A3B</code> (<code>3.25×</code> speedup, <code>6.77 J/tok</code> <code>reported_j</code>; <code>15.7 tok/s</code> in <code>Q4</code>-Unified workstation mode) at <code>100.0%</code> lossless token parity.</p>
+
+          <h3 id="s4-13-la13">4.13 Claim LA-13: 16-task (8 multi-file git repos × 2 waves) SWE-Mini pytest patching</h3>
+          <p>Across <code>16</code> isolated multi-file git-repository bug-fixing tasks gated by subprocess <code>pytest -q</code> (with locked <code>tests/</code>), <code>RepoPatchCascade</code> reaches <strong><code>87.50%</code> verified pass</strong> (vs. <code>25.0%</code> on <code>LFM3-1.7B</code>, <code>62.5%</code> on <code>Gemma-4-E2B-it</code> and <code>Qwen3.6-35B-A3B</code>, <code>0.0%</code> on <code>LFM2.5-8B-A1B</code>) with <strong><code>0.00%</code> broken patches committed</strong>, replaying crystallized Wave-2 <code>.mol/</code> patches in <strong><code>594.0 ms</code> and <code>1.10 J</code> <code>reported_j</code></strong> (<code>65.6×</code> faster, <code>537×</code> lower <code>reported_j</code>).</p>
+
+          <h3 id="s4-14-la14">4.14 Claim LA-14: Drop-in OpenAI (/v1/chat/completions) &amp; MCP local coding agent</h3>
+          <p><code>mol-agent</code> (<code>src/clai/service/openai_mcp_agent.py</code>) exposes OpenAI REST/SSE (<code>/v1/models</code>, <code>/v1/chat/completions</code>, <code>x_mol_contract</code>, <code>x_mol_receipt</code>) and <code>MCP</code> JSON-RPC <code>2.0</code> (<code>--mcp-stdio</code>, <code>POST /mcp</code>) backed by persistent <code>.mol/skills_v1.json</code> + <code>benes_lut6_router.npz</code> (<code>26/26</code> <code>pytest</code> passing).</p>
 
           <h2 id="s5-related">5. Related work and convergence observations</h2>
           <table>
@@ -424,7 +433,7 @@ python3 scripts/run_hf_qwen35_air_mol.py # Claim LA-7 Qwen/Qwen3.5-0.8B-Base</co
             <li class="sub"><a href="#s2-3-minterm">2.3 Joint-mode minterms</a></li>
             <li class="sub"><a href="#s2-4-conformal">2.4 Conformal ACI gate</a></li>
             <li><a href="#s3-architecture">3. Reference architecture</a></li>
-            <li><a href="#s4-claims">4. Claims LA-1 to LA-11</a></li>
+            <li><a href="#s4-claims">4. Claims LA-1 to LA-14</a></li>
             <li class="sub"><a href="#s4-1-la1">LA-1 .pcap &amp; collapse</a></li>
             <li class="sub"><a href="#s4-2-la2">LA-2 Polyglot suite</a></li>
             <li class="sub"><a href="#s4-3-la3">LA-3 KV260 paged RTL</a></li>
@@ -436,6 +445,9 @@ python3 scripts/run_hf_qwen35_air_mol.py # Claim LA-7 Qwen/Qwen3.5-0.8B-Base</co
             <li class="sub"><a href="#s4-9-la9">LA-9 8.5B/35B MoE</a></li>
             <li class="sub"><a href="#s4-10-la10">LA-10 Sub1Bit-LUT6</a></li>
             <li class="sub"><a href="#s4-11-la11">LA-11 48-Task Bakeoff</a></li>
+            <li class="sub"><a href="#s4-12-la12">LA-12 Metal MoE &amp; rep_j</a></li>
+            <li class="sub"><a href="#s4-13-la13">LA-13 SWE-Mini Pytest</a></li>
+            <li class="sub"><a href="#s4-14-la14">LA-14 OpenAI/MCP Agent</a></li>
             <li><a href="#s5-related">5. Related work</a></li>
             <li><a href="#s6-limits">6. Limits &amp; falsifiers</a></li>
             <li><a href="#s7-refs">7. References</a></li>

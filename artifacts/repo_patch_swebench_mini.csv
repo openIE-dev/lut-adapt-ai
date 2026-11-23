@@ -1,0 +1,6 @@
+arm,wave1_cold_pass_pct,wave2_warm_pass_pct,overall_verified_pass_pct,broken_patches_committed_pct,rung0_rung1_hit_pct_wave2,mean_latency_ms_wave1,mean_latency_ms_wave2,est_joules_per_verified_fix,reported_joules_per_verified_fix
+A_LiquidAI_LFM3_1.7B_RepoPatch_1Shot,25.0,25.0,25.0,75.0,0.0,4943.34,5020.44,637.68,371.611
+B_Google_Gemma4_E2B_it_RepoPatch_1Shot,62.5,62.5,62.5,37.5,0.0,6864.56,7117.27,469.79,133.483
+C_LiquidAI_LFM2.5_8B_A1B_MoE_RepoPatch_1Shot,0.0,0.0,0.0,100.0,0.0,61429.73,61415.53,54051.91,17882.33
+D_Qwen3.6_35B_A3B_MetalAirMoL_RepoPatch_1Shot,62.5,62.5,62.5,37.5,0.0,20270.12,20502.41,3098.71,288.394
+E_OpenIE_MoL_RepoPatchCascade_OURS,87.5,87.5,87.5,0.0,75.0,59340.96,30663.18,3059.83,692.379

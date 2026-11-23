@@ -73,6 +73,13 @@ from clai.frontier.hf_air_mol_pretrained import (
     deserialize_shard_bytes_dtype,
     encode_token_bitbus_512,
 )
+from clai.frontier.metal_moe_kernels import (
+    BenesLUT6RouterPrefetcher,
+    fused_q4_moe_ffn_metal,
+    get_metal_moe_library,
+    pread_packed_experts_qd8,
+    set_metal_gated_deltanet_enabled,
+)
 
 
 LFM25_MOE_8B_MODEL = "LiquidAI/LFM2.5-8B-A1B"
@@ -374,6 +381,7 @@ class ExpertRoutedMoEAirMoLEngine:
         shard_dir: Path,
         device: torch.device,
         compute_dtype: torch.dtype = torch.float32,
+        use_metal_kernels: bool = True,
     ):
         self.shard_dir = shard_dir
         self.device = device
@@ -385,6 +393,22 @@ class ExpertRoutedMoEAirMoLEngine:
         self.text_config._attn_implementation = "eager"
         self.model_type = self.text_config.model_type
         self.is_qwen_moe = self.model_type in ("qwen3_5_moe", "qwen3_5_moe_text")
+
+        d_ok = int(self.text_config.hidden_size) % 64 == 0
+        i_ok = int(self.text_config.moe_intermediate_size) % 64 == 0
+        self.use_metal_kernels = bool(
+            use_metal_kernels
+            and device.type == "mps"
+            and d_ok
+            and i_ok
+            and get_metal_moe_library() is not None
+        )
+        if self.is_qwen_moe:
+            set_metal_gated_deltanet_enabled(self.use_metal_kernels)
+        self.router_prefetcher = BenesLUT6RouterPrefetcher(
+            num_layers=int(self.text_config.num_hidden_layers),
+            num_experts=int(self.text_config.num_experts),
+        )
 
         self.tokenizer = AutoTokenizer.from_pretrained(shard_dir)
         self.n_layers = int(self.text_config.num_hidden_layers)
@@ -728,28 +752,58 @@ class ExpertRoutedMoEAirMoLEngine:
         sweep_stats.active_experts_loaded += int(pmeta["num_experts"]) if dense_sweep_all else len(uniq_e)
 
         pack_path = self.shard_dir / f"hf_layer_{l_idx:02d}.experts.pack4"
-        exp_map, exp_ram = pread_selected_experts_pack4(
-            pack_path,
-            uniq_e,
-            pmeta,
-            meter,
-            self.device,
-            dtype=self.dtype,
-            dense_sweep_all=dense_sweep_all,
-        )
-        meter.record_alloc(exp_ram)
-        try:
-            ffn_out = torch.zeros_like(flat_h)
-            for e_id, (gu_w, dn_w) in exp_map.items():
-                tok_idx, topk_pos = torch.where(selected_experts == e_id)
-                cur = flat_h[tok_idx]
-                g_part, u_part = F.linear(cur, gu_w).chunk(2, dim=-1)
-                act = F.silu(g_part) * u_part
-                proj = F.linear(act, dn_w) * routing_weights[tok_idx, topk_pos].unsqueeze(-1).to(self.dtype)
-                ffn_out.index_add_(0, tok_idx, proj)
-        finally:
-            del exp_map
-            meter.record_free(exp_ram)
+        if self.use_metal_kernels and not dense_sweep_all:
+            sketch = self.router_prefetcher.sketch_6bit(h)
+            prefetched = self.router_prefetcher.collect_prefetch(l_idx, meter)
+            self.router_prefetcher.record_actual_experts(l_idx, sketch, uniq_e)
+            packed_t, mins_t, scales_t, exp_ram = pread_packed_experts_qd8(
+                pack_path, uniq_e, pmeta, meter, self.device, _open_uncached, prefetched_raw=prefetched
+            )
+            if (l_idx + 1) in self.layer_pack_meta:
+                nxt_path = self.shard_dir / f"hf_layer_{l_idx + 1:02d}.experts.pack4"
+                nxt_stride = int(self.layer_pack_meta[l_idx + 1]["expert_stride_bytes"])
+                self.router_prefetcher.launch_async_prefetch(l_idx + 1, sketch, nxt_path, nxt_stride, _open_uncached)
+            meter.record_alloc(exp_ram)
+            try:
+                ffn_out = fused_q4_moe_ffn_metal(
+                    flat_h,
+                    selected_experts,
+                    routing_weights,
+                    uniq_e,
+                    packed_t,
+                    mins_t,
+                    scales_t,
+                    d_dim=int(self.text_config.hidden_size),
+                    i_dim=int(self.text_config.moe_intermediate_size),
+                    m_gu=int(pmeta["m_gu"]),
+                    m_tot=int(pmeta["m_tot"]),
+                )
+            finally:
+                del packed_t, mins_t, scales_t
+                meter.record_free(exp_ram)
+        else:
+            exp_map, exp_ram = pread_selected_experts_pack4(
+                pack_path,
+                uniq_e,
+                pmeta,
+                meter,
+                self.device,
+                dtype=self.dtype,
+                dense_sweep_all=dense_sweep_all,
+            )
+            meter.record_alloc(exp_ram)
+            try:
+                ffn_out = torch.zeros_like(flat_h)
+                for e_id, (gu_w, dn_w) in exp_map.items():
+                    tok_idx, topk_pos = torch.where(selected_experts == e_id)
+                    cur = flat_h[tok_idx]
+                    g_part, u_part = F.linear(cur, gu_w).chunk(2, dim=-1)
+                    act = F.silu(g_part) * u_part
+                    proj = F.linear(act, dn_w) * routing_weights[tok_idx, topk_pos].unsqueeze(-1).to(self.dtype)
+                    ffn_out.index_add_(0, tok_idx, proj)
+            finally:
+                del exp_map
+                meter.record_free(exp_ram)
 
         del gate, ffn_norm
         return h + ffn_out.view_as(h), snaps_t
@@ -841,28 +895,58 @@ class ExpertRoutedMoEAirMoLEngine:
         sweep_stats.active_experts_loaded += int(pmeta["num_experts"]) if dense_sweep_all else len(uniq_e)
 
         pack_path = self.shard_dir / f"hf_layer_{l_idx:02d}.experts.pack4"
-        exp_map, exp_ram = pread_selected_experts_pack4(
-            pack_path,
-            uniq_e,
-            pmeta,
-            meter,
-            self.device,
-            dtype=self.dtype,
-            dense_sweep_all=dense_sweep_all,
-        )
-        meter.record_alloc(exp_ram)
-        try:
-            exp_out = torch.zeros_like(flat_h)
-            for e_id, (gu_w, dn_w) in exp_map.items():
-                tok_idx, topk_pos = torch.where(selected_experts == e_id)
-                cur = flat_h[tok_idx]
-                g_part, u_part = F.linear(cur, gu_w).chunk(2, dim=-1)
-                act = F.silu(g_part) * u_part
-                proj = F.linear(act, dn_w) * routing_weights[tok_idx, topk_pos].unsqueeze(-1).to(self.dtype)
-                exp_out.index_add_(0, tok_idx, proj)
-        finally:
-            del exp_map
-            meter.record_free(exp_ram)
+        if self.use_metal_kernels and not dense_sweep_all:
+            sketch = self.router_prefetcher.sketch_6bit(h)
+            prefetched = self.router_prefetcher.collect_prefetch(l_idx, meter)
+            self.router_prefetcher.record_actual_experts(l_idx, sketch, uniq_e)
+            packed_t, mins_t, scales_t, exp_ram = pread_packed_experts_qd8(
+                pack_path, uniq_e, pmeta, meter, self.device, _open_uncached, prefetched_raw=prefetched
+            )
+            if (l_idx + 1) in self.layer_pack_meta:
+                nxt_path = self.shard_dir / f"hf_layer_{l_idx + 1:02d}.experts.pack4"
+                nxt_stride = int(self.layer_pack_meta[l_idx + 1]["expert_stride_bytes"])
+                self.router_prefetcher.launch_async_prefetch(l_idx + 1, sketch, nxt_path, nxt_stride, _open_uncached)
+            meter.record_alloc(exp_ram)
+            try:
+                exp_out = fused_q4_moe_ffn_metal(
+                    flat_h,
+                    selected_experts,
+                    routing_weights,
+                    uniq_e,
+                    packed_t,
+                    mins_t,
+                    scales_t,
+                    d_dim=int(self.text_config.hidden_size),
+                    i_dim=int(self.text_config.moe_intermediate_size),
+                    m_gu=int(pmeta["m_gu"]),
+                    m_tot=int(pmeta["m_tot"]),
+                )
+            finally:
+                del packed_t, mins_t, scales_t
+                meter.record_free(exp_ram)
+        else:
+            exp_map, exp_ram = pread_selected_experts_pack4(
+                pack_path,
+                uniq_e,
+                pmeta,
+                meter,
+                self.device,
+                dtype=self.dtype,
+                dense_sweep_all=dense_sweep_all,
+            )
+            meter.record_alloc(exp_ram)
+            try:
+                exp_out = torch.zeros_like(flat_h)
+                for e_id, (gu_w, dn_w) in exp_map.items():
+                    tok_idx, topk_pos = torch.where(selected_experts == e_id)
+                    cur = flat_h[tok_idx]
+                    g_part, u_part = F.linear(cur, gu_w).chunk(2, dim=-1)
+                    act = F.silu(g_part) * u_part
+                    proj = F.linear(act, dn_w) * routing_weights[tok_idx, topk_pos].unsqueeze(-1).to(self.dtype)
+                    exp_out.index_add_(0, tok_idx, proj)
+            finally:
+                del exp_map
+                meter.record_free(exp_ram)
 
         del gate, post_norm, shared_exp, sh_sd
         return h + (exp_out + shared_out).view_as(h), snaps_t

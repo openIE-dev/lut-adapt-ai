@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "num_repos_per_wave": 8,
+    "num_waves": 2,
+    "total_repo_evaluations": 16,
+    "wave2_spec_mutations_caught_by_pytest_cz": 1,
+    "crystallized_repo_patch_skills": 8,
+    "persisted_mol_dir": "artifacts/.mol_repo_patches",
+    "reported_j_source": "apple_silicon_l3_rusage_v6_plus_l2_ioreport_energy_model",
+    "measured_j": null,
+    "board_metered": false
+  },
+  "traces": [
+    {
+      "task_id": "SWE_W1_01_R01_billing_proration",
+      "wave": 1,
+      "resolved_by": "Rung3a_Gemma4_E2B->Crystallized_Patch#1",
+      "latency_ms": 17491.01,
+      "reported_j": 259.8273,
+      "diff_lines": 52
+    },
+    {
+      "task_id": "SWE_W1_02_R02_dag_scheduler",
+      "wave": 1,
+      "resolved_by": "Rung3a_Gemma4_E2B->Crystallized_Patch#2",
+      "latency_ms": 14512.29,
+      "reported_j": 101.7566,
+      "diff_lines": 28
+    },
+    {
+      "task_id": "SWE_W1_03_R03_jwt_clock_skew",
+      "wave": 1,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Patch#3",
+      "latency_ms": 2246.06,
+      "reported_j": 33.0219,
+      "diff_lines": 17
+    },
+    {
+      "task_id": "SWE_W1_04_R04_wal_tx_recovery",
+      "wave": 1,
+      "resolved_by": "Rung3a_Gemma4_E2B->Crystallized_Patch#4",
+      "latency_ms": 14367.53,
+      "reported_j": 216.9046,
+      "diff_lines": 35
+    },
+    {
+      "task_id": "SWE_W1_05_R05_http_idempotent_retry",
+      "wave": 1,
+      "resolved_by": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL->Crystallized_Patch#5",
+      "latency_ms": 165888.7,
+      "reported_j": 2660.7024,
+      "diff_lines": 22
+    },
+    {
+      "task_id": "SWE_W1_06_R06_semver_prerelease",
+      "wave": 1,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 238856.78,
+      "reported_j": 3029.9877,
+      "diff_lines": 0
+    },
+    {
+      "task_id": "SWE_W1_07_R07_lru_ttl_eviction",
+      "wave": 1,
+      "resolved_by": "Rung3a_Gemma4_E2B->Crystallized_Patch#6",
+      "latency_ms": 13323.88,
+      "reported_j": 161.2847,
+      "diff_lines": 32
+    },
+    {
+      "task_id": "SWE_W1_08_R08_schema_mutable_defaults",
+      "wave": 1,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Patch#7",
+      "latency_ms": 8041.45,
+      "reported_j": 141.8095,
+      "diff_lines": 22
+    },
+    {
+      "task_id": "SWE_W2_01_R01_billing_proration",
+      "wave": 2,
+      "resolved_by": "Rung0_BenesLUT6->.mol/PatchSkill#1",
+      "latency_ms": 572.38,
+      "reported_j": 1.0602,
+      "diff_lines": 52
+    },
+    {
+      "task_id": "SWE_W2_02_R02_dag_scheduler",
+      "wave": 2,
+      "resolved_by": "Rung0_BenesLUT6->.mol/PatchSkill#2",
+      "latency_ms": 581.44,
+      "reported_j": 1.0906,
+      "diff_lines": 28
+    },
+    {
+      "task_id": "SWE_W2_03_R03_jwt_clock_skew_MUTATED",
+      "wave": 2,
+      "resolved_by": "Rung2_LFM3_1.7B->Crystallized_Patch#8",
+      "latency_ms": 2905.07,
+      "reported_j": 51.3858,
+      "diff_lines": 20
+    },
+    {
+      "task_id": "SWE_W2_04_R04_wal_tx_recovery",
+      "wave": 2,
+      "resolved_by": "Rung0_BenesLUT6->.mol/PatchSkill#4",
+      "latency_ms": 617.57,
+      "reported_j": 1.149,
+      "diff_lines": 35
+    },
+    {
+      "task_id": "SWE_W2_05_R05_http_idempotent_retry",
+      "wave": 2,
+      "resolved_by": "Rung0_BenesLUT6->.mol/PatchSkill#5",
+      "latency_ms": 594.79,
+      "reported_j": 1.1388,
+      "diff_lines": 22
+    },
+    {
+      "task_id": "SWE_W2_06_R06_semver_prerelease",
+      "wave": 2,
+      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
+      "latency_ms": 238836.31,
+      "reported_j": 3030.0268,
+      "diff_lines": 0
+    },
+    {
+      "task_id": "SWE_W2_07_R07_lru_ttl_eviction",
+      "wave": 2,
+      "resolved_by": "Rung0_BenesLUT6->.mol/PatchSkill#6",
+      "latency_ms": 575.0,
+      "reported_j": 1.1117,
+      "diff_lines": 32
+    },
+    {
+      "task_id": "SWE_W2_08_R08_schema_mutable_defaults",
+      "wave": 2,
+      "resolved_by": "Rung0_BenesLUT6->.mol/PatchSkill#7",
+      "latency_ms": 622.87,
+      "reported_j": 1.0451,
+      "diff_lines": 22
+    }
+  ]
+}

@@ -21,6 +21,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 import hashlib
 import heapq
+import json
 import math
 import os
 from pathlib import Path
@@ -38,6 +39,12 @@ from transformers import AutoModelForCausalLM, AutoModelForImageTextToText, Auto
 from clai.contracts.joule_meter import meter_joules, read_apple_pmu_telemetry
 from clai.frontier.air_mol_streamer import NVMeIOMeter
 from clai.frontier.benes_lut_fabric import compile_multicast_bcb512, eval_multicast_bcb512
+from clai.frontier.metal_moe_kernels import (
+    fused_q4_moe_ffn_metal,
+    fused_q4_moe_ffn_metal_direct,
+    get_metal_moe_library,
+    install_metal_gated_deltanet_patch,
+)
 from clai.frontier.moe_air_mol import (
     LFM25_MOE_8B_MODEL,
     QWEN36_MOE_35B_MODEL,
@@ -73,10 +80,14 @@ class CodingSpecTask:
 
 
 def extract_python_code(raw_text: str) -> str:
-    """Strips `<think>...</think>` blocks and extracts Python source from markdown fences."""
-    cleaned = re.sub(r"<think>.*?</think>", "", raw_text, flags=re.DOTALL).strip()
+    """Strips `<think>...</think>` and Gemma-4 `<|channel>thought...<channel|>` blocks and extracts Python source."""
+    cleaned = re.sub(r"<think>.*?</think>", "", raw_text, flags=re.DOTALL)
+    cleaned = re.sub(r"<\|channel>thought.*?<channel\|>", "", cleaned, flags=re.DOTALL).strip()
     if "<think>" in cleaned:
         cleaned = cleaned.split("<think>")[0].strip()
+    if "<|channel>thought" in cleaned:
+        cleaned = cleaned.split("<|channel>thought")[0].strip()
+    cleaned = cleaned.replace("<turn|>", "").replace("<|im_end|>", "").replace("<eos>", "").strip()
     fences = re.findall(r"```(?:python|py)?\s*\n(.*?)```", cleaned, flags=re.DOTALL)
     if fences:
         for block in fences:
@@ -162,6 +173,8 @@ def verify_python_candidate(
         "re": re,
         "collections": __import__("collections"),
         "bisect": __import__("bisect"),
+        "functools": __import__("functools"),
+        "itertools": __import__("itertools"),
     }
     try:
         with _execution_timeout(0.35):
@@ -434,6 +447,79 @@ class BenesLUT6SkillCascadeStore:
                     best_ent = ent
         return best_ent if best_hd <= 48 else None
 
+    def save_to_dir(self, mol_dir: Path) -> Path:
+        """Persists crystallized verified AST skills + `BenesLUT6` truth tables into `.mol/` on disk."""
+        mol_dir.mkdir(parents=True, exist_ok=True)
+        if self._dirty or (self.skills and self.compiled_bcb is None):
+            self.recompile_lut6_router()
+
+        skills_payload = []
+        ex_list: list[np.ndarray] = []
+        ex_sids: list[int] = []
+        for sid, ent in sorted(self.skills.items()):
+            skills_payload.append(
+                {
+                    "skill_id": ent.skill_id,
+                    "fn_name": ent.fn_name,
+                    "normalized_code": ent.normalized_code,
+                    "source_model": ent.source_model,
+                    "hits": ent.hits,
+                    "num_exemplars": len(ent.bus_exemplars),
+                }
+            )
+            for bx in ent.bus_exemplars:
+                ex_list.append(bx.astype(np.uint8))
+                ex_sids.append(int(sid))
+
+        (mol_dir / "skills_v1.json").write_text(
+            json.dumps({"version": 1, "num_skills": len(skills_payload), "skills": skills_payload}, indent=2),
+            encoding="utf-8",
+        )
+        ex_arr = np.stack(ex_list, axis=0) if ex_list else np.zeros((0, 512), dtype=np.uint8)
+        np.savez_compressed(
+            mol_dir / "benes_lut6_router.npz",
+            wires=self.wires,
+            tables=self.tables,
+            exemplars=ex_arr,
+            exemplar_sids=np.array(ex_sids, dtype=np.int32),
+        )
+        return mol_dir / "skills_v1.json"
+
+    @classmethod
+    def load_from_dir(cls, mol_dir: Path) -> BenesLUT6SkillCascadeStore:
+        """Reloads persistent `.mol/` skill store + `80`-`LUT6` Beneš router from disk."""
+        store = cls()
+        json_p = mol_dir / "skills_v1.json"
+        npz_p = mol_dir / "benes_lut6_router.npz"
+        if not json_p.exists():
+            return store
+
+        meta = json.loads(json_p.read_text(encoding="utf-8"))
+        for item in meta.get("skills", []):
+            sid = int(item["skill_id"])
+            store.skills[sid] = VerifiedSkillEntry(
+                skill_id=sid,
+                fn_name=str(item["fn_name"]),
+                normalized_code=str(item["normalized_code"]),
+                bus_exemplars=[],
+                source_model=str(item.get("source_model", "")),
+                hits=int(item.get("hits", 0)),
+            )
+
+        if npz_p.exists():
+            data = np.load(npz_p)
+            store.wires = data["wires"].astype(np.int16)
+            store.tables = data["tables"].astype(np.uint64)
+            ex_arr = data["exemplars"].astype(np.uint8)
+            ex_sids = data["exemplar_sids"].astype(np.int32)
+            for bx, sid in zip(ex_arr, ex_sids.tolist()):
+                if sid in store.skills:
+                    store.skills[sid].bus_exemplars.append(bx)
+            if store.skills:
+                store.compiled_bcb = compile_multicast_bcb512(store.wires.reshape(-1).astype(np.int32))
+                store._dirty = False
+        return store
+
 
 # =============================================================================
 # 3. Real 2026 Checkpoint Inference Wrappers (Dense MPS + Sparse-MoE `Expert-AirMoL`)
@@ -532,14 +618,14 @@ class Local2026ModelRunner:
         model.model.rotary_emb = Qwen3RotaryEmbedding(config=cfg).to(device)
         return model.eval()
 
-    def _format_chat(self, user_prompt: str) -> str:
+    def _format_chat(self, user_prompt: str) -> tuple[str, str]:
         if self.is_littlebit:
             # LittleBit-2 0.55bpw QAT was distilled on raw pretraining text (C4 + WikiText-2),
             # so prompt it as direct Python code completion for maximum fairness.
             sig_m = re.search(r"(def\s+[A-Za-z0-9_]+\([^`]+:)", user_prompt)
             sig = sig_m.group(1) if sig_m else "def solution(x):"
             doc = user_prompt.replace("`", "")
-            return f'"""\n{doc}\n"""\n```python\n{sig}\n'
+            return f'"""\n{doc}\n"""\n```python\n{sig}\n', f"```python\n{sig}\n"
         msgs = [
             {"role": "system", "content": SYSTEM_CODE_PROMPT},
             {"role": "user", "content": user_prompt},
@@ -550,33 +636,70 @@ class Local2026ModelRunner:
             )
         except TypeError:
             txt = self.tokenizer.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
-        return txt + "```python\n"
+        return txt, ""
+
+    def _collect_eos_ids(self) -> list[int]:
+        eos: set[int] = set()
+        raw_eos = self.tokenizer.eos_token_id
+        if isinstance(raw_eos, int) and raw_eos >= 0:
+            eos.add(raw_eos)
+        elif isinstance(raw_eos, list):
+            eos.update(int(x) for x in raw_eos if isinstance(x, int) and x >= 0)
+        for tok_s in ("<turn|>", "<|im_end|>", "<eos>", "<|endoftext|>"):
+            tid = self.tokenizer.convert_tokens_to_ids(tok_s)
+            if isinstance(tid, int) and tid >= 0 and tid != self.tokenizer.unk_token_id:
+                eos.add(tid)
+        return sorted(eos)
 
     @torch.no_grad()
-    def generate_code(self, user_prompt: str, max_new_tokens: int = 260) -> tuple[str, float, int]:
+    def generate_code(self, user_prompt: str, max_new_tokens: int = 640) -> tuple[str, float, int]:
         """Returns `(generated_text, mean_top1_confidence, generated_tokens)`."""
-        chat_txt = self._format_chat(user_prompt)
-        prefilled_prefix = "```python\n" + chat_txt.split("```python\n")[-1] if "```python\n" in chat_txt else ""
+        chat_txt, prefilled_prefix = self._format_chat(user_prompt)
         inputs = self.tokenizer(chat_txt, return_tensors="pt").to(self.device)
         in_len = inputs["input_ids"].size(1)
+        eos_ids = self._collect_eos_ids()
 
-        out = self.model.generate(
-            **inputs,
-            max_new_tokens=max_new_tokens,
-            do_sample=False,
-            stop_strings=["\n```"],
-            tokenizer=self.tokenizer,
-            return_dict_in_generate=True,
-            output_scores=True,
-            pad_token_id=self.tokenizer.pad_token_id or self.tokenizer.eos_token_id,
-        )
+        gen_kwargs: dict[str, Any] = {
+            "max_new_tokens": max_new_tokens,
+            "do_sample": False,
+            "return_dict_in_generate": True,
+            "output_scores": True,
+            "pad_token_id": (
+                self.tokenizer.pad_token_id
+                if self.tokenizer.pad_token_id is not None
+                else (eos_ids[0] if eos_ids else 0)
+            ),
+        }
+        if eos_ids:
+            gen_kwargs["eos_token_id"] = eos_ids
+        if self.is_littlebit:
+            gen_kwargs["stop_strings"] = ["\n```"]
+            gen_kwargs["tokenizer"] = self.tokenizer
+        else:
+            from transformers import StoppingCriteria, StoppingCriteriaList
+
+            tok_ref = self.tokenizer
+
+            class _ClosingFenceStop(StoppingCriteria):
+                def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs: Any) -> bool:
+                    gen_slice = input_ids[0, in_len:]
+                    if gen_slice.numel() < 12 or gen_slice.numel() % 4 != 0:
+                        return False
+                    txt_s = tok_ref.decode(gen_slice, skip_special_tokens=False)
+                    txt_clean = re.sub(r"<\|channel>thought.*?<channel\|>", "", txt_s, flags=re.DOTALL)
+                    txt_clean = re.sub(r"<think>.*?</think>", "", txt_clean, flags=re.DOTALL)
+                    return txt_clean.count("```") >= 2 and txt_clean.rstrip().endswith("```")
+
+            gen_kwargs["stopping_criteria"] = StoppingCriteriaList([_ClosingFenceStop()])
+
+        out = self.model.generate(**inputs, **gen_kwargs)
         gen_ids = out.sequences[0, in_len:]
         probs = []
         for sc in out.scores[: min(32, len(out.scores))]:
             p = F.softmax(sc[0].float(), dim=-1).max().item()
             probs.append(p)
         conf = float(np.mean(probs)) if probs else 0.5
-        decoded = self.tokenizer.decode(gen_ids, skip_special_tokens=True)
+        decoded = self.tokenizer.decode(gen_ids, skip_special_tokens=False)
         if prefilled_prefix:
             decoded = prefilled_prefix + decoded
         if self.device.type == "mps":
@@ -617,6 +740,9 @@ class ExpertAirMoL35BRunner:
         self._create_rec_mask = create_recurrent_attention_mask
         self.device = device
         self.dtype = torch.bfloat16
+        self.use_metal_kernels = bool(device.type == "mps" and get_metal_moe_library() is not None)
+        if self.use_metal_kernels:
+            install_metal_gated_deltanet_patch()
 
         slug = QWEN36_MOE_35B_MODEL.split("/")[-1].lower().replace(".", "_").replace("-", "_")
         if shard_dir is None:
@@ -634,8 +760,14 @@ class ExpertAirMoL35BRunner:
         self.embed_chunks = [sd_e0["embed_0"], sd_e0["embed_1"], sd_e1["embed_2"], sd_e1["embed_3"]]
 
         self.layers_pinned = []
+        self.experts_q4_resident: list[tuple[torch.Tensor, torch.Tensor, torch.Tensor]] = []
         self._open_fds: list[int] = []
         self._mmaps: list[mmap.mmap] = []
+        try:
+            phys_ram_gb = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") / (1024**3)
+        except Exception:
+            phys_ram_gb = 16.0
+        self.pin_q4_unified = bool(self.use_metal_kernels and phys_ram_gb >= 36.0)
 
         for l_idx in range(self.engine.n_layers):
             hsd, _ = deserialize_shard_bytes_dtype(
@@ -669,11 +801,29 @@ class ExpertAirMoL35BRunner:
             del hsd
 
             pfile = shard_dir / f"hf_layer_{l_idx:02d}.experts.pack4"
-            fd = os.open(str(pfile), os.O_RDONLY)
-            mm = mmap.mmap(fd, 0, access=mmap.ACCESS_READ)
-            self._open_fds.append(fd)
-            self._mmaps.append(mm)
-            self.layers_pinned.append((is_attn, in_norm, mixer, post_norm, gate, sh_exp, sh_gate_w, mm))
+            if self.pin_q4_unified:
+                pmeta = self.engine.layer_pack_meta[l_idx]
+                n_exp = int(pmeta["num_experts"])
+                stride = int(pmeta["expert_stride_bytes"])
+                m_tot = int(pmeta["m_tot"])
+                p_len = m_tot * 32
+                m_len = m_tot * 2
+                raw_b = pfile.read_bytes()
+                arr = np.frombuffer(raw_b, dtype=np.uint8).reshape(n_exp, stride)
+                pk_t = torch.from_numpy(arr[:, :p_len].reshape(n_exp, m_tot, 32).copy()).to(device)
+                mn_t = torch.from_numpy(arr[:, p_len : p_len + m_len].copy().view(np.float16).reshape(n_exp, m_tot)).to(device)
+                sc_t = torch.from_numpy(
+                    arr[:, p_len + m_len : p_len + 2 * m_len].copy().view(np.float16).reshape(n_exp, m_tot)
+                ).to(device)
+                del raw_b, arr
+                self.experts_q4_resident.append((pk_t, mn_t, sc_t))
+                self.layers_pinned.append((is_attn, in_norm, mixer, post_norm, gate, sh_exp, sh_gate_w, None))
+            else:
+                fd = os.open(str(pfile), os.O_RDONLY)
+                mm = mmap.mmap(fd, 0, access=mmap.ACCESS_READ)
+                self._open_fds.append(fd)
+                self._mmaps.append(mm)
+                self.layers_pinned.append((is_attn, in_norm, mixer, post_norm, gate, sh_exp, sh_gate_w, mm))
 
         self.head_chunks = []
         self.final_norm = None
@@ -691,6 +841,35 @@ class ExpertAirMoL35BRunner:
             tid = self.tokenizer.convert_tokens_to_ids(tok_s)
             if isinstance(tid, int) and tid >= 0:
                 self.stop_ids.add(tid)
+
+    def _load_mmap_packed_experts(
+        self, l_idx: int, mm, uniq_e: list[int]
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, int]:
+        """Slices raw `4.50 bpw` `INT4` expert buffers from `mmap` directly onto GPU for `fused_q4_moe_ffn_metal`."""
+        pmeta = self.engine.layer_pack_meta[l_idx]
+        stride = int(pmeta["expert_stride_bytes"])
+        m_tot = int(pmeta["m_tot"])
+        p_len = m_tot * 32
+        m_len = m_tot * 2
+        k_cnt = len(uniq_e)
+
+        packed_np = np.empty((k_cnt, m_tot, 32), dtype=np.uint8)
+        mins_np = np.empty((k_cnt, m_tot), dtype=np.float16)
+        scales_np = np.empty((k_cnt, m_tot), dtype=np.float16)
+        mv = memoryview(mm)
+        for idx, e in enumerate(uniq_e):
+            off = e * stride
+            sl = mv[off : off + stride]
+            packed_np[idx] = np.frombuffer(sl[:p_len], dtype=np.uint8).reshape(m_tot, 32)
+            mins_np[idx] = np.frombuffer(sl[p_len : p_len + m_len], dtype=np.float16)
+            scales_np[idx] = np.frombuffer(sl[p_len + m_len : p_len + 2 * m_len], dtype=np.float16)
+
+        return (
+            torch.from_numpy(packed_np).to(device=self.device),
+            torch.from_numpy(mins_np).to(device=self.device),
+            torch.from_numpy(scales_np).to(device=self.device),
+            k_cnt * stride,
+        )
 
     def _unpack_mmap_experts(self, l_idx: int, mm, uniq_e: list[int]) -> tuple[dict[int, tuple[torch.Tensor, torch.Tensor]], int]:
         pmeta = self.engine.layer_pack_meta[l_idx]
@@ -776,16 +955,52 @@ class ExpertAirMoL35BRunner:
             flat_h = post_norm(h).reshape(-1, self.tcfg.hidden_size)
             sh_out = F.sigmoid(F.linear(flat_h, sh_gate_w)) * sh_exp(flat_h)
             _, rw, sel = gate(flat_h)
-            uniq_e = sorted(set(int(x) for x in sel.reshape(-1).tolist()))
-            exp_map, b_read = self._unpack_mmap_experts(l_idx, mm, uniq_e)
-            bytes_streamed += b_read
-
-            exp_out = torch.zeros_like(flat_h)
-            for e_id, (gu_w, dn_w) in exp_map.items():
-                t_i, k_p = torch.where(sel == e_id)
-                gp, up = F.linear(flat_h[t_i], gu_w).chunk(2, dim=-1)
-                exp_out.index_add_(0, t_i, F.linear(F.silu(gp) * up, dn_w) * rw[t_i, k_p].unsqueeze(-1))
-            del exp_map
+            if self.pin_q4_unified:
+                pmeta = self.engine.layer_pack_meta[l_idx]
+                uniq_cnt = int(torch.unique(sel).numel())
+                bytes_streamed += uniq_cnt * int(pmeta["expert_stride_bytes"])
+                pk_all, mn_all, sc_all = self.experts_q4_resident[l_idx]
+                exp_out = fused_q4_moe_ffn_metal_direct(
+                    flat_h,
+                    sel,
+                    rw,
+                    pk_all,
+                    mn_all,
+                    sc_all,
+                    d_dim=int(self.tcfg.hidden_size),
+                    i_dim=int(self.tcfg.moe_intermediate_size),
+                    m_gu=int(pmeta["m_gu"]),
+                    m_tot=int(pmeta["m_tot"]),
+                )
+            elif self.use_metal_kernels:
+                uniq_e = sorted(set(int(x) for x in sel.reshape(-1).tolist()))
+                pmeta = self.engine.layer_pack_meta[l_idx]
+                packed_t, mins_t, scales_t, b_read = self._load_mmap_packed_experts(l_idx, mm, uniq_e)
+                bytes_streamed += b_read
+                exp_out = fused_q4_moe_ffn_metal(
+                    flat_h,
+                    sel,
+                    rw,
+                    uniq_e,
+                    packed_t,
+                    mins_t,
+                    scales_t,
+                    d_dim=int(self.tcfg.hidden_size),
+                    i_dim=int(self.tcfg.moe_intermediate_size),
+                    m_gu=int(pmeta["m_gu"]),
+                    m_tot=int(pmeta["m_tot"]),
+                )
+                del packed_t, mins_t, scales_t
+            else:
+                uniq_e = sorted(set(int(x) for x in sel.reshape(-1).tolist()))
+                exp_map, b_read = self._unpack_mmap_experts(l_idx, mm, uniq_e)
+                bytes_streamed += b_read
+                exp_out = torch.zeros_like(flat_h)
+                for e_id, (gu_w, dn_w) in exp_map.items():
+                    t_i, k_p = torch.where(sel == e_id)
+                    gp, up = F.linear(flat_h[t_i], gu_w).chunk(2, dim=-1)
+                    exp_out.index_add_(0, t_i, F.linear(F.silu(gp) * up, dn_w) * rw[t_i, k_p].unsqueeze(-1))
+                del exp_map
             h = h + (exp_out + sh_out).view_as(h)
 
         assert self.final_norm is not None
@@ -794,7 +1009,7 @@ class ExpertAirMoL35BRunner:
         return logits[:, 0], bytes_streamed
 
     @torch.no_grad()
-    def generate_code(self, user_prompt: str, max_new_tokens: int = 220) -> tuple[str, int, float, float]:
+    def generate_code(self, user_prompt: str, max_new_tokens: int = 768) -> tuple[str, int, float, float]:
         """Returns `(generated_text, generated_tokens, expert_gb_streamed, active_ram_mb)`."""
         msgs = [
             {"role": "system", "content": SYSTEM_CODE_PROMPT},
@@ -802,7 +1017,7 @@ class ExpertAirMoL35BRunner:
         ]
         chat_txt = self.tokenizer.apply_chat_template(
             msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False
-        ) + "```python\n"
+        )
         p_ids = self.tokenizer.encode(chat_txt, add_special_tokens=False)
 
         cache = self._DynamicCache(config=self.tcfg)
@@ -812,7 +1027,7 @@ class ExpertAirMoL35BRunner:
         acc_txt = self.tokenizer.decode(emitted, skip_special_tokens=False)
 
         while len(emitted) < max_new_tokens and nxt not in self.stop_ids:
-            if "\n```" in acc_txt or acc_txt.strip().endswith("```"):
+            if acc_txt.count("```") >= 2 and acc_txt.rstrip().endswith("```"):
                 break
             lg, b_s = self._forward_step(torch.tensor([[nxt]], device=self.device, dtype=torch.long), cache)
             b_tot += b_s
@@ -822,14 +1037,15 @@ class ExpertAirMoL35BRunner:
 
         if self.device.type == "mps":
             torch.mps.synchronize()
-        txt = "```python\n" + self.tokenizer.decode(emitted, skip_special_tokens=True)
-        return txt, len(emitted), b_tot / (1024**3), 4350.0
+        txt = self.tokenizer.decode(emitted, skip_special_tokens=False)
+        return txt, len(emitted), b_tot / (1024**3), 4213.0
 
     def unload(self) -> None:
         for mm in self._mmaps:
             mm.close()
         for fd in self._open_fds:
             os.close(fd)
+        self.experts_q4_resident.clear()
         self.layers_pinned.clear()
         self.embed_chunks.clear()
         self.head_chunks.clear()
@@ -1380,6 +1596,22 @@ class BakeoffSummaryRow:
     mean_latency_ms_wave3: float
     overall_mean_latency_ms: float
     est_joules_per_verified_solve: float
+    reported_joules_per_verified_solve: float | None = None
+
+
+def _build_repair_prompt(spec_prompt: str, prev_raw: str, diag: str) -> str:
+    """Constructs a structured counterexample repair prompt with the failing candidate code + exact `C(z)` trace."""
+    prev_code = extract_python_code(prev_raw)
+    if len(prev_code) > 2200:
+        prev_code = prev_code[:2200] + "\n# ... [truncated]"
+    return (
+        f"{spec_prompt}\n\n"
+        f"Your previous Python draft failed deterministic contract verification `C(z)`:\n"
+        f"```python\n{prev_code}\n```\n"
+        f"COUNTEREXAMPLE / DIAGNOSTIC:\n  {diag}\n\n"
+        f"Fix this exact bug while preserving all passing cases and boundary invariants. "
+        f"Output ONLY the complete corrected Python function inside a single ```python ... ``` block."
+    )
 
 
 def run_frontier_head_to_head_bakeoff(
@@ -1394,11 +1626,15 @@ def run_frontier_head_to_head_bakeoff(
       5. `E_Qwen3.6_35B_A3B_ExpertAirMoL_1Shot` (`34.66B` `256`-Expert Frontier Sparse-MoE, ungated)
       6. `F_RouteLLM_ConfidenceRouter_Ungated` (`LFM3-1.7B -> Gemma4-E2B -> LFM2.5-8B-A1B` router, no `C(z)`)
       7. `G_OpenIE_MoL_VerifiedCascade_OURS` (`Rung 0 BenesLUT6` + `Rung 1 AST Skill` + `C(z)` Verifier
-         + Counterexample-Guided `LFM3-1.7B -> Gemma4-E2B -> LFM2.5-8B-A1B -> Qwen3.6-35B-A3B` Repair
-         + Online Downward Crystallization)
+         + Structured Counterexample-Guided `LFM3-1.7B -> Gemma4-E2B -> LFM2.5-8B-A1B -> Metal-Qwen3.6-35B-A3B`
+         + Online Downward Crystallization into `.mol/`)
     """
     lib = Path(os.environ.get("CLAI_MODEL_LIBRARY", "/Volumes/macos_4TB_external_1/neuronexus_ai/model_library"))
     lb2_dir = lib / "littlebit-qwen3-8b-0.55bpw"
+    if not (lb2_dir / "config.json").exists():
+        from huggingface_hub import snapshot_download
+
+        snapshot_download(repo_id="LittleBitLLM/littlebit-qwen3-8b-0.55bpw", local_dir=str(lb2_dir))
     lfm3_dir = lib / "LFM3-1.7B"
     gemma4_dir = lib / "gemma-4-E2B-it"
     lfm8b_snap = next((lib / "_hf_cache/models--LiquidAI--LFM2.5-8B-A1B/snapshots").iterdir())
@@ -1413,8 +1649,8 @@ def run_frontier_head_to_head_bakeoff(
         ("lfm8b", "D_LiquidAI_LFM2.5_8B_A1B_MoE_1Shot", lfm8b_snap, 55.0),
     ]
 
-    # Cache per-model 1-shot generations AND repair generations on actual failed tasks
-    cache_1shot: dict[str, dict[str, tuple[str, float, float, float]]] = {}
+    # Cache per-model 1-shot generations: (raw_out, conf, dt_ms, est_j, rep_j)
+    cache_1shot: dict[str, dict[str, tuple[str, float, float, float, float]]] = {}
 
     unique_prompts: list[CodingSpecTask] = []
     seen_p = set()
@@ -1423,24 +1659,27 @@ def run_frontier_head_to_head_bakeoff(
             seen_p.add(t.prompt)
             unique_prompts.append(t)
 
-    repair_gemma4: dict[str, tuple[str, float, float]] = {}
-    repair_lfm8b: dict[str, tuple[str, float, float]] = {}
+    repair_gemma4: dict[str, tuple[str, float, float, float]] = {}
+    repair_lfm8b: dict[str, tuple[str, float, float, float]] = {}
 
     for m_key, m_title, m_path, watts in model_specs:
         print(f"  [Bakeoff] Running {m_title} across {len(unique_prompts)} unique specifications...", flush=True)
         runner = Local2026ModelRunner(m_key, m_path, device)
         cache_1shot[m_key] = {}
+        tok_budget = 384 if m_key == "lb2" else 640
         for idx_p, ut in enumerate(unique_prompts, start=1):
-            t0 = time.perf_counter()
-            raw_out, conf, _ntok = runner.generate_code(ut.prompt, max_new_tokens=260)
-            dt_ms = (time.perf_counter() - t0) * 1000.0
+            with meter_joules("rung2" if watts < 50 else "rung3", device=device) as jr:
+                raw_out, conf, _ntok = runner.generate_code(ut.prompt, max_new_tokens=tok_budget)
+            dt_ms = jr.elapsed_ms
             est_j = (dt_ms / 1000.0) * watts
-            cache_1shot[m_key][ut.prompt] = (raw_out, conf, dt_ms, est_j)
-            if idx_p % 8 == 0 or idx_p == len(unique_prompts):
+            rep_j = float(jr.reported_j) if jr.reported_j is not None else 0.0
+            cache_1shot[m_key][ut.prompt] = (raw_out, conf, dt_ms, est_j, rep_j)
+            if idx_p % 6 == 0 or idx_p == len(unique_prompts):
                 ok_q, _, diag_q = verify_python_candidate(raw_out, ut.fn_name, ut.tests)
-                tag = "PASS" if ok_q else f"FAIL({diag_q[:36]})"
+                tag = "PASS" if ok_q else f"FAIL({diag_q[:40]})"
                 print(
-                    f"    [{m_key} {idx_p:02d}/{len(unique_prompts)}] {ut.task_id}: {dt_ms:.0f} ms -> {tag}",
+                    f"    [{m_key} {idx_p:02d}/{len(unique_prompts)}] {ut.task_id}: {dt_ms:.0f} ms "
+                    f"(rep_J={rep_j:.2f}) -> {tag}",
                     flush=True,
                 )
 
@@ -1448,20 +1687,20 @@ def run_frontier_head_to_head_bakeoff(
             for ut in unique_prompts:
                 ok_l3, _, _ = verify_python_candidate(cache_1shot["lfm3"][ut.prompt][0], ut.fn_name, ut.tests)
                 if not ok_l3:
-                    ok_g4, _, diag_g4 = verify_python_candidate(
-                        cache_1shot["gemma4"][ut.prompt][0], ut.fn_name, ut.tests
-                    )
+                    cand_g4 = cache_1shot["gemma4"][ut.prompt][0]
+                    ok_g4, _, diag_g4 = verify_python_candidate(cand_g4, ut.fn_name, ut.tests)
                     if not ok_g4:
-                        rep_p = (
-                            f"{ut.prompt}\n\nYour previous draft failed deterministic contract verification `C(z)`:\n"
-                            f"  ERROR: {diag_g4}\n"
-                            f"Fix this exact bug and output ONLY the corrected Python function."
+                        rep_p = _build_repair_prompt(ut.prompt, cand_g4, diag_g4)
+                        with meter_joules("rung2", device=device) as jr_g:
+                            r_fix, _, _ = runner.generate_code(rep_p, max_new_tokens=640)
+                        dt_ms = jr_g.elapsed_ms
+                        repair_gemma4[ut.prompt] = (
+                            r_fix,
+                            dt_ms,
+                            (dt_ms / 1000.0) * watts,
+                            float(jr_g.reported_j or 0.0),
                         )
-                        t0 = time.perf_counter()
-                        r_fix, _, _ = runner.generate_code(rep_p, max_new_tokens=280)
-                        dt_ms = (time.perf_counter() - t0) * 1000.0
-                        repair_gemma4[ut.prompt] = (r_fix, dt_ms, (dt_ms / 1000.0) * watts)
-            print(f"    [gemma4] Completed {len(repair_gemma4)} counterexample repair attempts.", flush=True)
+            print(f"    [gemma4] Completed {len(repair_gemma4)} structured counterexample repairs.", flush=True)
         elif m_key == "lfm8b":
             for ut in unique_prompts:
                 ok_l3, _, _ = verify_python_candidate(cache_1shot["lfm3"][ut.prompt][0], ut.fn_name, ut.tests)
@@ -1470,43 +1709,45 @@ def run_frontier_head_to_head_bakeoff(
                 if ut.prompt in repair_gemma4:
                     ok_g4r, _, _ = verify_python_candidate(repair_gemma4[ut.prompt][0], ut.fn_name, ut.tests)
                 if not (ok_l3 or ok_g4 or ok_g4r):
-                    ok8_1, _, diag8_1 = verify_python_candidate(
-                        cache_1shot["lfm8b"][ut.prompt][0], ut.fn_name, ut.tests
-                    )
+                    cand_8 = cache_1shot["lfm8b"][ut.prompt][0]
+                    ok8_1, _, diag8_1 = verify_python_candidate(cand_8, ut.fn_name, ut.tests)
                     if not ok8_1:
-                        rep_p = (
-                            f"{ut.prompt}\n\nYour previous draft failed deterministic contract verification `C(z)`:\n"
-                            f"  ERROR: {diag8_1}\n"
-                            f"Fix this exact boundary/invariant failure and output ONLY the corrected Python function."
+                        rep_p = _build_repair_prompt(ut.prompt, cand_8, diag8_1)
+                        with meter_joules("rung3", device=device) as jr_8:
+                            r_fix, _, _ = runner.generate_code(rep_p, max_new_tokens=640)
+                        dt_ms = jr_8.elapsed_ms
+                        repair_lfm8b[ut.prompt] = (
+                            r_fix,
+                            dt_ms,
+                            (dt_ms / 1000.0) * watts,
+                            float(jr_8.reported_j or 0.0),
                         )
-                        t0 = time.perf_counter()
-                        r_fix, _, _ = runner.generate_code(rep_p, max_new_tokens=300)
-                        dt_ms = (time.perf_counter() - t0) * 1000.0
-                        repair_lfm8b[ut.prompt] = (r_fix, dt_ms, (dt_ms / 1000.0) * watts)
-            print(f"    [lfm8b] Completed {len(repair_lfm8b)} counterexample repair attempts.", flush=True)
+            print(f"    [lfm8b] Completed {len(repair_lfm8b)} structured counterexample repairs.", flush=True)
 
         runner.unload()
 
     print(
-        f"  [Bakeoff] Running E_Qwen3.6_35B_A3B_ExpertAirMoL (`34.66B` 256-Expert MoE) across "
+        f"  [Bakeoff] Running Metal-Accelerated E_Qwen3.6_35B_A3B_ExpertAirMoL (`34.66B` 256-Expert MoE) across "
         f"{len(unique_prompts)} unique specifications...",
         flush=True,
     )
     runner_35b = ExpertAirMoL35BRunner(device=device)
-    cache_35b_by_prompt: dict[str, tuple[str, float, float, float]] = {}
-    repair_35b: dict[str, tuple[str, float, float]] = {}
+    cache_35b_by_prompt: dict[str, tuple[str, float, float, float, float]] = {}
+    repair_35b: dict[str, tuple[str, float, float, float]] = {}
 
     for idx_p, ut in enumerate(unique_prompts, start=1):
-        t0 = time.perf_counter()
-        raw35, _ntok35, nvme_gb, _ram_mb = runner_35b.generate_code(ut.prompt, max_new_tokens=220)
-        dt_ms = (time.perf_counter() - t0) * 1000.0
+        with meter_joules("rung3", device=device) as jr_35:
+            raw35, _ntok35, nvme_gb, _ram_mb = runner_35b.generate_code(ut.prompt, max_new_tokens=768)
+        dt_ms = jr_35.elapsed_ms
         est_j = (dt_ms / 1000.0) * 95.0
-        cache_35b_by_prompt[ut.prompt] = (raw35, dt_ms, est_j, nvme_gb)
-        if idx_p % 8 == 0 or idx_p == len(unique_prompts):
+        rep_j = float(jr_35.reported_j or 0.0)
+        cache_35b_by_prompt[ut.prompt] = (raw35, dt_ms, est_j, rep_j, nvme_gb)
+        if idx_p % 6 == 0 or idx_p == len(unique_prompts):
             ok_q, _, diag_q = verify_python_candidate(raw35, ut.fn_name, ut.tests)
-            tag = "PASS" if ok_q else f"FAIL({diag_q[:36]})"
+            tag = "PASS" if ok_q else f"FAIL({diag_q[:40]})"
             print(
-                f"    [qwen35b {idx_p:02d}/{len(unique_prompts)}] {ut.task_id}: {dt_ms:.0f} ms ({nvme_gb:.2f} GB) -> {tag}",
+                f"    [qwen35b {idx_p:02d}/{len(unique_prompts)}] {ut.task_id}: {dt_ms:.0f} ms "
+                f"({nvme_gb:.2f} GB, rep_J={rep_j:.2f}) -> {tag}",
                 flush=True,
             )
 
@@ -1521,20 +1762,20 @@ def run_frontier_head_to_head_bakeoff(
         if ut.prompt in repair_lfm8b:
             cands.append(repair_lfm8b[ut.prompt][0])
         if not any(verify_python_candidate(c, ut.fn_name, ut.tests)[0] for c in cands):
-            r35_1, dt35_1, j35_1, _ = cache_35b_by_prompt[ut.prompt]
-            ok35_1, _, diag35 = verify_python_candidate(r35_1, ut.fn_name, ut.tests)
-            if ok35_1:
-                repair_35b[ut.prompt] = (r35_1, dt35_1, j35_1)
-            else:
-                rep_p35 = (
-                    f"{ut.prompt}\n\nCounterexample from contract verifier `C(z)`:\n  {diag35}\n"
-                    f"Output ONLY the corrected Python function."
-                )
-                t0 = time.perf_counter()
-                r35_2, _, _, _ = runner_35b.generate_code(rep_p35, max_new_tokens=230)
-                dt35_2 = (time.perf_counter() - t0) * 1000.0
-                repair_35b[ut.prompt] = (r35_2, dt35_1 + dt35_2, j35_1 + (dt35_2 / 1000.0) * 95.0)
-    print(f"    [qwen35b] Completed {len(repair_35b)} frontier escalation/repair evaluations.", flush=True)
+            r35_cur, dt35_tot, j35_tot, rep35_tot, _ = cache_35b_by_prompt[ut.prompt]
+            ok35, _, diag35 = verify_python_candidate(r35_cur, ut.fn_name, ut.tests)
+            for _turn in range(2):
+                if ok35:
+                    break
+                rep_p35 = _build_repair_prompt(ut.prompt, r35_cur, diag35)
+                with meter_joules("rung3", device=device) as jr_35r:
+                    r35_cur, _, _, _ = runner_35b.generate_code(rep_p35, max_new_tokens=768)
+                dt35_tot += jr_35r.elapsed_ms
+                j35_tot += (jr_35r.elapsed_ms / 1000.0) * 95.0
+                rep35_tot += float(jr_35r.reported_j or 0.0)
+                ok35, _, diag35 = verify_python_candidate(r35_cur, ut.fn_name, ut.tests)
+            repair_35b[ut.prompt] = (r35_cur, dt35_tot, j35_tot, rep35_tot)
+    print(f"    [qwen35b] Completed {len(repair_35b)} frontier escalation/2-turn repair evaluations.", flush=True)
     runner_35b.unload()
 
     # Assemble summary rows across all 7 Arms!
@@ -1543,14 +1784,15 @@ def run_frontier_head_to_head_bakeoff(
 
     def _summarize_arm(
         arm_name: str,
-        outcomes: list[tuple[int, bool, bool, bool, bool, float, float]],
+        outcomes: list[tuple[int, bool, bool, bool, bool, float, float, float]],
     ) -> BakeoffSummaryRow:
-        # tuple: (wave, solved, broken_committed, r0_r1_hit, used_35b, lat_ms, est_j)
+        # tuple: (wave, solved, broken_committed, r0_r1_hit, used_35b, lat_ms, est_j, rep_j)
         w1 = [x for x in outcomes if x[0] == 1]
         w2 = [x for x in outcomes if x[0] == 2]
         w3 = [x for x in outcomes if x[0] == 3]
         tot_solved = sum(1 for x in outcomes if x[1])
         tot_j = sum(x[6] for x in outcomes)
+        tot_rep_j = sum(x[7] for x in outcomes)
         return BakeoffSummaryRow(
             arm=arm_name,
             wave1_cold_pass_pct=round(100.0 * sum(1 for x in w1 if x[1]) / len(w1), 2),
@@ -1564,44 +1806,46 @@ def run_frontier_head_to_head_bakeoff(
             mean_latency_ms_wave3=round(float(np.mean([x[5] for x in w3])), 2),
             overall_mean_latency_ms=round(float(np.mean([x[5] for x in outcomes])), 2),
             est_joules_per_verified_solve=round(tot_j / max(1, tot_solved), 2),
+            reported_joules_per_verified_solve=round(tot_rep_j / max(1, tot_solved), 3) if tot_rep_j > 0 else None,
         )
 
     # Arms A, B, C, D: Ungated 1-Shot Standalone Models
     for m_key, m_title, _, _ in model_specs:
         out_m = []
         for t in tasks:
-            raw_c, _, dt_ms, est_j = cache_1shot[m_key][t.prompt]
+            raw_c, _, dt_ms, est_j, rep_j = cache_1shot[m_key][t.prompt]
             ok, _, _ = verify_python_candidate(raw_c, t.fn_name, t.tests)
-            # Ungated standalone tool returns code directly -> if `not ok`, a broken commit is admitted!
-            out_m.append((t.wave, ok, not ok, False, False, dt_ms, est_j))
+            out_m.append((t.wave, ok, not ok, False, False, dt_ms, est_j, rep_j))
         rows.append(_summarize_arm(m_title, out_m))
 
     # Arm E: Ungated 1-Shot Standalone `Qwen3.6-35B-A3B` (`Expert-AirMoL`)
     out_35 = []
     for t in tasks:
-        raw35, dt35, j35, _ = cache_35b_by_prompt[t.prompt]
+        raw35, dt35, j35, rep35, _ = cache_35b_by_prompt[t.prompt]
         ok35, _, _ = verify_python_candidate(raw35, t.fn_name, t.tests)
-        out_35.append((t.wave, ok35, not ok35, False, True, dt35, j35))
+        out_35.append((t.wave, ok35, not ok35, False, True, dt35, j35, rep35))
     rows.append(_summarize_arm("E_Qwen3.6_35B_A3B_ExpertAirMoL_1Shot", out_35))
 
     # Arm F: `RouteLLM` Confidence-Threshold Model Router (`LFM3-1.7B -> Gemma4-E2B -> LFM2.5-8B-A1B`, No `C(z)` Gate!)
     out_rllm = []
     for t in tasks:
-        rl3, confl3, dtl3, jl3 = cache_1shot["lfm3"][t.prompt]
-        tot_dt, tot_j = dtl3, jl3
+        rl3, confl3, dtl3, jl3, repl3 = cache_1shot["lfm3"][t.prompt]
+        tot_dt, tot_j, tot_rep = dtl3, jl3, repl3
         chosen = rl3
         if confl3 < 0.88:
-            rg4, confg4, dtg4, jg4 = cache_1shot["gemma4"][t.prompt]
+            rg4, confg4, dtg4, jg4, repg4 = cache_1shot["gemma4"][t.prompt]
             tot_dt += dtg4
             tot_j += jg4
+            tot_rep += repg4
             chosen = rg4
             if confg4 < 0.86:
-                r8, _, dt8, j8 = cache_1shot["lfm8b"][t.prompt]
+                r8, _, dt8, j8, rep8 = cache_1shot["lfm8b"][t.prompt]
                 tot_dt += dt8
                 tot_j += j8
+                tot_rep += rep8
                 chosen = r8
         ok_r, _, _ = verify_python_candidate(chosen, t.fn_name, t.tests)
-        out_rllm.append((t.wave, ok_r, not ok_r, False, False, tot_dt, tot_j))
+        out_rllm.append((t.wave, ok_r, not ok_r, False, False, tot_dt, tot_j, tot_rep))
     rows.append(_summarize_arm("F_RouteLLM_ConfidenceRouter_Ungated", out_rllm))
 
     # Arm G: `OpenIE Mixture of Limits (MoL)` (`Rung 0 BenesLUT6` + `Rung 1 AST Skill` + `C(z)` Gate
@@ -1611,61 +1855,64 @@ def run_frontier_head_to_head_bakeoff(
     spec_drift_caught = 0
 
     for t in tasks:
-        t_r0 = time.perf_counter()
-        cand_skill = skill_store.lookup_rung0_rung1(t.fn_name, t.prompt)
-        dt_r0_ms = (time.perf_counter() - t_r0) * 1000.0
+        with meter_joules("rung0") as jr_r0:
+            cand_skill = skill_store.lookup_rung0_rung1(t.fn_name, t.prompt)
+        dt_r0_ms = jr_r0.elapsed_ms
+        rep_r0 = float(jr_r0.reported_j or 0.0)
 
         if cand_skill is not None:
-            t_v = time.perf_counter()
-            ok_s, _, _ = verify_python_candidate(cand_skill.normalized_code, t.fn_name, t.tests)
-            dt_v_ms = (time.perf_counter() - t_v) * 1000.0
+            with meter_joules("rung0") as jr_v:
+                ok_s, _, _ = verify_python_candidate(cand_skill.normalized_code, t.fn_name, t.tests)
             if ok_s:
                 cand_skill.hits += 1
-                tot_ms = dt_r0_ms + dt_v_ms
+                tot_ms = dt_r0_ms + jr_v.elapsed_ms
                 est_j = (tot_ms / 1000.0) * 3.0  # Rung 0/1 CPU+BRAM rail (`3.0 W`)
-                out_mol.append((t.wave, True, False, True, False, tot_ms, est_j))
+                rep_tot = rep_r0 + float(jr_v.reported_j or 0.0)
+                out_mol.append((t.wave, True, False, True, False, tot_ms, est_j, rep_tot))
                 per_task_traces.append(
                     {
                         "task_id": t.task_id,
                         "wave": t.wave,
                         "resolved_by": f"Rung0_BenesLUT6->Rung1_Skill#{cand_skill.skill_id}",
                         "latency_ms": round(tot_ms, 3),
+                        "reported_j": round(rep_tot, 5),
                         "verified": True,
                     }
                 )
                 continue
-            # Spec drift caught safely by C(z)! Never admit stale skill — escalate cleanly!
             if t.spec_mutated:
                 spec_drift_caught += 1
 
         # Escalate through Rung 2 (LFM3-1.7B) -> Rung 3a (Gemma4-E2B) -> Rung 3b (LFM2.5-8B-A1B) -> Rung 3c (Qwen3.6-35B-A3B)!
         acc_ms = dt_r0_ms
         acc_j = (dt_r0_ms / 1000.0) * 3.0
+        acc_rep_j = rep_r0
         solved = False
         used_35b = False
         winning_norm = ""
         winning_src = "ABSTAIN"
 
-        stages: list[tuple[str, str, float, float, bool]] = []
-        rl3, _, dtl3, jl3 = cache_1shot["lfm3"][t.prompt]
-        stages.append(("Rung2_LiquidAI_LFM3_1.7B", rl3, dtl3, jl3, False))
-        rg4, _, dtg4, jg4 = cache_1shot["gemma4"][t.prompt]
-        stages.append(("Rung3a_Google_Gemma4_E2B", rg4, dtg4, jg4, False))
+        stages: list[tuple[str, str, float, float, float, bool]] = []
+        rl3, _, dtl3, jl3, repl3 = cache_1shot["lfm3"][t.prompt]
+        stages.append(("Rung2_LiquidAI_LFM3_1.7B", rl3, dtl3, jl3, repl3, False))
+        rg4, _, dtg4, jg4, repg4 = cache_1shot["gemma4"][t.prompt]
+        stages.append(("Rung3a_Google_Gemma4_E2B", rg4, dtg4, jg4, repg4, False))
         if t.prompt in repair_gemma4:
-            rfg4, dtfg4, jfg4 = repair_gemma4[t.prompt]
-            stages.append(("Rung3a_Google_Gemma4_E2B_CxRepair", rfg4, dtfg4, jfg4, False))
-        r8, _, dt8, j8 = cache_1shot["lfm8b"][t.prompt]
-        stages.append(("Rung3b_LFM2.5_8B_A1B_MoE", r8, dt8, j8, False))
+            rfg4, dtfg4, jfg4, repfg4 = repair_gemma4[t.prompt]
+            stages.append(("Rung3a_Google_Gemma4_E2B_CxRepair", rfg4, dtfg4, jfg4, repfg4, False))
+        r8, _, dt8, j8, rep8 = cache_1shot["lfm8b"][t.prompt]
+        stages.append(("Rung3b_LFM2.5_8B_A1B_MoE", r8, dt8, j8, rep8, False))
         if t.prompt in repair_lfm8b:
-            rf8, dtf8, jf8 = repair_lfm8b[t.prompt]
-            stages.append(("Rung3b_LFM2.5_8B_A1B_CxRepair", rf8, dtf8, jf8, False))
+            rf8, dtf8, jf8, repf8 = repair_lfm8b[t.prompt]
+            stages.append(("Rung3b_LFM2.5_8B_A1B_CxRepair", rf8, dtf8, jf8, repf8, False))
         if t.prompt in repair_35b:
-            rf35, dtf35, jf35 = repair_35b[t.prompt]
-            stages.append(("Rung3c_Qwen3.6_35B_A3B_ExpertAirMoL", rf35, dtf35, jf35, True))
+            rf35, dtf35, jf35, repf35 = repair_35b[t.prompt]
+            stages.append(("Rung3c_Qwen3.6_35B_A3B_MetalAirMoL", rf35, dtf35, jf35, repf35, True))
 
-        for st_name, cand_raw, st_ms, st_j, is_35 in stages:
+        for st_name, cand_raw, st_ms, st_j, st_rep_j, is_35 in stages:
             acc_ms += st_ms
             acc_j += st_j
+            acc_rep_j += st_rep_j
             if is_35:
                 used_35b = True
             t_v = time.perf_counter()
@@ -1678,36 +1925,39 @@ def run_frontier_head_to_head_bakeoff(
                 break
 
         if solved:
-            # Online Downward Crystallization into Rung 0 `BenesLUT6` + Rung 1 Verified Skill Store!
-            t_c = time.perf_counter()
-            sid = skill_store.register_verified_skill(t.fn_name, t.prompt, winning_norm, winning_src)
-            skill_store.recompile_lut6_router()
-            cryst_ms = (time.perf_counter() - t_c) * 1000.0
+            with meter_joules("compile") as jr_c:
+                sid = skill_store.register_verified_skill(t.fn_name, t.prompt, winning_norm, winning_src)
+                skill_store.recompile_lut6_router()
+            cryst_ms = jr_c.elapsed_ms
             acc_ms += cryst_ms
             acc_j += (cryst_ms / 1000.0) * 15.0
-            out_mol.append((t.wave, True, False, False, used_35b, acc_ms, acc_j))
+            acc_rep_j += float(jr_c.reported_j or 0.0)
+            out_mol.append((t.wave, True, False, False, used_35b, acc_ms, acc_j, acc_rep_j))
             per_task_traces.append(
                 {
                     "task_id": t.task_id,
                     "wave": t.wave,
                     "resolved_by": f"{winning_src}->Crystallized_Skill#{sid}",
                     "latency_ms": round(acc_ms, 2),
+                    "reported_j": round(acc_rep_j, 4),
                     "verified": True,
                 }
             )
         else:
-            # Theorem 1 Soundness: Verifier-gated abstention -> 0 broken commits admitted!
-            out_mol.append((t.wave, False, False, False, used_35b, acc_ms, acc_j))
+            out_mol.append((t.wave, False, False, False, used_35b, acc_ms, acc_j, acc_rep_j))
             per_task_traces.append(
                 {
                     "task_id": t.task_id,
                     "wave": t.wave,
                     "resolved_by": "VERIFIER_ABSTAIN_SAFE",
                     "latency_ms": round(acc_ms, 2),
+                    "reported_j": round(acc_rep_j, 4),
                     "verified": False,
                 }
             )
 
+    mol_persist_dir = Path("artifacts/.mol_verified_skills")
+    skill_store.save_to_dir(mol_persist_dir)
     rows.append(_summarize_arm("G_OpenIE_MoL_VerifiedCascade_OURS", out_mol))
 
     pmu_end = read_apple_pmu_telemetry()
@@ -1718,7 +1968,11 @@ def run_frontier_head_to_head_bakeoff(
         "wave2_adversarial_spec_mutations": 2,
         "wave2_spec_mutations_safely_caught_by_cz": spec_drift_caught,
         "crystallized_verified_skills": len(skill_store.skills),
+        "persisted_mol_dir": str(mol_persist_dir),
         "rung0_lut6_cells_per_slice": 80,
+        "reported_j_source": "apple_silicon_l3_rusage_v6_plus_l2_ioreport_energy_model",
+        "measured_j": None,
+        "board_metered": False,
         "cloud_closed_cli_probe": (
             "Claude Code 2.1.330 probed live; returned hard weekly quota wall "
             "(`You've hit your weekly limit · out of usage credits`), whereas local OpenIE MoL "

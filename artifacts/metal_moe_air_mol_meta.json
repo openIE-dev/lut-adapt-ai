@@ -1,0 +1,115 @@
+{
+  "device": "mps",
+  "microkernel_verification": {
+    "gated_deltanet_t256": {
+      "max_state_abs_err": 1.19e-07,
+      "max_out_abs_err": 6.1e-05,
+      "pytorch_ms_per_call": 34.523,
+      "metal_ms_per_call": 1.671,
+      "speedup_x": 20.66,
+      "pytorch_reported_j": 1.49894,
+      "metal_reported_j": 0.03245
+    },
+    "q4_moe_28experts_burst4": {
+      "max_fp32_abs_err": 7.2e-07,
+      "max_bf16_abs_err": 0.0078125,
+      "pytorch_ms_per_call": 22.408,
+      "metal_ms_per_call": 0.516,
+      "speedup_x": 43.45,
+      "pytorch_reported_j": 0.39594,
+      "metal_reported_j": 0.01327
+    }
+  },
+  "e2e_rows": [
+    {
+      "model_id": "LiquidAI/LFM2.5-8B-A1B",
+      "engine_variant": "1_PyTorchRef_ExpertAirMoL_LFM2.5_8B_A1B_T1",
+      "total_params_b": 8.47,
+      "lossless_token_exact_pct": 100.0,
+      "mean_tokens_per_nvme_sweep": 1.0,
+      "nvme_gb_read_per_token": 1.257,
+      "peak_active_weight_ram_mb": 1408.29,
+      "measured_tok_per_sec": 0.394,
+      "speedup_vs_pytorch_ref": 1.0,
+      "est_joules_per_token": 266.66,
+      "reported_joules_per_token": 10.978,
+      "reported_gpu_joules_per_token": 5.2492,
+      "reported_cpu_joules_per_token": 5.7288
+    },
+    {
+      "model_id": "LiquidAI/LFM2.5-8B-A1B",
+      "engine_variant": "2_MetalFused_ExpertAirMoL_LFM2.5_8B_A1B_T1",
+      "total_params_b": 8.47,
+      "lossless_token_exact_pct": 100.0,
+      "mean_tokens_per_nvme_sweep": 1.0,
+      "nvme_gb_read_per_token": 1.257,
+      "peak_active_weight_ram_mb": 500.0,
+      "measured_tok_per_sec": 0.689,
+      "speedup_vs_pytorch_ref": 1.75,
+      "est_joules_per_token": 152.42,
+      "reported_joules_per_token": 6.9791,
+      "reported_gpu_joules_per_token": 1.3032,
+      "reported_cpu_joules_per_token": 5.6759
+    },
+    {
+      "model_id": "LiquidAI/LFM2.5-8B-A1B",
+      "engine_variant": "3_MetalFused_ExpertAirMoL_LFM2.5_8B_A1B_BenesLUT6_K3_OURS",
+      "total_params_b": 8.47,
+      "lossless_token_exact_pct": 100.0,
+      "mean_tokens_per_nvme_sweep": 2.67,
+      "nvme_gb_read_per_token": 0.791,
+      "peak_active_weight_ram_mb": 500.0,
+      "measured_tok_per_sec": 1.671,
+      "speedup_vs_pytorch_ref": 4.24,
+      "est_joules_per_token": 62.85,
+      "reported_joules_per_token": 3.4934,
+      "reported_gpu_joules_per_token": 1.2174,
+      "reported_cpu_joules_per_token": 2.2761
+    },
+    {
+      "model_id": "Qwen/Qwen3.6-35B-A3B",
+      "engine_variant": "1_PyTorchRef_ExpertAirMoL_Qwen3.6_35B_A3B_T1",
+      "total_params_b": 34.66,
+      "lossless_token_exact_pct": 100.0,
+      "mean_tokens_per_nvme_sweep": 1.0,
+      "nvme_gb_read_per_token": 2.353,
+      "peak_active_weight_ram_mb": 2434.65,
+      "measured_tok_per_sec": 0.191,
+      "speedup_vs_pytorch_ref": 1.0,
+      "est_joules_per_token": 549.49,
+      "reported_joules_per_token": 20.7647,
+      "reported_gpu_joules_per_token": 8.7641,
+      "reported_cpu_joules_per_token": 12.0007
+    },
+    {
+      "model_id": "Qwen/Qwen3.6-35B-A3B",
+      "engine_variant": "2_MetalFused_ExpertAirMoL_Qwen3.6_35B_A3B_T1",
+      "total_params_b": 34.66,
+      "lossless_token_exact_pct": 100.0,
+      "mean_tokens_per_nvme_sweep": 1.0,
+      "nvme_gb_read_per_token": 2.353,
+      "peak_active_weight_ram_mb": 970.0,
+      "measured_tok_per_sec": 0.241,
+      "speedup_vs_pytorch_ref": 1.26,
+      "est_joules_per_token": 436.26,
+      "reported_joules_per_token": 15.4399,
+      "reported_gpu_joules_per_token": 3.9331,
+      "reported_cpu_joules_per_token": 11.5068
+    },
+    {
+      "model_id": "Qwen/Qwen3.6-35B-A3B",
+      "engine_variant": "3_MetalFused_ExpertAirMoL_Qwen3.6_35B_A3B_BenesLUT6_K3_OURS",
+      "total_params_b": 34.66,
+      "lossless_token_exact_pct": 100.0,
+      "mean_tokens_per_nvme_sweep": 2.67,
+      "nvme_gb_read_per_token": 1.447,
+      "peak_active_weight_ram_mb": 970.0,
+      "measured_tok_per_sec": 0.621,
+      "speedup_vs_pytorch_ref": 3.25,
+      "est_joules_per_token": 169.03,
+      "reported_joules_per_token": 6.7734,
+      "reported_gpu_joules_per_token": 2.3056,
+      "reported_cpu_joules_per_token": 4.4678
+    }
+  ]
+}

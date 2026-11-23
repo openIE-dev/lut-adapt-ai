@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "num_skills": 8,
+  "skills": [
+    {
+      "skill_id": 1,
+      "fn_name": "R01_billing_proration",
+      "normalized_code": "{\"billing/prorate.py\": \"from billing.types import LineItem\\nimport operator\\n\\ndef allocate_prorated_cents(total_cents: int, items: list[LineItem]) -> dict[str, int]:\\n    if total_cents < 0:\\n        raise ValueError('total_cents must be >= 0')\\n    valid = [it for it in items if it.weight > 0]\\n    if not valid:\\n        return {}\\n    \\n    tot_w = sum(it.weight for it in valid)\\n    \\n    if tot_w == 0:\\n        return {}\\n\\n    # 1. Calculate floor shares and fractional remainders\\n    results = {}\\n    remainders = []\\n    \\n    for item in valid:\\n        # Calculate floor share\\n        share = (total_cents * item.weight) // tot_w\\n        results[item.sku] = share\\n        \\n        # Calculate fractional remainder: (total_cents * w) % total_w\\n        remainder = (total_cents * item.weight) % tot_w\\n        \\n        # Store (remainder, original_index, sku) for sorting\\n        remainders.append((remainder, valid.index(item), item.sku))\\n\\n    # 2. Distribute remaining cents\\n    current_sum = sum(results.values())\\n    remaining_cents = total_cents - current_sum\\n    \\n    if remaining_cents > 0:\\n        # Sort by remainder (descending), then by original index (ascending)\\n        # We sort by (-remainder, index) to get descending remainder and ascending index\\n        remainders.sort(key=lambda x: (-x[0], x[1]))\\n        \\n        # Distribute remaining_cents +1 cent to the top 'remaining_cents' items\\n        for i in range(min(remaining_cents, len(remainders))):\\n            _, _, sku = remainders[i]\\n            results[sku] += 1\\n            \\n    return results\\n\"}",
+      "source_model": "Rung3a_Gemma4_E2B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 2,
+      "fn_name": "R02_dag_scheduler",
+      "normalized_code": "{\"scheduler/executor.py\": \"from scheduler.dag import TaskDAG\\n\\nclass DAGExecutor:\\n    def __init__(self, dag: TaskDAG) -> None:\\n        self.dag = dag\\n\\n    def run_waves(self) -> list[list[str]]:\\n        done: set[str] = set()\\n        waves: list[list[str]] = []\\n        \\n        # Keep track of tasks that haven't been processed to detect cycles\\n        remaining_tasks = set(self.dag.deps.keys())\\n\\n        while remaining_tasks:\\n            ready = sorted(t for t in remaining_tasks if self.dag.deps.get(t, set()) <= done)\\n            \\n            if not ready:\\n                # If there are remaining tasks but none are ready, it implies a cycle\\n                if remaining_tasks:\\n                    raise ValueError('cycle detected')\\n                break\\n\\n            waves.append(ready)\\n            done.update(ready)\\n            remaining_tasks -= set(ready)\\n            \\n        return waves\\n\"}",
+      "source_model": "Rung3a_Gemma4_E2B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 3,
+      "fn_name": "R03_jwt_clock_skew",
+      "normalized_code": "{\"auth/validator.py\": \"from auth.token import TokenClaims, ValidationPolicy\\n\\ndef validate_claims(claims: TokenClaims, now_ts: int, policy: ValidationPolicy) -> bool:\\n    if claims.aud != policy.required_aud:\\n        return False\\n    # Expired if now_ts > exp + leeway (strictly greater; at equality still valid)\\n    if now_ts > claims.exp + policy.leeway_sec:\\n        return False\\n    # Not yet valid if now_ts + leeway < nbf (i.e., before nbf with leeway)\\n    if claims.nbf is not None and now_ts + policy.leeway_sec < claims.nbf:\\n        return False\\n    return True\\n\"}",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 0,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 4,
+      "fn_name": "R04_wal_tx_recovery",
+      "normalized_code": "{\"wal/recovery.py\": \"from wal.frame import WALFrame\\n\\ndef replay_committed_kv(frames: list[WALFrame]) -> dict[str, str]:\\n    store: dict[str, str] = {}\\n    tx_buffers: dict[int, list[tuple[str, str]]] = {}  # tx_id -> list of (op, key, val)\\n    \\n    for fr in frames:\\n        if fr.op == 'PUT':\\n            if fr.tx_id not in tx_buffers:\\n                tx_buffers[fr.tx_id] = []\\n            tx_buffers[fr.tx_id].append(('PUT', fr.key, fr.val))\\n        elif fr.op == 'DEL':\\n            if fr.tx_id not in tx_buffers:\\n                tx_buffers[fr.tx_id] = []\\n            tx_buffers[fr.tx_id].append(('DEL', fr.key, None))\\n        elif fr.op == 'COMMIT':\\n            if fr.tx_id in tx_buffers:\\n                # Apply buffered mutations for this committed transaction\\n                for op, key, val in tx_buffers.pop(fr.tx_id):\\n                    if op == 'PUT':\\n                        store[key] = val\\n                    elif op == 'DEL':\\n                        store.pop(key, None)\\n        elif fr.op == 'ABORT':\\n            # Discard buffer for this transaction\\n            tx_buffers.pop(fr.tx_id, None)\\n            \\n    return store\\n\"}",
+      "source_model": "Rung3a_Gemma4_E2B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 5,
+      "fn_name": "R05_http_idempotent_retry",
+      "normalized_code": "{\"http_client/transport.py\": \"from http_client.policy import Request, RetryPolicy\\n\\ndef should_retry(req: Request, status_code: int, attempt: int, policy: RetryPolicy) -> bool:\\n    if attempt >= policy.max_retries or status_code not in policy.retry_statuses:\\n        return False\\n    method_upper = req.method.upper()\\n    if method_upper in ('GET', 'HEAD', 'PUT', 'DELETE', 'OPTIONS'):\\n        return True\\n    if method_upper in ('POST', 'PATCH'):\\n        for key, value in req.headers.items():\\n            if key.lower() == 'idempotency-key' and value.strip():\\n                return True\\n        return False\\n    return False\\n\"}",
+      "source_model": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 6,
+      "fn_name": "R07_lru_ttl_eviction",
+      "normalized_code": "{\"ttlcache/cache.py\": \"from collections import OrderedDict\\nfrom typing import Any\\nfrom ttlcache.entry import CacheEntry\\n\\nclass TTLCache:\\n    def __init__(self, max_size: int) -> None:\\n        self.max_size = max_size\\n        self._data: dict[str, CacheEntry] = {}\\n        self._lru: OrderedDict[str, None] = OrderedDict()\\n\\n    def get(self, key: str, now: float) -> Any | None:\\n        ent = self._data.get(key)\\n        if ent is None:\\n            return None\\n        if now >= ent.expires_at:\\n            del self._data[key]\\n            if key in self._lru:\\n                del self._lru[key]\\n            return None\\n        self._lru.move_to_end(key)\\n        return ent.value\\n\\n    def put(self, key: str, value: Any, ttl: float, now: float) -> None:\\n        if key not in self._data and len(self._lru) >= self.max_size:\\n            # Before evicting, purge expired entries\\n            keys_to_delete = [k for k, entry in self._data.items() if now >= entry.expires_at]\\n            for k in keys_to_delete:\\n                self._data.pop(k)\\n                self._lru.pop(k, None)\\n\\n            # Now evict the oldest LRU key if capacity is still exceeded (or if we need to make space)\\n            if len(self._lru) >= self.max_size:\\n                old_k, _ = self._lru.popitem(last=False)\\n                self._data.pop(old_k, None)\\n\\n        self._data[key] = CacheEntry(value, now + ttl)\\n        self._lru[key] = None\\n        self._lru.move_to_end(key)\\n\"}",
+      "source_model": "Rung3a_Gemma4_E2B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 7,
+      "fn_name": "R08_schema_mutable_defaults",
+      "normalized_code": "{\"etl/migrator.py\": \"from etl.schema import SCHEMA_V2_DEFAULTS\\n\\ndef migrate_records(rows: list[dict]) -> list[dict]:\\n    out_rows = []\\n    for r in rows:\\n        rec = {}\\n        for k, dval in SCHEMA_V2_DEFAULTS.items():\\n            if k == 'email':\\n                raw = r.get(k, dval)\\n                rec[k] = str(raw).strip().lower()\\n            elif isinstance(dval, dict):\\n                rec[k] = dval.copy()\\n            elif isinstance(dval, list):\\n                rec[k] = dval.copy()  # shallow copy of list elements may still share, but fine for simple\\n            else:\\n                rec[k] = dval\\n            # Also, if key exists in r with same name, prefer r value? Original used r.get(k, dval). We'll keep r.get for non-mutated keys?\\n            # But we also need to handle existing values in r. Let's do: base = r.get(k); then apply defaults only if missing.\\n        out_rows.append(rec)\\n    return out_rows\\n\"}",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 1,
+      "num_exemplars": 1
+    },
+    {
+      "skill_id": 8,
+      "fn_name": "R03_jwt_clock_skew",
+      "normalized_code": "{\"auth/validator.py\": \"from auth.token import TokenClaims, ValidationPolicy\\n\\ndef validate_claims(claims: TokenClaims, now_ts: int, policy: ValidationPolicy) -> bool:\\n    if claims.aud != policy.required_aud:\\n        return False\\n    # Expired if now_ts > claims.exp + leeway (i.e., after exp plus grace period; at exact equality still valid)\\n    if now_ts > claims.exp + policy.leeway_sec:\\n        return False\\n    # Not yet valid if now_ts + leeway < claims.nbf (i.e., before nbf minus grace period)\\n    if claims.nbf is not None and now_ts + policy.leeway_sec < claims.nbf:\\n        return False\\n    # Future-issued tokens (iat > now_ts + leeway) must be rejected\\n    if claims.iat is not None and claims.iat > now_ts + policy.leeway_sec:\\n        return False\\n    return True\\n\"}",
+      "source_model": "Rung2_LFM3_1.7B",
+      "hits": 0,
+      "num_exemplars": 1
+    }
+  ]
+}

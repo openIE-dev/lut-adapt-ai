@@ -509,10 +509,10 @@ def encode_code_bitbus_512(ctx_bytes: list[int] | bytes, lang_id: int) -> np.nda
     if len(cam_win) >= 8:
         matched_long = False
         for ng_len in (6, 5, 4):
-            if len(cam_win) >= ng_len + 8:
+            if len(cam_win) >= ng_len + 4:
                 needle = cam_win[-ng_len:]
-                # Require 4 full lookahead bytes (`-(ng_len + 3)`) so CAM never pads NUL 0x00 bytes!
-                pos = cam_win[: -(ng_len + 3)].rfind(needle)
+                # `cam_win[:-4].rfind(needle)` guarantees `pos + ng_len <= len(cam_win) - 4` (4 full lookahead bytes)
+                pos = cam_win[:-4].rfind(needle)
                 if pos != -1:
                     bus[448] = 1
                     if ng_len >= 6:
@@ -526,8 +526,8 @@ def encode_code_bitbus_512(ctx_bytes: list[int] | bytes, lang_id: int) -> np.nda
                     break
 
         n3 = cam_win[-3:]
-        if len(cam_win) >= 10:
-            pos3 = cam_win[:-6].rfind(n3)
+        if len(cam_win) >= 7:
+            pos3 = cam_win[:-4].rfind(n3)
             if pos3 != -1:
                 bus[449] = 1
                 avail3 = cam_win[pos3 + 3 : pos3 + 7]
@@ -642,9 +642,9 @@ class PagedBenesLUT6CodeDrafter:
             cam_u32 = np.zeros(n_samp, dtype=np.uint32)
             for b in range(32):
                 cam_u32 |= x_mat[:, 384 + b].astype(np.uint32) << np.uint32(b)
-            trust_cam = float((cam_u32[cam_hits] == y_u32[cam_hits]).mean()) >= 0.60
+            trust_cam = float((cam_u32[cam_hits] == y_u32[cam_hits]).mean()) >= 0.40
         else:
-            trust_cam = False
+            trust_cam = True
 
         for v in range(self.VOTERS_PER_BIT):
             ast4 = [
@@ -820,7 +820,7 @@ class PagedBenesLUT6CodeDrafter:
         #    the 2-Mux LUT6 routes the exact local file's identifier/expression bytes!
         const6 = self.mux_lut6_6.get(tail6)
         if const6 is not None:
-            if bus[0, 452] == 1 and getattr(self, "mux_lut6_6_freq", {}).get(tail6, 99) <= 3:
+            if bus[0, 452] == 1 and getattr(self, "mux_lut6_6_freq", {}).get(tail6, 99) <= 64:
                 pred_b, _ = self._eval_page_batch(self.default_page, bus)
                 return [int(pred_b[0, k]) for k in range(self.draft_k)]
             return list(const6)

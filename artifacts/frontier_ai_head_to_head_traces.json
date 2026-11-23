@@ -4,348 +4,400 @@
     "tasks_per_wave": 16,
     "total_task_invocations": 48,
     "wave2_adversarial_spec_mutations": 2,
-    "wave2_spec_mutations_safely_caught_by_cz": 3,
-    "crystallized_verified_skills": 9,
+    "wave2_spec_mutations_safely_caught_by_cz": 2,
+    "crystallized_verified_skills": 16,
+    "persisted_mol_dir": "artifacts/.mol_verified_skills",
     "rung0_lut6_cells_per_slice": 80,
+    "reported_j_source": "apple_silicon_l3_rusage_v6_plus_l2_ioreport_energy_model",
+    "measured_j": null,
+    "board_metered": false,
     "cloud_closed_cli_probe": "Claude Code 2.1.330 probed live; returned hard weekly quota wall (`You've hit your weekly limit \u00b7 out of usage credits`), whereas local OpenIE MoL completed 100% of Waves 1-3 offline with zero rate limits.",
-    "apple_pmu_system_energy_delta_j": 126947.3,
-    "apple_pmu_accumulator_ticks": 7306
+    "apple_pmu_system_energy_delta_j": 117166.4,
+    "apple_pmu_accumulator_ticks": 6646
   },
   "mol_traces": [
     {
       "task_id": "W1_01_F01_rfc1982_serial",
       "wave": 1,
-      "resolved_by": "Rung3a_Google_Gemma4_E2B_CxRepair->Crystallized_Skill#1",
-      "latency_ms": 24091.14,
+      "resolved_by": "Rung3a_Google_Gemma4_E2B->Crystallized_Skill#1",
+      "latency_ms": 15912.52,
+      "reported_j": 103.5683,
       "verified": true
     },
     {
       "task_id": "W1_02_F02_weighted_intervals",
       "wave": 1,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 281133.68,
-      "verified": false
+      "resolved_by": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL->Crystallized_Skill#2",
+      "latency_ms": 334651.03,
+      "reported_j": 3173.5471,
+      "verified": true
     },
     {
       "task_id": "W1_03_F03_lex_toposort",
       "wave": 1,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 282727.43,
-      "verified": false
+      "resolved_by": "Rung2_LiquidAI_LFM3_1.7B->Crystallized_Skill#3",
+      "latency_ms": 6920.87,
+      "reported_j": 47.9217,
+      "verified": true
     },
     {
       "task_id": "W1_04_F04_ns_token_bucket",
       "wave": 1,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 265118.54,
-      "verified": false
+      "resolved_by": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL->Crystallized_Skill#4",
+      "latency_ms": 196284.82,
+      "reported_j": 2566.2556,
+      "verified": true
     },
     {
       "task_id": "W1_05_F05_crc8_atm",
       "wave": 1,
-      "resolved_by": "Rung2_LiquidAI_LFM3_1.7B->Crystallized_Skill#2",
-      "latency_ms": 2502.36,
+      "resolved_by": "Rung2_LiquidAI_LFM3_1.7B->Crystallized_Skill#5",
+      "latency_ms": 1734.39,
+      "reported_j": 8.5137,
       "verified": true
     },
     {
       "task_id": "W1_06_F06_range_sum_ops",
       "wave": 1,
-      "resolved_by": "Rung2_LiquidAI_LFM3_1.7B->Crystallized_Skill#3",
-      "latency_ms": 4587.63,
+      "resolved_by": "Rung2_LiquidAI_LFM3_1.7B->Crystallized_Skill#6",
+      "latency_ms": 3967.85,
+      "reported_j": 29.7753,
       "verified": true
     },
     {
       "task_id": "W1_07_F07_rfc6901_pointer",
       "wave": 1,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 277517.93,
-      "verified": false
+      "resolved_by": "Rung2_LiquidAI_LFM3_1.7B->Crystallized_Skill#7",
+      "latency_ms": 9311.93,
+      "reported_j": 49.1344,
+      "verified": true
     },
     {
       "task_id": "W1_08_F08_hop_shortest_path",
       "wave": 1,
-      "resolved_by": "Rung3b_LFM2.5_8B_A1B_MoE->Crystallized_Skill#4",
-      "latency_ms": 35305.86,
+      "resolved_by": "Rung3a_Google_Gemma4_E2B_CxRepair->Crystallized_Skill#8",
+      "latency_ms": 48654.12,
+      "reported_j": 256.8071,
       "verified": true
     },
     {
       "task_id": "W1_09_F09_exact_window_median",
       "wave": 1,
-      "resolved_by": "Rung3c_Qwen3.6_35B_A3B_ExpertAirMoL->Crystallized_Skill#5",
-      "latency_ms": 149938.2,
+      "resolved_by": "Rung2_LiquidAI_LFM3_1.7B->Crystallized_Skill#9",
+      "latency_ms": 11710.94,
+      "reported_j": 68.3108,
       "verified": true
     },
     {
       "task_id": "W1_10_F10_true_damerau",
       "wave": 1,
       "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 310919.57,
+      "latency_ms": 359386.18,
+      "reported_j": 3727.402,
       "verified": false
     },
     {
       "task_id": "W1_11_F11_benes4_route",
       "wave": 1,
       "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 246422.43,
+      "latency_ms": 370773.14,
+      "reported_j": 3319.9504,
       "verified": false
     },
     {
       "task_id": "W1_12_F12_sql_parameterizer",
       "wave": 1,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 236282.31,
-      "verified": false
+      "resolved_by": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL->Crystallized_Skill#10",
+      "latency_ms": 236482.26,
+      "reported_j": 2306.751,
+      "verified": true
     },
     {
       "task_id": "W1_13_F13_constrained_subseq",
       "wave": 1,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 246678.81,
-      "verified": false
+      "resolved_by": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL->Crystallized_Skill#11",
+      "latency_ms": 226113.65,
+      "reported_j": 2386.0556,
+      "verified": true
     },
     {
       "task_id": "W1_14_F14_sleb128_decoder",
       "wave": 1,
-      "resolved_by": "Rung3c_Qwen3.6_35B_A3B_ExpertAirMoL->Crystallized_Skill#6",
-      "latency_ms": 145889.74,
+      "resolved_by": "Rung3a_Google_Gemma4_E2B->Crystallized_Skill#12",
+      "latency_ms": 33380.39,
+      "reported_j": 138.4355,
       "verified": true
     },
     {
       "task_id": "W1_15_F15_consistent_hash",
       "wave": 1,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 331952.45,
-      "verified": false
+      "resolved_by": "Rung2_LiquidAI_LFM3_1.7B->Crystallized_Skill#13",
+      "latency_ms": 6983.99,
+      "reported_j": 42.8481,
+      "verified": true
     },
     {
       "task_id": "W1_16_F16_conformal_quantile",
       "wave": 1,
-      "resolved_by": "Rung2_LiquidAI_LFM3_1.7B->Crystallized_Skill#7",
-      "latency_ms": 3080.21,
+      "resolved_by": "Rung2_LiquidAI_LFM3_1.7B->Crystallized_Skill#14",
+      "latency_ms": 3748.09,
+      "reported_j": 23.9346,
       "verified": true
     },
     {
       "task_id": "W2_01_F01_rfc1982_serial_MUTATED",
       "wave": 2,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 274652.47,
-      "verified": false
+      "resolved_by": "Rung3c_Qwen3.6_35B_A3B_MetalAirMoL->Crystallized_Skill#15",
+      "latency_ms": 290020.29,
+      "reported_j": 2620.8552,
+      "verified": true
     },
     {
       "task_id": "W2_02_F02_weighted_intervals",
       "wave": 2,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 288771.95,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#2",
+      "latency_ms": 4.095,
+      "reported_j": 0.04088,
+      "verified": true
     },
     {
       "task_id": "W2_03_F03_lex_toposort",
       "wave": 2,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 333393.27,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#3",
+      "latency_ms": 3.364,
+      "reported_j": 0.05533,
+      "verified": true
     },
     {
       "task_id": "W2_04_F04_ns_token_bucket",
       "wave": 2,
-      "resolved_by": "Rung3c_Qwen3.6_35B_A3B_ExpertAirMoL->Crystallized_Skill#8",
-      "latency_ms": 280694.69,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#4",
+      "latency_ms": 3.212,
+      "reported_j": 0.03071,
       "verified": true
     },
     {
       "task_id": "W2_05_F05_crc8_atm_MUTATED",
       "wave": 2,
-      "resolved_by": "Rung3a_Google_Gemma4_E2B_CxRepair->Crystallized_Skill#9",
-      "latency_ms": 20875.1,
+      "resolved_by": "Rung3a_Google_Gemma4_E2B->Crystallized_Skill#16",
+      "latency_ms": 16407.5,
+      "reported_j": 59.918,
       "verified": true
     },
     {
       "task_id": "W2_06_F06_range_sum_ops",
       "wave": 2,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#3",
-      "latency_ms": 2.925,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#6",
+      "latency_ms": 3.239,
+      "reported_j": 0.08102,
       "verified": true
     },
     {
       "task_id": "W2_07_F07_rfc6901_pointer",
       "wave": 2,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 231702.6,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#7",
+      "latency_ms": 3.201,
+      "reported_j": 0.05881,
+      "verified": true
     },
     {
       "task_id": "W2_08_F08_hop_shortest_path",
       "wave": 2,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#4",
-      "latency_ms": 2.652,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#8",
+      "latency_ms": 3.362,
+      "reported_j": 0.06056,
       "verified": true
     },
     {
       "task_id": "W2_09_F09_exact_window_median",
       "wave": 2,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#5",
-      "latency_ms": 2.517,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#9",
+      "latency_ms": 2.908,
+      "reported_j": 0.03102,
       "verified": true
     },
     {
       "task_id": "W2_10_F10_true_damerau",
       "wave": 2,
       "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 241762.94,
+      "latency_ms": 342981.64,
+      "reported_j": 62888.288,
       "verified": false
     },
     {
       "task_id": "W2_11_F11_benes4_route",
       "wave": 2,
       "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 254768.3,
+      "latency_ms": 361805.6,
+      "reported_j": 3411.735,
       "verified": false
     },
     {
       "task_id": "W2_12_F12_sql_parameterizer",
       "wave": 2,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 234690.12,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#10",
+      "latency_ms": 3.417,
+      "reported_j": 0.0652,
+      "verified": true
     },
     {
       "task_id": "W2_13_F13_constrained_subseq",
       "wave": 2,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 212638.58,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#11",
+      "latency_ms": 2.91,
+      "reported_j": 0.06439,
+      "verified": true
     },
     {
       "task_id": "W2_14_F14_sleb128_decoder",
       "wave": 2,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#6",
-      "latency_ms": 2.509,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#12",
+      "latency_ms": 2.843,
+      "reported_j": 0.0616,
       "verified": true
     },
     {
       "task_id": "W2_15_F15_consistent_hash",
       "wave": 2,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 225987.71,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#13",
+      "latency_ms": 3.102,
+      "reported_j": 0.04651,
+      "verified": true
     },
     {
       "task_id": "W2_16_F16_conformal_quantile",
       "wave": 2,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#7",
-      "latency_ms": 2.612,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#14",
+      "latency_ms": 2.763,
+      "reported_j": 0.06008,
       "verified": true
     },
     {
       "task_id": "W3_01_F01_rfc1982_serial_mut",
       "wave": 3,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 274652.38,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#15",
+      "latency_ms": 2.704,
+      "reported_j": 0.05999,
+      "verified": true
     },
     {
       "task_id": "W3_02_F02_weighted_intervals",
       "wave": 3,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 288771.76,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#2",
+      "latency_ms": 3.03,
+      "reported_j": 0.05252,
+      "verified": true
     },
     {
       "task_id": "W3_03_F03_lex_toposort",
       "wave": 3,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 333395.0,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#3",
+      "latency_ms": 2.939,
+      "reported_j": 0.05265,
+      "verified": true
     },
     {
       "task_id": "W3_04_F04_ns_token_bucket",
       "wave": 3,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#8",
-      "latency_ms": 2.655,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#4",
+      "latency_ms": 2.826,
+      "reported_j": 0.06814,
       "verified": true
     },
     {
       "task_id": "W3_05_F05_crc8_atm_mut",
       "wave": 3,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#9",
-      "latency_ms": 2.382,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#16",
+      "latency_ms": 2.699,
+      "reported_j": 0.06994,
       "verified": true
     },
     {
       "task_id": "W3_06_F06_range_sum_ops",
       "wave": 3,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#3",
-      "latency_ms": 2.59,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#6",
+      "latency_ms": 2.969,
+      "reported_j": 0.05886,
       "verified": true
     },
     {
       "task_id": "W3_07_F07_rfc6901_pointer",
       "wave": 3,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 231702.44,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#7",
+      "latency_ms": 2.909,
+      "reported_j": 0.03457,
+      "verified": true
     },
     {
       "task_id": "W3_08_F08_hop_shortest_path",
       "wave": 3,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#4",
-      "latency_ms": 2.62,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#8",
+      "latency_ms": 3.247,
+      "reported_j": 0.03282,
       "verified": true
     },
     {
       "task_id": "W3_09_F09_exact_window_median",
       "wave": 3,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#5",
-      "latency_ms": 2.555,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#9",
+      "latency_ms": 2.771,
+      "reported_j": 0.02738,
       "verified": true
     },
     {
       "task_id": "W3_10_F10_true_damerau",
       "wave": 3,
       "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 241762.69,
+      "latency_ms": 342981.77,
+      "reported_j": 62888.2802,
       "verified": false
     },
     {
       "task_id": "W3_11_F11_benes4_route",
       "wave": 3,
       "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 254768.12,
+      "latency_ms": 361805.69,
+      "reported_j": 3411.7271,
       "verified": false
     },
     {
       "task_id": "W3_12_F12_sql_parameterizer",
       "wave": 3,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 234690.77,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#10",
+      "latency_ms": 2.966,
+      "reported_j": 0.03514,
+      "verified": true
     },
     {
       "task_id": "W3_13_F13_constrained_subseq",
       "wave": 3,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 212638.6,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#11",
+      "latency_ms": 2.849,
+      "reported_j": 0.01193,
+      "verified": true
     },
     {
       "task_id": "W3_14_F14_sleb128_decoder",
       "wave": 3,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#6",
-      "latency_ms": 2.514,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#12",
+      "latency_ms": 2.766,
+      "reported_j": 0.03821,
       "verified": true
     },
     {
       "task_id": "W3_15_F15_consistent_hash",
       "wave": 3,
-      "resolved_by": "VERIFIER_ABSTAIN_SAFE",
-      "latency_ms": 225987.67,
-      "verified": false
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#13",
+      "latency_ms": 2.997,
+      "reported_j": 0.00919,
+      "verified": true
     },
     {
       "task_id": "W3_16_F16_conformal_quantile",
       "wave": 3,
-      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#7",
-      "latency_ms": 2.448,
+      "resolved_by": "Rung0_BenesLUT6->Rung1_Skill#14",
+      "latency_ms": 2.729,
+      "reported_j": 0.04241,
       "verified": true
     }
   ]

@@ -1,8 +1,8 @@
-arm,wave1_cold_pass_pct,wave2_adapt_pass_pct,wave3_warm_pass_pct,overall_verified_pass_pct,broken_commits_admitted_pct,rung0_rung1_hit_pct_wave3,frontier_35b_calls_pct,mean_latency_ms_wave1,mean_latency_ms_wave3,overall_mean_latency_ms,est_joules_per_verified_solve
-A_LittleBit2_Qwen3_8B_0.55bpw_QAT_1Shot,0.0,0.0,0.0,0.0,100.0,0.0,0.0,19066.27,19946.37,19653.0,28300.32
-B_LiquidAI_LFM3_1.7B_TriHybrid_1Shot,18.75,6.25,6.25,10.42,89.58,0.0,0.0,4732.0,3560.92,3951.28,1213.83
-C_Google_Gemma4_E2B_it_1Shot,6.25,0.0,0.0,2.08,97.92,0.0,0.0,6295.55,8886.13,8022.6,16173.57
-D_LiquidAI_LFM2.5_8B_A1B_MoE_1Shot,18.75,12.5,12.5,14.58,85.42,0.0,0.0,15725.11,14221.48,14722.69,5552.56
-E_Qwen3.6_35B_A3B_ExpertAirMoL_1Shot,37.5,31.25,31.25,33.33,66.67,0.0,100.0,117042.22,98434.62,104637.15,29821.59
-F_RouteLLM_ConfidenceRouter_Ungated,18.75,6.25,6.25,10.42,89.58,0.0,0.0,5051.77,3560.92,4057.87,1256.81
-G_OpenIE_MoL_VerifiedCascade_OURS,43.75,43.75,43.75,43.75,0.0,43.75,62.5,177759.27,143649.2,161301.8,31121.29
+arm,wave1_cold_pass_pct,wave2_adapt_pass_pct,wave3_warm_pass_pct,overall_verified_pass_pct,broken_commits_admitted_pct,rung0_rung1_hit_pct_wave3,frontier_35b_calls_pct,mean_latency_ms_wave1,mean_latency_ms_wave3,overall_mean_latency_ms,est_joules_per_verified_solve,reported_joules_per_verified_solve
+A_LittleBit2_Qwen3_8B_0.55bpw_QAT_1Shot,0.0,0.0,0.0,0.0,100.0,0.0,0.0,22413.19,22707.68,22609.51,32557.7,8020.126
+B_LiquidAI_LFM3_1.7B_TriHybrid_1Shot,43.75,25.0,25.0,31.25,68.75,0.0,0.0,8460.39,9791.37,9347.71,957.21,152.772
+C_Google_Gemma4_E2B_it_1Shot,37.5,18.75,18.75,25.0,75.0,0.0,0.0,18923.78,23577.79,22026.45,3700.44,5800.681
+D_LiquidAI_LFM2.5_8B_A1B_MoE_1Shot,6.25,6.25,6.25,6.25,93.75,0.0,0.0,53123.33,53885.47,53631.42,47195.65,33415.043
+E_Qwen3.6_35B_A3B_ExpertAirMoL_1Shot,81.25,75.0,75.0,77.08,22.92,0.0,100.0,49887.3,44447.44,46260.73,5701.32,1069.645
+F_RouteLLM_ConfidenceRouter_Ungated,43.75,25.0,25.0,31.25,68.75,0.0,0.0,9735.4,11293.96,10774.44,1148.96,171.089
+G_OpenIE_MoL_VerifiedCascade_OURS,87.5,87.5,87.5,87.5,0.0,87.5,22.92,116626.01,44051.74,74627.03,5912.94,3655.506

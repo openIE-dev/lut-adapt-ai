@@ -304,18 +304,18 @@
     (function(){
       var hf = {
         qwen35b: {
-          ram: '2,530.7 MB', rampct: '3.83% of 66,110 MB FP16 (256-Expert MoE)',
-          t1:   { tpsw: '1.00 tok', cpsw: '2.25 code chars / sweep', gb: '18.159 GB/tok', sw: '100% experts (Dense AirLLM 4B)', toks: '0.06 tok/s', par: '100.0% parity (2.356 GB/tok Expert-T1)' },
+          ram: '970.0 MB (Metal INT4)', rampct: '1.47% of 66,110 MB FP16 (256-Expert MoE · 6.77 J/tok reported_j)',
+          t1:   { tpsw: '1.00 tok', cpsw: '2.25 code chars / sweep', gb: '18.159 GB/tok', sw: '100% experts (Dense AirLLM 4B)', toks: '0.06 tok/s', par: '100.0% parity (20.76 J/tok PyTorch-Ref)' },
           pld:  { tpsw: '1.89 tok', cpsw: '4.26 code chars / sweep', gb: '1.708 GB/tok', sw: '10.63× I/O cut (11.6% experts)', toks: '0.32 tok/s', par: '100.0% exact token parity' },
           cold: { tpsw: '2.00 tok', cpsw: '4.50 code chars / sweep', gb: '1.722 GB/tok', sw: '10.54× I/O cut (12.9% experts)', toks: '0.31 tok/s', par: '100.0% exact token parity' },
-          wake: { tpsw: '2.57 tok', cpsw: '5.79 code chars / sweep', gb: '1.477 GB/tok', sw: '12.30× NVMe I/O cut (15.0% exp)', toks: '0.39 tok/s', par: '100.0% parity (6.50× faster vs T=1)' }
+          wake: { tpsw: '2.67 tok', cpsw: '5.79 code chars / sweep', gb: '1.447 GB/tok', sw: '12.30× NVMe cut · 970 MB Metal RAM', toks: '0.62 tok/s (15.7 Q4-UM)', par: '100.0% parity · 6.77 J/tok reported_j' }
         },
         lfm8b: {
-          ram: '1,408.3 MB', rampct: '8.72% of 16,151 MB FP16 (32-Expert MoE)',
-          t1:   { tpsw: '1.00 tok', cpsw: '1.62 code chars / sweep', gb: '4.574 GB/tok', sw: '100% experts (Dense AirLLM 4B)', toks: '0.28 tok/s', par: '100.0% parity (1.200 GB/tok Expert-T1)' },
+          ram: '500.0 MB (Metal INT4)', rampct: '3.10% of 16,151 MB FP16 (32-Expert MoE · 3.49 J/tok reported_j)',
+          t1:   { tpsw: '1.00 tok', cpsw: '1.62 code chars / sweep', gb: '4.574 GB/tok', sw: '100% experts (Dense AirLLM 4B)', toks: '0.28 tok/s', par: '100.0% parity (10.98 J/tok PyTorch-Ref)' },
           pld:  { tpsw: '1.78 tok', cpsw: '2.89 code chars / sweep', gb: '0.883 GB/tok', sw: '5.18× I/O cut (28.8% experts)', toks: '0.79 tok/s', par: '100.0% exact token parity' },
           cold: { tpsw: '1.85 tok', cpsw: '3.00 code chars / sweep', gb: '1.002 GB/tok', sw: '4.56× I/O cut (33.9% experts)', toks: '0.72 tok/s', par: '100.0% exact token parity' },
-          wake: { tpsw: '3.00 tok', cpsw: '4.88 code chars / sweep', gb: '0.663 GB/tok', sw: '6.90× NVMe I/O cut (36.5% exp)', toks: '1.10 tok/s', par: '100.0% parity (3.93× faster vs T=1)' }
+          wake: { tpsw: '2.67 tok', cpsw: '4.88 code chars / sweep', gb: '0.791 GB/tok', sw: '6.90× NVMe cut · 500 MB Metal RAM', toks: '1.67 tok/s (4.24×)', par: '100.0% parity · 3.49 J/tok reported_j' }
         },
         lfm3: {
           ram: '250.0 MB', rampct: '3.79% of 6,594.85 MB FP32 (Oct 2026 Tri-Hybrid)',
