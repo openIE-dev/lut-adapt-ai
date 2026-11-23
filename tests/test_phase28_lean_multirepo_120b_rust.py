@@ -20,15 +20,26 @@ from clai.frontier.multirepo_swebench import zero_leak_localize_multirepo_callgr
 
 def test_claim_la19_lean4_formal_proofs_zero_sorry_zero_custom_axioms() -> None:
     csv_p = Path("artifacts/lean4_formal_proofs_summary.csv")
+    kcsv_p = Path("artifacts/lean4_six_kernel_paranoid_audit.csv")
     meta_p = Path("artifacts/lean4_formal_proofs_meta.json")
-    assert csv_p.is_file() and meta_p.is_file()
+    assert csv_p.is_file() and kcsv_p.is_file() and meta_p.is_file()
 
     meta = json.loads(meta_p.read_text(encoding="utf-8"))
     rows = list(csv.DictReader(csv_p.open(encoding="utf-8")))
-    assert meta["total_kernel_checked_theorems"] >= 25
+    krows = list(csv.DictReader(kcsv_p.open(encoding="utf-8")))
+    assert meta["total_kernel_checked_theorems"] >= 27
     assert len(rows) == meta["total_kernel_checked_theorems"]
     assert meta["sorry_count"] == 0
     assert meta["custom_axiom_count"] == 0
+    assert meta["ofReduceBool_native_decide_count"] == 0
+    assert meta["choice_free_theorems"] >= 23
+    assert meta["cve_2026_72844_hardened"] is True
+    assert meta["cve_2026_72711_hardened"] is True
+    assert meta["independent_kernels_passed"] == 6
+    assert len(krows) == 6
+    assert all(kr["verdict"] == "ACCEPTS" for kr in krows)
+    assert meta["con_leche_verified_declarations"] >= 58000
+    assert meta["con_ron_verified_declarations"] >= 58000
     assert meta["measured_j"] is None and meta["board_metered"] is False
 
     lean_files = list(Path("proofs").rglob("*.lean"))
@@ -39,6 +50,7 @@ def test_claim_la19_lean4_formal_proofs_zero_sorry_zero_custom_axioms() -> None:
         no_comments = re.sub(r"--[^\n]*", "", no_comments)
         assert not re.search(r"\bsorry\b", no_comments), f"Found `sorry` in {lf}"
         assert not re.search(r"^\s*axiom\b", no_comments, flags=re.MULTILINE), f"Found custom `axiom` in {lf}"
+        assert not re.search(r"\b(?:native_decide|ofReduceBool)\b", no_comments), f"Found `native_decide` in {lf}"
 
 
 def test_claim_la20_multirepo_swebench_verified_and_callgraph_localizer() -> None:

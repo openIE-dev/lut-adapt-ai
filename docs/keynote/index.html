@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Compilation Threshold · Keynote &amp; Visual Asset Deck | Open Interface Engineering</title>
+  <style>
+    :root {
+      --bg: #070b14;
+      --surface: #0f172a;
+      --card: #111827;
+      --border: #334155;
+      --fg: #f8fafc;
+      --muted: #94a3b8;
+      --cyan: #22d3ee;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --violet: #a78bfa;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--sans);
+      background: radial-gradient(circle at 15% 10%, #0f1d35 0%, var(--bg) 55%);
+      color: var(--fg);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 1220px; margin: 0 auto; padding: 28px 22px 56px; }
+    header, footer, .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px;
+    }
+    header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    .eyebrow { font-family: var(--mono); font-size: 11.5px; color: var(--cyan); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    h1 { margin: 4px 0 0; font-size: 24px; font-weight: 800; }
+    h2 { margin: 0 0 6px; font-size: 20px; font-weight: 800; }
+    .sub { margin: 0; font-size: 13.5px; color: var(--muted); }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    button {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 8px 13px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    button:hover { border-color: var(--cyan); color: var(--fg); }
+    button.active { background: var(--cyan); color: #04131a; border-color: var(--cyan); font-weight: 800; }
+    .fig-frame {
+      margin-top: 16px;
+      background: #070b14;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    .fig-frame img { width: 100%; height: auto; display: block; border-radius: 10px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px; }
+    .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+    .pill {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--emerald);
+      color: var(--emerald);
+      background: rgba(16, 185, 129, 0.1);
+    }
+    .ctrl-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin: 14px 0; padding: 12px 16px; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); }
+    .ctrl-row label { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+    input[type="range"] { accent-color: var(--cyan); }
+    select { background: var(--bg); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; font-family: var(--mono); font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12.5px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-family: var(--mono); font-size: 11.5px; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; white-space: pre-wrap; font-family: var(--sans); font-size: 13.5px; line-height: 1.65; color: #e2e8f0; }
+    footer { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="eyebrow">Open Interface Engineering · Keynote &amp; Visual Asset Deck</div>
+        <h1>The Compilation Threshold: Unlocking Rungs 6–9</h1>
+      </div>
+      <div class="tabs" id="tabs"></div>
+    </header>
+
+    <main id="deck-body"></main>
+
+    <footer>
+      <div>6-Kernel Verified (Lean 4.36.0 · con-leche · con-ron · lean4lean · nanoda · leanchecker) · 0.00% Broken Commits · Tier-Typed Joule Receipts</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="prev">← Prev</button>
+        <span id="counter">1 / 4</span>
+        <button id="next" class="active">Next →</button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const SLIDES = [
+      "1 · 9-Rung Avalanche & Threshold",
+      "2 · The Trinity Stack",
+      "3 · 6-Kernel Proof Assurance",
+      "4 · Keynote Script & Translation Matrix"
+    ];
+    let idx = 0;
+
+    function render() {
+      const tabs = document.getElementById("tabs");
+      tabs.innerHTML = "";
+      SLIDES.forEach((s, i) => {
+        const b = document.createElement("button");
+        b.textContent = s;
+        if (i === idx) b.className = "active";
+        b.onclick = () => { idx = i; render(); };
+        tabs.appendChild(b);
+      });
+      document.getElementById("counter").textContent = (idx + 1) + " / " + SLIDES.length;
+
+      const body = document.getElementById("deck-body");
+      if (idx === 0) {
+        body.innerHTML = `
+          <section class="panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <div>
+                <h2>The 9-Rung Computer Intelligence Avalanche Ratchet &amp; Compilation Threshold (ΔT &gt; ΔT*)</h2>
+                <p class="sub">Drag stationary persistence ΔT across Proposition 1's break-even threshold to observe the phase transition from stateless Rung-5 tool calling into Rungs 6–9.</p>
+              </div>
+              <span class="pill">Proposition 1 · Cascade.lean</span>
+            </div>
+            <div class="ctrl-row">
+              <label>Persistence Horizon <code>ΔT</code> <input id="s-dt" type="range" min="1" max="600" value="260" /> <strong id="v-dt" style="color:var(--fg);font-family:var(--mono);">260 steps</strong></label>
+              <label>Certified Hit Rate <code>p'₀</code> <input id="s-p0" type="range" min="25" max="98" value="85" /> <strong id="v-p0" style="color:var(--fg);font-family:var(--mono);">0.85</strong></label>
+              <label>Rung-3 Wake <select id="s-wake"><option value="148">Qwen3.6-35B (148 J)</option><option value="245" selected>Nemotron-120B (245 J)</option><option value="18">LFM3-1.7B (18 J)</option></select></label>
+              <span id="sim-verdict" class="pill"></span>
+            </div>
+            <div class="fig-frame">
+              <img src="avalanche-compilation-threshold.svg" alt="The 9-Rung Computer Intelligence Avalanche Ratchet and the Compilation Threshold" />
+            </div>
+          </section>
+        `;
+        const upd = () => {
+          const dt = Number(document.getElementById("s-dt").value);
+          const p0 = Number(document.getElementById("s-p0").value) / 100;
+          const cw = Number(document.getElementById("s-wake").value);
+          document.getElementById("v-dt").textContent = dt + " steps";
+          document.getElementById("v-p0").textContent = p0.toFixed(2);
+          const eComp = cw * 12.0;
+          const dtStar = Math.ceil(eComp / Math.max(1e-6, p0 * cw - 0.012));
+          const cold = dt * cw;
+          const comp = eComp + dt * (0.012 + (1 - p0) * cw);
+          const v = document.getElementById("sim-verdict");
+          if (dt > dtStar) {
+            v.textContent = `RUNGS 6–9 UNLOCKED · ΔT (${dt}) > ΔT* (${dtStar}) · ${(cold / comp).toFixed(2)}× Spend Cut`;
+            v.style.borderColor = "var(--emerald)";
+            v.style.color = "var(--emerald)";
+          } else {
+            v.textContent = `STUCK AT RUNG 5 · ΔT (${dt}) ≤ ΔT* (${dtStar}) · Compile Refused`;
+            v.style.borderColor = "var(--amber)";
+            v.style.color = "var(--amber)";
+          }
+        };
+        ["s-dt", "s-p0", "s-wake"].forEach(id => document.getElementById(id).addEventListener("input", upd));
+        upd();
+      } else if (idx === 1) {
+        body.innerHTML = `
+          <section class="panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <div>
+                <h2>The Trinity of Compiled Intelligence: Pattern-Lang · OpenIE / LUT-Adapt · MathGround</h2>
+                <p class="sub">One verifier-first, downward-compiling architecture unifying developer interfaces, software agents, and bare-metal physical safety.</p>
+              </div>
+              <span class="pill">0.00% Broken Commits Admitted</span>
+            </div>
+            <div class="fig-frame">
+              <img src="trinity-stack.svg" alt="The Trinity of Compiled Intelligence" />
+            </div>
+          </section>
+        `;
+      } else if (idx === 2) {
+        body.innerHTML = `
+          <section class="panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <div>
+                <h2>Six-Kernel Paranoid Proof Assurance (Claim LA-19 · CVE-2026-72844-Hardened)</h2>
+                <p class="sub">All 27 Section 2 theorems pass six independent checkers via lake check --paranoid, including set-theory-consistent con-leche and Aeneas-verified Rust con-ron.</p>
+              </div>
+              <span class="pill">6 / 6 Independent Kernels Accept</span>
+            </div>
+            <div class="fig-frame">
+              <img src="six-kernel-trust-and-stack.svg" alt="Six-Kernel Formal Proof Assurance and Three-Layer Compiled Stack" />
+            </div>
+          </section>
+        `;
+      } else {
+        body.innerHTML = `
+          <section class="panel">
+            <h2>Keynote Script &amp; Scientist-to-Visionary Translation Matrix</h2>
+            <p class="sub">Silicon Valley clarity anchored to OpenIE epistemic rigor: hallucinations quarantined at the gate, 6-kernel proofs, and tier-typed Joule receipts never conflated.</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Scientist Formulation (Exact)</th>
+                  <th>Keynote Formulation (Visceral &amp; True)</th>
+                  <th>Credibility Guardrail</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ΔT · (p'₀·c_wake − c₀) &gt; E_compile</code> (Proposition 1)</td>
+                  <td><strong>“True agency isn't measured by how long a model reasons—it's measured by how quickly it stops reasoning and starts compiling.”</strong></td>
+                  <td>Links Rung 6 (Immersion) &amp; Rung 7 (Competence) directly to <code>Cascade.lean</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>C(z) ∈ {0,1}</code> gate admits <code>0.00%</code> broken patches across 4 SWE-bench repos &amp; 120B</td>
+                  <td><strong>“Hallucinations don't ship. Models propose; deterministic gates decide. Zero broken commits ever cross the gate.”</strong></td>
+                  <td>Replaces false “zero hallucinations” hype with verifiable gate refusal.</td>
+                </tr>
+                <tr>
+                  <td><code>est_j</code> (<code>62.4 pJ</code> RTL) ≠ <code>reported_j</code> (<code>272 µJ</code> Rust MCP) ≠ shunt <code>measured_j</code></td>
+                  <td><strong>“Every answer ships with an unforgeable, tier-typed Joule receipt—never laundered, never faked.”</strong></td>
+                  <td>Honors <code>ConformalProvenance.lean</code> anti-laundering boundary.</td>
+                </tr>
+                <tr>
+                  <td><code>lake check --paranoid</code> passes <code>con-leche</code>, <code>con-ron</code>, <code>lean4lean</code>, <code>nanoda</code>, <code>Lean 4.36.0</code></td>
+                  <td><strong>“Six-kernel verified—checked by set-theory-consistent and Rust kernels, immune to single-prover soundness bugs.”</strong></td>
+                  <td>Inoculates against July 2026's <code>CVE-2026-72844</code> Collatz bug &amp; <code>native_decide</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        `;
+      }
+    }
+
+    document.getElementById("prev").onclick = () => { idx = (idx + SLIDES.length - 1) % SLIDES.length; render(); };
+    document.getElementById("next").onclick = () => { idx = (idx + 1) % SLIDES.length; render(); };
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { idx = (idx + 1) % SLIDES.length; render(); }
+      if (e.key === "ArrowLeft") { idx = (idx + SLIDES.length - 1) % SLIDES.length; render(); }
+    });
+    render();
+  </script>
+</body>
+</html>

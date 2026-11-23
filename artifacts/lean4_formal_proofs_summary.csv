@@ -1,28 +1,28 @@
-module,theorem_name,paper_section,statement_summary,kernel_axioms,zero_sorry,zero_custom_axioms
-Cascade,simon_kadane_two_gear_diff,Section 2.1,Exact 2-gear adjacent swap identity,propext;Quot.sound,True,True
-Cascade,simon_kadane_adjacent_swap_iff,Section 2.1,Simon-Kadane p1*c2 >= p2*c1 optimality,propext;Classical.choice;Quot.sound,True,True
-Cascade,simon_kadane_strict_iff,Section 2.1,Strict Simon-Kadane ordering gain,propext;Classical.choice;Quot.sound,True,True
-Cascade,cascade_head_swap_diff,Section 2.1,N-gear prefix swap survival invariance,propext;Quot.sound,True,True
-Cascade,proposition1_downward_compile_iff,Proposition 1,Downward LUT6 amortization horizon iff,propext;Classical.choice;Quot.sound,True,True
-Cascade,rung0_precedes_wake_iff,Proposition 1,Rung 0 precedes wake path iff c0 < p0'*c_wake,propext;Classical.choice;Quot.sound,True,True
-Cascade,zero_hit_churn_refusal,Proposition 1,Zero-hit adversarial churn compile refusal,propext;Quot.sound,True,True
-BenesCopy,benes_copy_benes_depth_formula,Theorem 2,2*(2n-1)+n = 5n-2 closed-form stage depth,propext;Quot.sound,True,True
-BenesCopy,kv260_benes_512_exact_counts,Theorem 2,"N=512 -> 43 stages & 11,008 SRAM switch bits",none (purely constructive),True,True
-BenesCopy,kv260_pipelined_4stage_partition,Claim LA-16,4-stage <= 13-stage routing partition,none (purely constructive),True,True
-BenesCopy,prefixSum_mono_step,Theorem 2,Monotonic multicast fanout partial sum step,propext;Quot.sound,True,True
-BenesCopy,prefixSum_mono,Theorem 2,Transitive monotonicity of copy intervals,propext;Quot.sound,True,True
-BenesCopy,monotonic_copy_intervals_disjoint,Theorem 2,"Disjointness of [S_i, S_{i+1}) copy intervals",propext;Quot.sound,True,True
-BenesCopy,lee_butterfly_modulo_collision_free,Theorem 2,Modulo-2^(d+1) butterfly link non-contention,propext;Quot.sound,True,True
-JointMinterm,joint_mode_dominates_all,Proposition 3,Joint-mode dominates all burst predictors,propext;Quot.sound,True,True
-JointMinterm,joint_mode_in_support,Proposition 3,Zero off-support chimera guarantee,propext;Quot.sound,True,True
-JointMinterm,marginal_chimera_witness,Proposition 3,"Constructive (40,35,25) marginal chimera witness",propext,True,True
-JointMinterm,packTokens_bound,Proposition 3,b*K bit-width upper bound on packed bursts,propext;Quot.sound,True,True
-JointMinterm,unpack_pack_roundtrip,Proposition 3,Lossless K-token pack/unpack bijection,propext,True,True
-JointMinterm,packTokens_fits_uint64,Proposition 3,uint64 fit whenever b*K <= 64,propext;Quot.sound,True,True
-JointMinterm,hf_2026_vocab_uint64_packing_bounds,Claims LA-7/9,"LFM2.5 (K=4), LFM3 (K=3), Qwen3.6 (K=3) fit",none (purely constructive),True,True
-ConformalProvenance,off_manifold_ray_forces_abstention,Result 4,Off-manifold ray ||f(x)|| > R(alpha) -> C_t = empty,propext;Quot.sound,True,True
-ConformalProvenance,split_conformal_rank_miscoverage_bound,Result 4,Finite-sample split-conformal miscoverage <= alpha,propext;Quot.sound,True,True
-ConformalProvenance,aci_stationary_iff_target_miscoverage,Result 4,ACI equilibrium iff err_t = alpha,propext;Quot.sound,True,True
-ConformalProvenance,downward_crystallize_never_deterministic,Section 0.3,ModelGenerated -/-> Deterministic lattice law,none (purely constructive),True,True
-ConformalProvenance,conformal_crystallize_rank_strictly_bounded,Section 0.3,ConformalBounded < CheckSafe < Deterministic,none (purely constructive),True,True
-ConformalProvenance,speculativeSweep_matches_greedy,Section 0.3,Target-verified LUT6 speculation = exact greedy,propext;Quot.sound,True,True
+module,theorem_name,paper_section,statement_summary,kernel_axioms,zero_sorry,zero_custom_axioms,ofReduceBool_used,six_kernel_verified
+Cascade,simon_kadane_two_gear_diff,Section 2.1,Exact 2-gear adjacent swap identity,propext;Quot.sound,True,True,False,True
+Cascade,simon_kadane_adjacent_swap_iff,Section 2.1,Simon-Kadane p1*c2 >= p2*c1 optimality,propext;Classical.choice;Quot.sound,True,True,False,True
+Cascade,simon_kadane_strict_iff,Section 2.1,Strict Simon-Kadane ordering gain,propext;Classical.choice;Quot.sound,True,True,False,True
+Cascade,cascade_head_swap_diff,Section 2.1,N-gear prefix swap survival invariance,propext;Quot.sound,True,True,False,True
+Cascade,proposition1_downward_compile_iff,Proposition 1,Downward LUT6 amortization horizon iff,propext;Classical.choice;Quot.sound,True,True,False,True
+Cascade,rung0_precedes_wake_iff,Proposition 1,Rung 0 precedes wake path iff c0 < p0'*c_wake,propext;Classical.choice;Quot.sound,True,True,False,True
+Cascade,zero_hit_churn_refusal,Proposition 1,Zero-hit adversarial churn compile refusal,propext;Quot.sound,True,True,False,True
+BenesCopy,benes_copy_benes_depth_formula,Theorem 2,2*(2n-1)+n = 5n-2 closed-form stage depth,propext;Quot.sound,True,True,False,True
+BenesCopy,kv260_benes_512_exact_counts,Theorem 2,"N=512 -> 43 stages & 11,008 SRAM switch bits",none (purely constructive),True,True,False,True
+BenesCopy,kv260_pipelined_4stage_partition,Claim LA-16,4-stage <= 13-stage routing partition,none (purely constructive),True,True,False,True
+BenesCopy,prefixSum_mono_step,Theorem 2,Monotonic multicast fanout partial sum step,propext;Quot.sound,True,True,False,True
+BenesCopy,prefixSum_mono,Theorem 2,Transitive monotonicity of copy intervals,propext;Quot.sound,True,True,False,True
+BenesCopy,monotonic_copy_intervals_disjoint,Theorem 2,"Disjointness of [S_i, S_{i+1}) copy intervals",propext;Quot.sound,True,True,False,True
+BenesCopy,lee_butterfly_modulo_collision_free,Theorem 2,Modulo-2^(d+1) butterfly link non-contention,propext;Quot.sound,True,True,False,True
+JointMinterm,joint_mode_dominates_all,Proposition 3,Joint-mode dominates all burst predictors,propext;Quot.sound,True,True,False,True
+JointMinterm,joint_mode_in_support,Proposition 3,Zero off-support chimera guarantee,propext;Quot.sound,True,True,False,True
+JointMinterm,marginal_chimera_witness,Proposition 3,"Constructive (40,35,25) marginal chimera witness",propext,True,True,False,True
+JointMinterm,packTokens_bound,Proposition 3,b*K bit-width upper bound on packed bursts,propext;Quot.sound,True,True,False,True
+JointMinterm,unpack_pack_roundtrip,Proposition 3,Lossless K-token pack/unpack bijection,propext,True,True,False,True
+JointMinterm,packTokens_fits_uint64,Proposition 3,uint64 fit whenever b*K <= 64,propext;Quot.sound,True,True,False,True
+JointMinterm,hf_2026_vocab_uint64_packing_bounds,Claims LA-7/9,"LFM2.5 (K=4), LFM3 (K=3), Qwen3.6 (K=3) fit",none (purely constructive),True,True,False,True
+ConformalProvenance,off_manifold_ray_forces_abstention,Result 4,Off-manifold ray ||f(x)|| > R(alpha) -> C_t = empty,propext;Quot.sound,True,True,False,True
+ConformalProvenance,split_conformal_rank_miscoverage_bound,Result 4,Finite-sample split-conformal miscoverage <= alpha,propext;Quot.sound,True,True,False,True
+ConformalProvenance,aci_stationary_iff_target_miscoverage,Result 4,ACI equilibrium iff err_t = alpha,propext;Quot.sound,True,True,False,True
+ConformalProvenance,downward_crystallize_never_deterministic,Section 0.3,ModelGenerated -/-> Deterministic lattice law,none (purely constructive),True,True,False,True
+ConformalProvenance,conformal_crystallize_rank_strictly_bounded,Section 0.3,ConformalBounded < CheckSafe < Deterministic,none (purely constructive),True,True,False,True
+ConformalProvenance,speculativeSweep_matches_greedy,Section 0.3,Target-verified LUT6 speculation = exact greedy,propext;Quot.sound,True,True,False,True
