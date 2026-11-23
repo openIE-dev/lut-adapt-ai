@@ -1,0 +1,66 @@
+{
+  "claim_id": "LA-25",
+  "phase": "Phase 29: Four-Vendor Hardware GPU Shader Parity (Apple Metal + AMD Vulkan + NVIDIA Vulkan + Intel Vulkan)",
+  "burn_cubecl_version": "0.22.1",
+  "rustc_version": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "distinct_gpu_vendors": 4,
+  "vendors": [
+    "Apple",
+    "AMD",
+    "NVIDIA",
+    "Intel"
+  ],
+  "single_source_files": [
+    "sys/rust/src/kernels/q4_moe.rs",
+    "sys/rust/src/kernels/gated_deltanet.rs"
+  ],
+  "max_fp32_parity_error_across_all_4_vendors": 1.8e-07,
+  "board_metered": false,
+  "measured_j": null,
+  "vendor_summaries": [
+    {
+      "gpu_vendor": "Apple",
+      "device_model": "Apple M5 Max (40-core GPU)",
+      "gpu_backend": "CubeCL_Metal_GPU",
+      "q4_moe_gpu_ms": 0.66,
+      "q4_moe_speedup_vs_ref_x": 41.69,
+      "q4_moe_max_abs_err": 1.8e-07,
+      "deltanet_gpu_ms": 3.7242,
+      "deltanet_speedup_vs_ref_x": 45.74,
+      "deltanet_max_abs_err": 2e-08
+    },
+    {
+      "gpu_vendor": "AMD",
+      "device_model": "AMD Radeon 8060S (gfx1151 RDNA 3.5)",
+      "gpu_backend": "CubeCL_Vulkan_SPIRV",
+      "q4_moe_gpu_ms": 2.0984,
+      "q4_moe_speedup_vs_ref_x": 16.72,
+      "q4_moe_max_abs_err": 1.5e-07,
+      "deltanet_gpu_ms": 0.6367,
+      "deltanet_speedup_vs_ref_x": 328.06,
+      "deltanet_max_abs_err": 2e-08
+    },
+    {
+      "gpu_vendor": "NVIDIA",
+      "device_model": "NVIDIA GeForce RTX 4050 Laptop (sm_89 Ada)",
+      "gpu_backend": "CubeCL_Vulkan_SPIRV",
+      "q4_moe_gpu_ms": 0.942,
+      "q4_moe_speedup_vs_ref_x": 59.32,
+      "q4_moe_max_abs_err": 1.5e-07,
+      "deltanet_gpu_ms": 1.4449,
+      "deltanet_speedup_vs_ref_x": 265.67,
+      "deltanet_max_abs_err": 2e-08
+    },
+    {
+      "gpu_vendor": "Intel",
+      "device_model": "Intel Iris Xe Graphics (RPL-P)",
+      "gpu_backend": "CubeCL_Vulkan_SPIRV",
+      "q4_moe_gpu_ms": 4.6239,
+      "q4_moe_speedup_vs_ref_x": 11.67,
+      "q4_moe_max_abs_err": 1.8e-07,
+      "deltanet_gpu_ms": 24.0915,
+      "deltanet_speedup_vs_ref_x": 16.19,
+      "deltanet_max_abs_err": 3e-08
+    }
+  ]
+}

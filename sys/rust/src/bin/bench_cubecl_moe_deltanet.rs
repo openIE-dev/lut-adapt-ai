@@ -8,8 +8,184 @@ use burn::tensor::{Device, Int, Tensor, TensorData};
 use clai_cubecl::ext::{gated_delta_recurrent_k128_gpu, q4_moe_ffn_pairs_gpu};
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
-use std::time::Instant;
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
+
+mod gpu_meter {
+    use super::*;
+
+    #[derive(Clone, Debug, Default)]
+    pub struct DispatchEnergy {
+        pub nvml_gpu_reported_mj_per_dispatch: Option<f64>,
+        pub amdgpu_ppt_reported_mj_per_dispatch: Option<f64>,
+        pub rapl_pkg_reported_mj_per_dispatch: Option<f64>,
+        pub darwin_l3_cpu_reported_mj_per_dispatch: Option<f64>,
+    }
+
+    fn read_u64_sysfs(p: &Path) -> Option<u64> {
+        std::fs::read_to_string(p).ok()?.trim().parse::<u64>().ok()
+    }
+
+    #[cfg(target_os = "linux")]
+    mod linux_nvml {
+        use std::ffi::c_void;
+        unsafe extern "C" {
+            fn dlopen(filename: *const u8, flags: i32) -> *mut c_void;
+            fn dlsym(handle: *mut c_void, symbol: *const u8) -> *const c_void;
+        }
+        pub struct Nvml {
+            dev: *mut c_void,
+            get_en: Option<unsafe extern "C" fn(*mut c_void, *mut u64) -> i32>,
+        }
+        impl Nvml {
+            pub fn try_new() -> Self {
+                unsafe {
+                    let h = dlopen(b"libnvidia-ml.so.1\0".as_ptr(), 1);
+                    if h.is_null() {
+                        return Self { dev: std::ptr::null_mut(), get_en: None };
+                    }
+                    let p_init = dlsym(h, b"nvmlInit_v2\0".as_ptr());
+                    let p_dev = dlsym(h, b"nvmlDeviceGetHandleByIndex_v2\0".as_ptr());
+                    let p_en = dlsym(h, b"nvmlDeviceGetTotalEnergyConsumption\0".as_ptr());
+                    if p_init.is_null() || p_dev.is_null() || p_en.is_null() {
+                        return Self { dev: std::ptr::null_mut(), get_en: None };
+                    }
+                    let f_init: unsafe extern "C" fn() -> i32 = std::mem::transmute(p_init);
+                    let f_dev: unsafe extern "C" fn(u32, *mut *mut c_void) -> i32 =
+                        std::mem::transmute(p_dev);
+                    let f_en: unsafe extern "C" fn(*mut c_void, *mut u64) -> i32 =
+                        std::mem::transmute(p_en);
+                    if f_init() != 0 {
+                        return Self { dev: std::ptr::null_mut(), get_en: None };
+                    }
+                    let mut dev: *mut c_void = std::ptr::null_mut();
+                    if f_dev(0, &mut dev as *mut _) != 0 {
+                        return Self { dev: std::ptr::null_mut(), get_en: None };
+                    }
+                    Self { dev, get_en: Some(f_en) }
+                }
+            }
+            pub fn read_mj(&self) -> Option<u64> {
+                let f = self.get_en?;
+                let mut v = 0u64;
+                if unsafe { f(self.dev, &mut v as *mut _) } == 0 {
+                    Some(v)
+                } else {
+                    None
+                }
+            }
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    mod macos_l3 {
+        #[repr(C)]
+        struct RUsageV6 {
+            words: [u64; 64],
+        }
+        unsafe extern "C" {
+            fn getpid() -> i32;
+            fn proc_pid_rusage(pid: i32, flavor: i32, buf: *mut RUsageV6) -> i32;
+        }
+        pub fn read_nj() -> Option<u64> {
+            let mut ru = RUsageV6 { words: [0; 64] };
+            if unsafe { proc_pid_rusage(getpid(), 6, &mut ru as *mut _) } == 0 {
+                Some(ru.words[42])
+            } else {
+                None
+            }
+        }
+    }
+
+    pub fn measure_window<F: FnOnce() -> T, T>(iters: usize, f: F) -> (T, f64, DispatchEnergy) {
+        #[cfg(target_os = "linux")]
+        let nvml = linux_nvml::Nvml::try_new();
+        #[cfg(target_os = "linux")]
+        let nv0 = nvml.read_mj();
+
+        let rapl_p = Path::new("/sys/class/powercap/intel-rapl:0/energy_uj");
+        let rapl_max =
+            read_u64_sysfs(Path::new("/sys/class/powercap/intel-rapl:0/max_energy_range_uj"))
+                .unwrap_or(0);
+        let rp0 = read_u64_sysfs(rapl_p);
+
+        let mut amdgpu_p: Option<PathBuf> = None;
+        if let Ok(rd) = std::fs::read_dir("/sys/class/hwmon") {
+            for ent in rd.flatten() {
+                let p = ent.path();
+                if let Ok(nm) = std::fs::read_to_string(p.join("name")) {
+                    if nm.trim() == "amdgpu" && p.join("power1_input").is_file() {
+                        amdgpu_p = Some(p.join("power1_input"));
+                    }
+                }
+            }
+        }
+        let stop = Arc::new(AtomicBool::new(false));
+        let amd_sampler = amdgpu_p.map(|ap| {
+            let st = Arc::clone(&stop);
+            std::thread::spawn(move || {
+                let mut mj = 0.0_f64;
+                let mut pt = Instant::now();
+                let mut pw_w = (read_u64_sysfs(&ap).unwrap_or(0) as f64) * 1e-6;
+                while !st.load(Ordering::Relaxed) {
+                    std::thread::sleep(Duration::from_millis(2));
+                    let now = Instant::now();
+                    let dt = (now - pt).as_secs_f64();
+                    let w = (read_u64_sysfs(&ap).unwrap_or(0) as f64) * 1e-6;
+                    mj += 0.5 * (pw_w + w) * dt * 1000.0;
+                    pw_w = w;
+                    pt = now;
+                }
+                mj
+            })
+        });
+
+        #[cfg(target_os = "macos")]
+        let mac0 = macos_l3::read_nj();
+
+        let t0 = Instant::now();
+        let ret = f();
+        let elapsed_ms = t0.elapsed().as_secs_f64() * 1e3;
+        stop.store(true, Ordering::Relaxed);
+
+        let inv = 1.0 / (iters.max(1) as f64);
+        let mut de = DispatchEnergy::default();
+
+        #[cfg(target_os = "linux")]
+        if let (Some(a), Some(b)) = (nv0, nvml.read_mj()) {
+            if b >= a {
+                de.nvml_gpu_reported_mj_per_dispatch = Some(((b - a) as f64) * inv);
+            }
+        }
+
+        if let (Some(a), Some(b)) = (rp0, read_u64_sysfs(rapl_p)) {
+            let duj = if b >= a {
+                b - a
+            } else if rapl_max > 0 {
+                (rapl_max - a) + b
+            } else {
+                0
+            };
+            de.rapl_pkg_reported_mj_per_dispatch = Some((duj as f64) * 1e-3 * inv);
+        }
+
+        if let Some(h) = amd_sampler {
+            if let Ok(tot_mj) = h.join() {
+                de.amdgpu_ppt_reported_mj_per_dispatch = Some(tot_mj * inv);
+            }
+        }
+
+        #[cfg(target_os = "macos")]
+        if let (Some(a), Some(b)) = (mac0, macos_l3::read_nj()) {
+            de.darwin_l3_cpu_reported_mj_per_dispatch =
+                Some((b.saturating_sub(a) as f64) * 1e-6 * inv);
+        }
+
+        (ret, elapsed_ms * inv, de)
+    }
+}
 
 fn select_gpu_device() -> (&'static str, Device) {
     #[cfg(feature = "cuda")]
@@ -227,32 +403,27 @@ fn main() {
     );
     let ref_moe_ms = t_ref0.elapsed().as_secs_f64() * 1e3;
 
-    let run_moe_on_dev = |dev: &Device, iters: usize| -> (Vec<f32>, f64) {
-        let p_t = Tensor::<3, Int>::from_data(TensorData::new(packed_vec.clone(), [k_uniq, m_tot, 8]), dev);
-        let m_t = Tensor::<2>::from_data(TensorData::new(mins_vec.clone(), [k_uniq, m_tot]), dev);
-        let s_t = Tensor::<2>::from_data(TensorData::new(scales_vec.clone(), [k_uniq, m_tot]), dev);
-        let h_t = Tensor::<2>::from_data(TensorData::new(flat_h_vec.clone(), [t_toks, d_model]), dev);
-        let tok_t = Tensor::<1, Int>::from_data(TensorData::new(pair_tok_vec.clone(), [p_pairs]), dev);
-        let slot_t = Tensor::<1, Int>::from_data(TensorData::new(pair_slot_vec.clone(), [p_pairs]), dev);
-        let rw_t = Tensor::<1>::from_data(TensorData::new(pair_rw_vec.clone(), [p_pairs]), dev);
+    let run_moe_on_dev =
+        |dev: &Device, iters: usize| -> (Vec<f32>, f64, gpu_meter::DispatchEnergy) {
+            let p_t = Tensor::<3, Int>::from_data(
+                TensorData::new(packed_vec.clone(), [k_uniq, m_tot, 8]),
+                dev,
+            );
+            let m_t =
+                Tensor::<2>::from_data(TensorData::new(mins_vec.clone(), [k_uniq, m_tot]), dev);
+            let s_t =
+                Tensor::<2>::from_data(TensorData::new(scales_vec.clone(), [k_uniq, m_tot]), dev);
+            let h_t =
+                Tensor::<2>::from_data(TensorData::new(flat_h_vec.clone(), [t_toks, d_model]), dev);
+            let tok_t =
+                Tensor::<1, Int>::from_data(TensorData::new(pair_tok_vec.clone(), [p_pairs]), dev);
+            let slot_t =
+                Tensor::<1, Int>::from_data(TensorData::new(pair_slot_vec.clone(), [p_pairs]), dev);
+            let rw_t =
+                Tensor::<1>::from_data(TensorData::new(pair_rw_vec.clone(), [p_pairs]), dev);
 
-        // Warmup JIT
-        let warm = q4_moe_ffn_pairs_gpu(
-            p_t.clone(),
-            m_t.clone(),
-            s_t.clone(),
-            h_t.clone(),
-            tok_t.clone(),
-            slot_t.clone(),
-            rw_t.clone(),
-            i_dim,
-        )
-        .into_data();
-        let warm_vec = warm.as_slice::<f32>().unwrap().to_vec();
-
-        let t0 = Instant::now();
-        for _ in 0..iters {
-            let out = q4_moe_ffn_pairs_gpu(
+            // Warmup JIT
+            let warm = q4_moe_ffn_pairs_gpu(
                 p_t.clone(),
                 m_t.clone(),
                 s_t.clone(),
@@ -261,16 +432,36 @@ fn main() {
                 slot_t.clone(),
                 rw_t.clone(),
                 i_dim,
-            );
-            let d = out.into_data();
-            std::hint::black_box(d.as_slice::<f32>().unwrap()[0]);
-        }
-        let mean_ms = (t0.elapsed().as_secs_f64() * 1e3) / (iters as f64);
-        (warm_vec, mean_ms)
-    };
+            )
+            .into_data();
+            let warm_vec = warm.as_slice::<f32>().unwrap().to_vec();
 
-    let (cpu_cube_moe, cpu_cube_moe_ms) = run_moe_on_dev(&cpu_dev, 5);
-    let (gpu_cube_moe, gpu_cube_moe_ms) = run_moe_on_dev(&gpu_dev, 40);
+            let (_, mean_ms, de) = gpu_meter::measure_window(iters, || {
+                for _ in 0..iters {
+                    let out = q4_moe_ffn_pairs_gpu(
+                        p_t.clone(),
+                        m_t.clone(),
+                        s_t.clone(),
+                        h_t.clone(),
+                        tok_t.clone(),
+                        slot_t.clone(),
+                        rw_t.clone(),
+                        i_dim,
+                    );
+                    let d = out.into_data();
+                    std::hint::black_box(d.as_slice::<f32>().unwrap()[0]);
+                }
+            });
+            (warm_vec, mean_ms, de)
+        };
+
+    let gpu_iters = if std::env::var("CUBECL_VENDOR_JSON").is_ok() {
+        120usize
+    } else {
+        40usize
+    };
+    let (cpu_cube_moe, cpu_cube_moe_ms, cpu_moe_en) = run_moe_on_dev(&cpu_dev, 5);
+    let (gpu_cube_moe, gpu_cube_moe_ms, gpu_moe_en) = run_moe_on_dev(&gpu_dev, gpu_iters);
 
     let err_moe_cpu = max_abs_diff(&ref_moe, &cpu_cube_moe);
     let err_moe_gpu = max_abs_diff(&ref_moe, &gpu_cube_moe);
@@ -311,30 +502,30 @@ fn main() {
     );
     let ref_dn_ms = t_dn0.elapsed().as_secs_f64() * 1e3;
 
-    let run_dn_on_dev = |dev: &Device, iters: usize| -> (Vec<f32>, Vec<f32>, f64) {
-        let q_t = Tensor::<4>::from_data(TensorData::new(q_vec.clone(), [b_sz, h_k, t_len, 128]), dev);
-        let k_t = Tensor::<4>::from_data(TensorData::new(k_vec.clone(), [b_sz, h_k, t_len, 128]), dev);
-        let v_t = Tensor::<4>::from_data(TensorData::new(v_vec.clone(), [b_sz, h_v, t_len, v_dim]), dev);
-        let g_t = Tensor::<3>::from_data(TensorData::new(g_vec.clone(), [b_sz, h_v, t_len]), dev);
-        let b_t = Tensor::<3>::from_data(TensorData::new(beta_vec.clone(), [b_sz, h_v, t_len]), dev);
-        let s_t = Tensor::<4>::from_data(TensorData::new(st0_vec.clone(), [b_sz, h_v, 128, v_dim]), dev);
+    let run_dn_on_dev =
+        |dev: &Device, iters: usize| -> (Vec<f32>, Vec<f32>, f64, gpu_meter::DispatchEnergy) {
+            let q_t = Tensor::<4>::from_data(
+                TensorData::new(q_vec.clone(), [b_sz, h_k, t_len, 128]),
+                dev,
+            );
+            let k_t = Tensor::<4>::from_data(
+                TensorData::new(k_vec.clone(), [b_sz, h_k, t_len, 128]),
+                dev,
+            );
+            let v_t = Tensor::<4>::from_data(
+                TensorData::new(v_vec.clone(), [b_sz, h_v, t_len, v_dim]),
+                dev,
+            );
+            let g_t =
+                Tensor::<3>::from_data(TensorData::new(g_vec.clone(), [b_sz, h_v, t_len]), dev);
+            let b_t =
+                Tensor::<3>::from_data(TensorData::new(beta_vec.clone(), [b_sz, h_v, t_len]), dev);
+            let s_t = Tensor::<4>::from_data(
+                TensorData::new(st0_vec.clone(), [b_sz, h_v, 128, v_dim]),
+                dev,
+            );
 
-        let (wo, ws) = gated_delta_recurrent_k128_gpu(
-            q_t.clone(),
-            k_t.clone(),
-            v_t.clone(),
-            g_t.clone(),
-            b_t.clone(),
-            s_t.clone(),
-        );
-        let wo_data = wo.into_data();
-        let ws_data = ws.into_data();
-        let wo_vec = wo_data.as_slice::<f32>().unwrap().to_vec();
-        let ws_vec = ws_data.as_slice::<f32>().unwrap().to_vec();
-
-        let t0 = Instant::now();
-        for _ in 0..iters {
-            let (o, s) = gated_delta_recurrent_k128_gpu(
+            let (wo, ws) = gated_delta_recurrent_k128_gpu(
                 q_t.clone(),
                 k_t.clone(),
                 v_t.clone(),
@@ -342,16 +533,33 @@ fn main() {
                 b_t.clone(),
                 s_t.clone(),
             );
-            let od = o.into_data();
-            let sd = s.into_data();
-            std::hint::black_box(od.as_slice::<f32>().unwrap()[0] + sd.as_slice::<f32>().unwrap()[0]);
-        }
-        let mean_ms = (t0.elapsed().as_secs_f64() * 1e3) / (iters as f64);
-        (wo_vec, ws_vec, mean_ms)
-    };
+            let wo_data = wo.into_data();
+            let ws_data = ws.into_data();
+            let wo_vec = wo_data.as_slice::<f32>().unwrap().to_vec();
+            let ws_vec = ws_data.as_slice::<f32>().unwrap().to_vec();
 
-    let (cpu_dn_out, cpu_dn_st, cpu_dn_ms) = run_dn_on_dev(&cpu_dev, 5);
-    let (gpu_dn_out, gpu_dn_st, gpu_dn_ms) = run_dn_on_dev(&gpu_dev, 40);
+            let (_, mean_ms, de) = gpu_meter::measure_window(iters, || {
+                for _ in 0..iters {
+                    let (o, s) = gated_delta_recurrent_k128_gpu(
+                        q_t.clone(),
+                        k_t.clone(),
+                        v_t.clone(),
+                        g_t.clone(),
+                        b_t.clone(),
+                        s_t.clone(),
+                    );
+                    let od = o.into_data();
+                    let sd = s.into_data();
+                    std::hint::black_box(
+                        od.as_slice::<f32>().unwrap()[0] + sd.as_slice::<f32>().unwrap()[0],
+                    );
+                }
+            });
+            (wo_vec, ws_vec, mean_ms, de)
+        };
+
+    let (cpu_dn_out, cpu_dn_st, cpu_dn_ms, cpu_dn_en) = run_dn_on_dev(&cpu_dev, 5);
+    let (gpu_dn_out, gpu_dn_st, gpu_dn_ms, gpu_dn_en) = run_dn_on_dev(&gpu_dev, gpu_iters);
 
     let err_dn_cpu = max_abs_diff(&ref_dn_out, &cpu_dn_out).max(max_abs_diff(&ref_dn_st, &cpu_dn_st));
     let err_dn_gpu = max_abs_diff(&ref_dn_out, &gpu_dn_out).max(max_abs_diff(&ref_dn_st, &gpu_dn_st));
@@ -429,4 +637,50 @@ fn main() {
     .unwrap();
 
     println!("Saved -> {}", csv_path.display());
+
+    if let Ok(json_path) = std::env::var("CUBECL_VENDOR_JSON") {
+        let hw_label = std::env::var("CUBECL_HARDWARE_LABEL")
+            .unwrap_or_else(|_| format!("{}_{}", std::env::consts::OS, std::env::consts::ARCH));
+        let opt_f = |v: Option<f64>| match v {
+            Some(x) => format!("{x:.6}"),
+            None => "null".to_string(),
+        };
+        let en_json = |e: &gpu_meter::DispatchEnergy| {
+            format!(
+                "{{\"nvml_gpu_reported_mj_per_dispatch\":{},\"amdgpu_ppt_reported_mj_per_dispatch\":{},\"rapl_pkg_reported_mj_per_dispatch\":{},\"darwin_l3_cpu_reported_mj_per_dispatch\":{}}}",
+                opt_f(e.nvml_gpu_reported_mj_per_dispatch),
+                opt_f(e.amdgpu_ppt_reported_mj_per_dispatch),
+                opt_f(e.rapl_pkg_reported_mj_per_dispatch),
+                opt_f(e.darwin_l3_cpu_reported_mj_per_dispatch),
+            )
+        };
+        let j_str = format!(
+            "{{\n  \"hardware_label\": \"{}\",\n  \"os\": \"{}\",\n  \"arch\": \"{}\",\n  \"gpu_backend\": \"{}\",\n  \"gpu_iters\": {},\n  \"board_metered\": false,\n  \"measured_j\": null,\n  \"q4_moe_gate_up_silu_down\": {{\n    \"host_ref_ms\": {:.4},\n    \"cubecl_cpu_ms\": {:.4},\n    \"cubecl_cpu_speedup\": {:.4},\n    \"cubecl_cpu_max_err\": {:.8},\n    \"cubecl_cpu_energy\": {},\n    \"cubecl_gpu_ms\": {:.4},\n    \"cubecl_gpu_speedup\": {:.4},\n    \"cubecl_gpu_max_err\": {:.8},\n    \"cubecl_gpu_energy\": {}\n  }},\n  \"gated_delta_recurrent_k128\": {{\n    \"host_ref_ms\": {:.4},\n    \"cubecl_cpu_ms\": {:.4},\n    \"cubecl_cpu_speedup\": {:.4},\n    \"cubecl_cpu_max_err\": {:.8},\n    \"cubecl_cpu_energy\": {},\n    \"cubecl_gpu_ms\": {:.4},\n    \"cubecl_gpu_speedup\": {:.4},\n    \"cubecl_gpu_max_err\": {:.8},\n    \"cubecl_gpu_energy\": {}\n  }}\n}}\n",
+            hw_label,
+            std::env::consts::OS,
+            std::env::consts::ARCH,
+            gpu_name,
+            gpu_iters,
+            ref_moe_ms,
+            cpu_cube_moe_ms,
+            ref_moe_ms / cpu_cube_moe_ms,
+            err_moe_cpu,
+            en_json(&cpu_moe_en),
+            gpu_cube_moe_ms,
+            ref_moe_ms / gpu_cube_moe_ms,
+            err_moe_gpu,
+            en_json(&gpu_moe_en),
+            ref_dn_ms,
+            cpu_dn_ms,
+            ref_dn_ms / cpu_dn_ms,
+            err_dn_cpu,
+            en_json(&cpu_dn_en),
+            gpu_dn_ms,
+            ref_dn_ms / gpu_dn_ms,
+            err_dn_gpu,
+            en_json(&gpu_dn_en),
+        );
+        std::fs::write(&json_path, j_str).expect("write CUBECL_VENDOR_JSON");
+        println!("Saved vendor JSON -> {json_path}");
+    }
 }

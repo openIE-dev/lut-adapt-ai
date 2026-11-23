@@ -1,0 +1,31 @@
+{
+  "hardware_label": "NVIDIA_GeForce_RTX_4050_Ada_Vulkan",
+  "os": "linux",
+  "arch": "x86_64",
+  "gpu_backend": "CubeCL_Vulkan_SPIRV",
+  "gpu_iters": 120,
+  "board_metered": false,
+  "measured_j": null,
+  "q4_moe_gate_up_silu_down": {
+    "host_ref_ms": 55.8777,
+    "cubecl_cpu_ms": 6.3592,
+    "cubecl_cpu_speedup": 8.7870,
+    "cubecl_cpu_max_err": 0.00000015,
+    "cubecl_cpu_energy": {"nvml_gpu_reported_mj_per_dispatch":0.000000,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":416.234400,"darwin_l3_cpu_reported_mj_per_dispatch":null},
+    "cubecl_gpu_ms": 0.9420,
+    "cubecl_gpu_speedup": 59.3158,
+    "cubecl_gpu_max_err": 0.00000015,
+    "cubecl_gpu_energy": {"nvml_gpu_reported_mj_per_dispatch":55.550000,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":27.175325,"darwin_l3_cpu_reported_mj_per_dispatch":null}
+  },
+  "gated_delta_recurrent_k128": {
+    "host_ref_ms": 383.8738,
+    "cubecl_cpu_ms": 23.3730,
+    "cubecl_cpu_speedup": 16.4238,
+    "cubecl_cpu_max_err": 0.00000002,
+    "cubecl_cpu_energy": {"nvml_gpu_reported_mj_per_dispatch":1276.800000,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":1324.642600,"darwin_l3_cpu_reported_mj_per_dispatch":null},
+    "cubecl_gpu_ms": 1.4449,
+    "cubecl_gpu_speedup": 265.6677,
+    "cubecl_gpu_max_err": 0.00000002,
+    "cubecl_gpu_energy": {"nvml_gpu_reported_mj_per_dispatch":131.391667,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":40.901083,"darwin_l3_cpu_reported_mj_per_dispatch":null}
+  }
+}

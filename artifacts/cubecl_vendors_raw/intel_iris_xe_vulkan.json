@@ -1,0 +1,31 @@
+{
+  "hardware_label": "Intel_Iris_Xe_RPL_Vulkan",
+  "os": "linux",
+  "arch": "x86_64",
+  "gpu_backend": "CubeCL_Vulkan_SPIRV",
+  "gpu_iters": 120,
+  "board_metered": false,
+  "measured_j": null,
+  "q4_moe_gate_up_silu_down": {
+    "host_ref_ms": 53.9458,
+    "cubecl_cpu_ms": 5.0687,
+    "cubecl_cpu_speedup": 10.6430,
+    "cubecl_cpu_max_err": 0.00000015,
+    "cubecl_cpu_energy": {"nvml_gpu_reported_mj_per_dispatch":0.000000,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":470.384600,"darwin_l3_cpu_reported_mj_per_dispatch":null},
+    "cubecl_gpu_ms": 4.6239,
+    "cubecl_gpu_speedup": 11.6668,
+    "cubecl_gpu_max_err": 0.00000018,
+    "cubecl_gpu_energy": {"nvml_gpu_reported_mj_per_dispatch":184.291667,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":172.196008,"darwin_l3_cpu_reported_mj_per_dispatch":null}
+  },
+  "gated_delta_recurrent_k128": {
+    "host_ref_ms": 390.1373,
+    "cubecl_cpu_ms": 23.2980,
+    "cubecl_cpu_speedup": 16.7455,
+    "cubecl_cpu_max_err": 0.00000002,
+    "cubecl_cpu_energy": {"nvml_gpu_reported_mj_per_dispatch":9785.800000,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":1393.160400,"darwin_l3_cpu_reported_mj_per_dispatch":null},
+    "cubecl_gpu_ms": 24.0915,
+    "cubecl_gpu_speedup": 16.1940,
+    "cubecl_gpu_max_err": 0.00000003,
+    "cubecl_gpu_energy": {"nvml_gpu_reported_mj_per_dispatch":8489.083333,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":711.613675,"darwin_l3_cpu_reported_mj_per_dispatch":null}
+  }
+}

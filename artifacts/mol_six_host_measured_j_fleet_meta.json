@@ -1,0 +1,131 @@
+{
+  "claim_id": "LA-24",
+  "phase": "Phase 29: Six-Host Cross-Silicon & Physical DC Shunt (measured_j) Mixture-of-Limits Benchmark",
+  "rustc_version": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "hosts_evaluated": 6,
+  "board_metered_hosts": [
+    "NVIDIA_Jetson_AGX_Thor_Tegra_aarch64"
+  ],
+  "counter_reported_hosts": [
+    "AMD_Ryzen_AI_Max_395_Linux_x86_64",
+    "Intel_Core_i9_13900H_Linux_x86_64",
+    "Apple_M3_Ultra_macOS_arm64",
+    "Apple_M5_Max_macOS_arm64",
+    "Windows_11_RTX_2060_x86_64"
+  ],
+  "anti_laundering_verified": true,
+  "thor_physical_shunt_highlights": {
+    "rails": [
+      "hwmon5 TI INA3221 ch2 VDD_CPU_SOC_MSS (in2_input * curr2_input, isolated from VDD_GPU)",
+      "hwmon6 TI INA238 VIN whole-board DC input (power1_input)"
+    ],
+    "cotenant_gpu_isolation": "CUDA_VISIBLE_DEVICES='' enforced; VDD_GPU remained flat at 2.378 W (< 0.06% pre/post drift)",
+    "quiescent_vin_drift_pct": 0.1903,
+    "w1_benes_lut6_cpu_measured_uj_per_eval": 1.8653,
+    "w2_sub1bit_lut6_vs_mac_cpu_measured_j_ratio": 3.7361,
+    "w3_expert_airmol_vs_dense_cpu_measured_j_ratio": 34.2086,
+    "w5_prop1_compiled_vs_stuck_cpu_measured_j_ratio": 10.9386,
+    "w5_prop1_compiled_vs_stuck_vin_measured_j_ratio": 11.074,
+    "w5_single_crystallize_cpu_measured_uj": 178.601,
+    "w5_single_wake_episode_cpu_measured_uj": 1735.029,
+    "w5_empirical_break_even_episodes_delta_t_star": 0.1084
+  },
+  "host_summaries": [
+    {
+      "host_label": "NVIDIA_Jetson_AGX_Thor_Tegra_aarch64",
+      "os": "linux",
+      "arch": "aarch64",
+      "board_metered": true,
+      "primary_energy_tier": "measured_j:TI_INA3221_VDD_CPU_SOC_MSS",
+      "event_primitive": "linux_eventfd",
+      "w2_sub1bit_speedup_x": 3.798,
+      "w2_sub1bit_energy_reduction_x": 3.736,
+      "w3_airmol_speedup_x": 33.543,
+      "w3_airmol_energy_reduction_x": 34.209,
+      "w4b_wakeup_reduction_x": 759.49,
+      "w4b_daemon_energy_reduction_x": 1.01,
+      "w5_prop1_speedup_x": 11.19,
+      "w5_prop1_energy_reduction_x": 10.939
+    },
+    {
+      "host_label": "AMD_Ryzen_AI_Max_395_Linux_x86_64",
+      "os": "linux",
+      "arch": "x86_64",
+      "board_metered": false,
+      "primary_energy_tier": "reported_j:Linux_RAPL_pkg",
+      "event_primitive": "linux_eventfd",
+      "w2_sub1bit_speedup_x": 6.778,
+      "w2_sub1bit_energy_reduction_x": 6.754,
+      "w3_airmol_speedup_x": 34.377,
+      "w3_airmol_energy_reduction_x": 31.051,
+      "w4b_wakeup_reduction_x": 762.39,
+      "w4b_daemon_energy_reduction_x": 1.223,
+      "w5_prop1_speedup_x": 11.319,
+      "w5_prop1_energy_reduction_x": 10.878
+    },
+    {
+      "host_label": "Intel_Core_i9_13900H_Linux_x86_64",
+      "os": "linux",
+      "arch": "x86_64",
+      "board_metered": false,
+      "primary_energy_tier": "reported_j:Linux_RAPL_core",
+      "event_primitive": "linux_eventfd",
+      "w2_sub1bit_speedup_x": 4.09,
+      "w2_sub1bit_energy_reduction_x": 3.842,
+      "w3_airmol_speedup_x": 34.762,
+      "w3_airmol_energy_reduction_x": 33.568,
+      "w4b_wakeup_reduction_x": 756.7,
+      "w4b_daemon_energy_reduction_x": 18.788,
+      "w5_prop1_speedup_x": 11.263,
+      "w5_prop1_energy_reduction_x": 11.498
+    },
+    {
+      "host_label": "Apple_M3_Ultra_macOS_arm64",
+      "os": "macos",
+      "arch": "aarch64",
+      "board_metered": false,
+      "primary_energy_tier": "reported_j:Darwin_L3_ri_energy_nj",
+      "event_primitive": "darwin_pipe_block",
+      "w2_sub1bit_speedup_x": 5.234,
+      "w2_sub1bit_energy_reduction_x": 2.697,
+      "w3_airmol_speedup_x": 34.607,
+      "w3_airmol_energy_reduction_x": 35.219,
+      "w4b_wakeup_reduction_x": 590.42,
+      "w4b_daemon_energy_reduction_x": 194.842,
+      "w5_prop1_speedup_x": 11.227,
+      "w5_prop1_energy_reduction_x": 13.052
+    },
+    {
+      "host_label": "Apple_M5_Max_macOS_arm64",
+      "os": "macos",
+      "arch": "aarch64",
+      "board_metered": false,
+      "primary_energy_tier": "reported_j:Darwin_L3_ri_energy_nj",
+      "event_primitive": "darwin_pipe_block",
+      "w2_sub1bit_speedup_x": 5.416,
+      "w2_sub1bit_energy_reduction_x": 3.408,
+      "w3_airmol_speedup_x": 35.415,
+      "w3_airmol_energy_reduction_x": 36.767,
+      "w4b_wakeup_reduction_x": 658.14,
+      "w4b_daemon_energy_reduction_x": 110.435,
+      "w5_prop1_speedup_x": 10.621,
+      "w5_prop1_energy_reduction_x": 11.126
+    },
+    {
+      "host_label": "Windows_11_RTX_2060_x86_64",
+      "os": "windows",
+      "arch": "x86_64",
+      "board_metered": false,
+      "primary_energy_tier": "cycles_only:Win32_QueryProcessCycleTime",
+      "event_primitive": "win32_event_wait",
+      "w2_sub1bit_speedup_x": 5.922,
+      "w2_sub1bit_energy_reduction_x": null,
+      "w3_airmol_speedup_x": 34.388,
+      "w3_airmol_energy_reduction_x": null,
+      "w4b_wakeup_reduction_x": 529.77,
+      "w4b_daemon_energy_reduction_x": null,
+      "w5_prop1_speedup_x": 12.645,
+      "w5_prop1_energy_reduction_x": null
+    }
+  ]
+}

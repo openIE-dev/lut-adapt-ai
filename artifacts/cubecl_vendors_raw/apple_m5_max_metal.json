@@ -1,0 +1,31 @@
+{
+  "hardware_label": "Apple_M5_Max_40Core_Metal",
+  "os": "macos",
+  "arch": "aarch64",
+  "gpu_backend": "CubeCL_Metal_GPU",
+  "gpu_iters": 120,
+  "board_metered": false,
+  "measured_j": null,
+  "q4_moe_gate_up_silu_down": {
+    "host_ref_ms": 27.5125,
+    "cubecl_cpu_ms": 8.8362,
+    "cubecl_cpu_speedup": 3.1136,
+    "cubecl_cpu_max_err": 0.00000015,
+    "cubecl_cpu_energy": {"nvml_gpu_reported_mj_per_dispatch":null,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":null,"darwin_l3_cpu_reported_mj_per_dispatch":271.897036},
+    "cubecl_gpu_ms": 0.6600,
+    "cubecl_gpu_speedup": 41.6885,
+    "cubecl_gpu_max_err": 0.00000018,
+    "cubecl_gpu_energy": {"nvml_gpu_reported_mj_per_dispatch":null,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":null,"darwin_l3_cpu_reported_mj_per_dispatch":1.304892}
+  },
+  "gated_delta_recurrent_k128": {
+    "host_ref_ms": 170.3530,
+    "cubecl_cpu_ms": 10.8157,
+    "cubecl_cpu_speedup": 15.7505,
+    "cubecl_cpu_max_err": 0.00000001,
+    "cubecl_cpu_energy": {"nvml_gpu_reported_mj_per_dispatch":null,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":null,"darwin_l3_cpu_reported_mj_per_dispatch":372.133684},
+    "cubecl_gpu_ms": 3.7242,
+    "cubecl_gpu_speedup": 45.7426,
+    "cubecl_gpu_max_err": 0.00000002,
+    "cubecl_gpu_energy": {"nvml_gpu_reported_mj_per_dispatch":null,"amdgpu_ppt_reported_mj_per_dispatch":null,"rapl_pkg_reported_mj_per_dispatch":null,"darwin_l3_cpu_reported_mj_per_dispatch":2.513327}
+  }
+}
