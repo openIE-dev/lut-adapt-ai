@@ -77,6 +77,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("TernaryTmac", "LutAdapt.TernaryTmac.three_tier_lut6_tmac_cascade_iff", "Section 4.30", "Two-tier LUT6 + T-MAC tail cascade amortization iff"),
     ("TernaryTmac", "LutAdapt.TernaryTmac.parseval_three_band_conservation", "Section 4.30", "3-band Walsh Parseval conservation under wobble vanishing"),
     ("TernaryTmac", "LutAdapt.TernaryTmac.const_proof_vector_gate_soundness", "Section 4.30", "Compile-time rustc const proof-vector gate soundness"),
+    ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.tmac_mirror_code_involution", "Section 4.33", "Base-3 4-trit reflection 80 - pack4Trits involution"),
+    ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.tmac_midpoint_40_is_zero", "Section 4.33", "Midpoint code 40 = (0,0,0,0) zero-entry invariant"),
+    ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.tmac_antisym_40_matches_full_81", "Section 4.33", "ISCA 2025 LUT Tensor Core 40-entry antisymmetric parity"),
+    ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.lut6_single_bitflip_locality_bound", "Section 4.34", "TMLR 2026 SEU single bit-flip 63/64 minterm locality"),
+    ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.secded_distance4_single_correct_double_detect", "Section 4.34", "RAMB36 (72,64) SECDED distance-4 0 silent miscorrection"),
+    ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.lupanov_k8_shared_decoder_saves_gates", "Section 4.35", "Lupanov shared-cofactor k=8 -> LUT6 gate reduction iff"),
+    ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.treelut_arbitrary_tree_6preds_fits_single_lut6", "Section 4.35", "TreeLUT arbitrary 6-predicate GBDT collapses to 1 LUT6"),
+    ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.kan_lut6_quantized_spline_exact", "Section 4.35", "KAN-LUT quantized B-spline bit-plane zero-FLOP exactness"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);
@@ -218,16 +226,13 @@ def main() -> None:
         audit_path.unlink(missing_ok=True)
 
     axiom_map: dict[str, list[str]] = {}
-    for line in ax_proc.stdout.splitlines():
-        m_none = re.match(r"^'([^']+)' does not depend on any axioms$", line.strip())
-        m_some = re.match(r"^'([^']+)' depends on axioms: \[([^\]]*)\]$", line.strip())
-        if m_none:
-            axiom_map[m_none.group(1)] = []
-        elif m_some:
-            axs = [a.strip() for a in m_some.group(2).split(",") if a.strip()]
-            for a in axs:
-                assert a in ALLOWED_LUTADAPT_THEOREM_AXIOMS, f"Disallowed axiom `{a}` in {m_some.group(1)}!"
-            axiom_map[m_some.group(1)] = axs
+    for m_none in re.finditer(r"'([^']+)'\s+does not depend on any axioms", ax_proc.stdout):
+        axiom_map[m_none.group(1).strip()] = []
+    for m_some in re.finditer(r"'([^']+)'\s+depends on axioms:\s*\[([^\]]*)\]", ax_proc.stdout, flags=re.DOTALL):
+        axs = [a.strip() for a in m_some.group(2).replace("\n", " ").split(",") if a.strip()]
+        for a in axs:
+            assert a in ALLOWED_LUTADAPT_THEOREM_AXIOMS, f"Disallowed axiom `{a}` in {m_some.group(1)}!"
+        axiom_map[m_some.group(1).strip()] = axs
 
     assert len(axiom_map) == len(THEOREM_CATALOG), f"Expected {len(THEOREM_CATALOG)} audited theorems, got {len(axiom_map)}"
 

@@ -243,6 +243,141 @@ pub const fn eval_tmac_from_pad(
     (payload_bits, votes, accs)
 }
 
+/// Builds the antisymmetric `41`-entry `LUT Tensor Core` (ISCA 2025) half-table for 4 inputs
+/// `(x0..x3)` using **ONLY integer additions and subtractions** (`0` multiplications, `0` FLOPs,
+/// `2.025×` fewer non-zero entries than the full 81-entry `T-MAC` table).
+///
+/// Because `pack_4trits(-w0, -w1, -w2, -w3) == 80 - pack_4trits(w0, w1, w2, w3)`, every ternary
+/// 4-group lookup satisfies strict odd symmetry around midpoint `40`:
+///   - `code < 40`  -> `lut41[code]`
+///   - `code == 40` -> `lut41[40] == 0`
+///   - `code > 40`  -> `-lut41[80 - code]`
+#[inline(always)]
+pub const fn build_tmac_antisym_lut41(x0: i8, x1: i8, x2: i8, x3: i8) -> [i16; 41] {
+    let v0 = [-(x0 as i16), 0, x0 as i16];
+    let v1 = [-(x1 as i16), 0, x1 as i16];
+    let v2 = [-(x2 as i16), 0, x2 as i16];
+    let sx3 = -(x3 as i16); // u3 = 0 (`codes 0..26`) and u3 = 1 (`codes 27..39`, where v3[1] = 0)
+
+    let mut lut = [0i16; 41];
+    let mut idx = 0usize;
+    // u3 = 0 -> codes 0..26 (all 9 (u2, u1) pairs x 3 u0 values)
+    let mut u2 = 0usize;
+    while u2 < 3 {
+        let s2 = sx3 + v2[u2];
+        let mut u1 = 0usize;
+        while u1 < 3 {
+            let s1 = s2 + v1[u1];
+            lut[idx] = s1 + v0[0];
+            lut[idx + 1] = s1 + v0[1];
+            lut[idx + 2] = s1 + v0[2];
+            idx += 3;
+            u1 += 1;
+        }
+        u2 += 1;
+    }
+    // u3 = 1 (`v3 = 0`), u2 = 0 -> codes 27..35
+    let s2_u20 = v2[0];
+    let mut u1 = 0usize;
+    while u1 < 3 {
+        let s1 = s2_u20 + v1[u1];
+        lut[idx] = s1 + v0[0];
+        lut[idx + 1] = s1 + v0[1];
+        lut[idx + 2] = s1 + v0[2];
+        idx += 3;
+        u1 += 1;
+    }
+    // u3 = 1 (`v3 = 0`), u2 = 1 (`v2 = 0`):
+    //   u1 = 0 -> codes 36..38
+    let s1_36 = v1[0];
+    lut[36] = s1_36 + v0[0];
+    lut[37] = s1_36 + v0[1];
+    lut[38] = s1_36 + v0[2];
+    //   u1 = 1 (`v1 = 0`), u0 = 0 -> code 39; u0 = 1 -> code 40 (`0`)
+    lut[39] = v0[0];
+    lut[40] = 0;
+    lut
+}
+
+/// Branchless odd-symmetric lookup (`ARM64 csneg` / `x86 cmov`) over `build_tmac_antisym_lut41`.
+#[inline(always)]
+pub const fn lookup_tmac_antisym41(lut41: &[i16; 41], code: u8) -> i32 {
+    let mirrored = if code > 40 {
+        (80 - code) as usize
+    } else {
+        code as usize
+    };
+    let v = lut41[mirrored] as i32;
+    if code > 40 { -v } else { v }
+}
+
+/// Evaluates the `672`-byte `T-MAC` ternary tail using **Antisymmetric 40-Entry Table
+/// Symmetrization** (`LUT Tensor Core`, ISCA 2025): cuts MCU stack SRAM from `2,592 B` to
+/// `1,312 B` (`49.4%` reduction) and halves table-precomputation additions while preserving
+/// `100%` bit-exact equivalence with `eval_tmac_from_pad` on existing `.lut6` crystals.
+#[inline]
+pub const fn eval_tmac_antisym_from_pad(
+    pad: &[u8; TMAC_PAD_BYTES],
+    features: &[i8; TMAC_IN_DIM],
+) -> (u64, u16, [i16; TMAC_OUT_CHANNELS]) {
+    if !has_valid_tmac_header(pad) {
+        return (0, 0, [0i16; TMAC_OUT_CHANNELS]);
+    }
+    let margin_thresh = i16::from_le_bytes([pad[6], pad[7]]);
+
+    let mut group_luts = [[0i16; 41]; TMAC_IN_GROUPS];
+    let mut g = 0usize;
+    while g < TMAC_IN_GROUPS {
+        let c0 = g << 2;
+        group_luts[g] = build_tmac_antisym_lut41(
+            features[c0],
+            features[c0 + 1],
+            features[c0 + 2],
+            features[c0 + 3],
+        );
+        g += 1;
+    }
+
+    let mut accs = [0i16; TMAC_OUT_CHANNELS];
+    let mut payload_bits = 0u64;
+    let mut votes = 0u16;
+
+    let mut r = 0usize;
+    while r < TMAC_OUT_CHANNELS {
+        let bias = i16::from_le_bytes([pad[472 + (r << 1)], pad[472 + (r << 1) + 1]]);
+        let mut sum = bias as i32;
+        let row_off = 216 + (r << 4);
+
+        let mut grp = 0usize;
+        while grp < TMAC_IN_GROUPS {
+            sum += lookup_tmac_antisym41(&group_luts[grp], pad[row_off + grp])
+                + lookup_tmac_antisym41(&group_luts[grp + 1], pad[row_off + grp + 1])
+                + lookup_tmac_antisym41(&group_luts[grp + 2], pad[row_off + grp + 2])
+                + lookup_tmac_antisym41(&group_luts[grp + 3], pad[row_off + grp + 3]);
+            grp += 4;
+        }
+        let clamped = if sum > (i16::MAX as i32) {
+            i16::MAX
+        } else if sum < (i16::MIN as i32) {
+            i16::MIN
+        } else {
+            sum as i16
+        };
+        accs[r] = clamped;
+
+        if r < 8 {
+            if clamped > 0 {
+                payload_bits |= 1u64 << r;
+            }
+        } else if clamped >= margin_thresh {
+            votes += 1;
+        }
+        r += 1;
+    }
+
+    (payload_bits, votes, accs)
+}
+
 /// Converts a 64-bit canonical wire state into bipolar `±16` `i8` activations when raw continuous
 /// ADC/embedding features are not supplied separately.
 #[inline(always)]
@@ -258,15 +393,22 @@ pub const fn wire_state_to_bipolar_i8(state: u64) -> [i8; TMAC_IN_DIM] {
     out
 }
 
-// Compile-time formal check of EntroMCU 5-trit bijection & T-MAC zero-MUL equivalence:
+// Compile-time formal check of EntroMCU 5-trit bijection, T-MAC zero-MUL equivalence,
+// and exhaustive 81/81 Antisymmetric 40-Entry Table Symmetrization parity:
 const _: () = {
     let b = pack_5trits(-1, 0, 1, -1, 1);
     assert!(b < 243);
     let u = unpack_5trits(b);
     assert!(u[0] == -1 && u[1] == 0 && u[2] == 1 && u[3] == -1 && u[4] == 1);
 
-    let lut = build_tmac_group_lut(17, -23, 41, -9);
+    let lut81 = build_tmac_group_lut(17, -23, 41, -9);
+    let lut41 = build_tmac_antisym_lut41(17, -23, 41, -9);
     let code = pack_4trits(1, -1, 1, -1) as usize;
-    // Expected: (+1)*17 + (-1)*(-23) + (+1)*41 + (-1)*(-9) = 17 + 23 + 41 + 9 = 90
-    assert!(lut[code] == 90);
+    assert!(lut81[code] == 90);
+
+    let mut c = 0usize;
+    while c < 81 {
+        assert!(lookup_tmac_antisym41(&lut41, c as u8) == (lut81[c] as i32));
+        c += 1;
+    }
 };

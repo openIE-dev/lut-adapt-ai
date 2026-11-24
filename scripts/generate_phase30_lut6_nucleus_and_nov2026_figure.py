@@ -77,7 +77,7 @@ def main() -> None:
 
     # Header
     p.append(f'  <text x="34" y="36" fill="#f8fafc" font-family="{FONT_SANS}" font-size="19.2" font-weight="700">4 KB LUT6 + Zero-MUL T-MAC Nucleus, Wobble Harmonics, DiffLUT-Net &amp; Nov 2026 Looped Models</text>')
-    p.append(f'  <text x="34" y="56" fill="#94a3b8" font-family="{FONT_MONO}" font-size="10.4">Claims LA-19 (42 Thms), LA-26..LA-31  |  Rust 1.100.0 #![no_std] lut6-core  |  Thor Shunt measured_j != Host reported_j != Bare-Metal Cycles</text>')
+    p.append(f'  <text x="34" y="56" fill="#94a3b8" font-family="{FONT_MONO}" font-size="10.4">Claims LA-19 (50 Thms), LA-26..LA-33  |  Rust 1.100.0 #![no_std] lut6-core  |  Thor Shunt measured_j != Host reported_j != Bare-Metal Cycles</text>')
 
     # =========================================================================
     # PANEL A (Top-Left): Thor Physical Shunt + Live Alif E3 Cortex-M55 Cycles
@@ -91,7 +91,7 @@ def main() -> None:
 
     thor_bars = [
         ("INT8 Micro-MLP (64->32->16)", thor_s["int8_mlp_measured_nj"], "g-rose", "#fda4af"),
-        ("Zero-MUL T-MAC Tail (672B)", thor_s["zero_mul_tmac_tail_measured_nj"], "g-amber", "#fde68a"),
+        ("Antisym-40 T-MAC Tail (0 MUL)", thor_s["antisym40_tmac_tail_measured_nj"], "g-amber", "#fde68a"),
         ("Nucleus Wobble Overlay Hit", thor_s["wobble_hit_measured_nj"], "g-indigo", "#93c5fd"),
         ("Nucleus Innate Rung-6 Hit", thor_s["innate_hit_measured_nj"], "g-emerald", "#6ee7b7"),
         ("Vertical Bit-Sliced Batch-64", thor_s["bitsliced_batch64_measured_nj"], "g-emerald", "#34d399"),
@@ -142,7 +142,7 @@ def main() -> None:
     p.append(f'  <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="1.4"/>')
     p.append(f'  <rect x="{bx+14}" y="{by+12}" width="146" height="21" rx="10.5" fill="#0c4a6e" stroke="#38bdf8"/>')
     p.append(f'  <text x="{bx+87}" y="{by+26}" text-anchor="middle" fill="#7dd3fc" font-family="{FONT_MONO}" font-size="9.6" font-weight="700">6/6 Lean Kernels</text>')
-    p.append(f'  <text x="{bx+170}" y="{by+27}" fill="#f8fafc" font-family="{FONT_SANS}" font-size="14" font-weight="700">B. Two-Tier LUT6+T-MAC, Wobble FWHT &amp; 42-Thm Proof</text>')
+    p.append(f'  <text x="{bx+170}" y="{by+27}" fill="#f8fafc" font-family="{FONT_SANS}" font-size="14" font-weight="700">B. Two-Tier LUT6+T-MAC, Wobble FWHT &amp; 50-Thm Proof</text>')
     p.append(f'  <text x="{bx+14}" y="{by+47}" fill="#94a3b8" font-family="{FONT_MONO}" font-size="9.3">Parseval sum_S f_hat(S)^2 = 4096  |  con-leche &amp; con-ron --verified ({lean["con_leche_verified_declarations"]} decls)</text>')
 
     p.append(f'  <text x="{bx+14}" y="{by+69}" fill="#cbd5e1" font-family="{FONT_SANS}" font-size="11.2" font-weight="600">1. Boolean Fourier High-Harmonic Noise (|S| &gt;= 5 out of 4,096):</text>')
@@ -174,11 +174,11 @@ def main() -> None:
         p.append(f'  <text x="{cx+86}" y="{cy+54}" text-anchor="middle" fill="#94a3b8" font-family="{FONT_MONO}" font-size="7.6">{t3}</text>')
 
     p.append(f'  <text x="{bx+14}" y="{by+284}" fill="#cbd5e1" font-family="{FONT_MONO}" font-size="8.8">Yosys Miter: 64/64 PASS + 672B T-MAC Tail (1.60 bpw, 0 MULs, rustc const gate)</text>')
-    p.append(f'  <text x="{bx+14}" y="{by+302}" fill="#93c5fd" font-family="{FONT_MONO}" font-size="8.8">Lean 4.36.0: Cascade(7)+Benes(7)+Minterm(7)+Conformal(6)+Nucleus(9)+TernaryTmac(6)</text>')
+    p.append(f'  <text x="{bx+14}" y="{by+302}" fill="#93c5fd" font-family="{FONT_MONO}" font-size="8.4">Lean 4.36.0: Cascade(7)+Benes(7)+Minterm(7)+Conformal(6)+Nucleus(9)+Tmac(6)+Global(8)</text>')
     p.append(f'  <rect x="{bx+14}" y="{by+bh-36}" width="{bw-28}" height="24" rx="6" fill="#0b1d33" stroke="#0284c7" stroke-opacity="0.55"/>')
     p.append(
         f'  <text x="{bx+bw/2:.0f}" y="{by+bh-20}" text-anchor="middle" fill="#bae6fd" font-family="{FONT_MONO}" font-size="8.2">'
-        f'{lean["total_kernel_checked_theorems"]}/42 Theorems Verified Across 6 Kernels (Darwin + Linux bwrap)  |  0 sorryAx  |  0 ofReduceBool'
+        f'{lean["total_kernel_checked_theorems"]}/50 Theorems Verified Across 6 Kernels (Darwin + Linux bwrap)  |  0 sorryAx  |  0 ofReduceBool'
         f"</text>"
     )
 

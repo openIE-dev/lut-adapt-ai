@@ -1,0 +1,22 @@
+{
+  "charon_release": "AeneasVerif/charon nightly-2026.11.23 (x86_64-unknown-linux-gnu)",
+  "aeneas_release": "AeneasVerif/aeneas nightly-2026.11.23-2e3d448 (x86_64-unknown-linux-gnu)",
+  "source_crate": "#![no_std] lut6_verify (6 core lut6-core Rust functions)",
+  "llbc_bytes": 252201,
+  "llbc_sha256": "79bf1a1585e3af0b2cb976d391ba58f05a9e7243efa545e2a850eb5aa694a13f",
+  "emitted_lean_artifact": "artifacts/Lut6Verify_Aeneas.lean",
+  "emitted_lean_bytes": 3685,
+  "emitted_lean_sha256": "30ac9efaaef1bc8b75d932d112f73266b20acd71b1c68cafb4df6eaa240195cf",
+  "extracted_rust_functions": [
+    "pack_5trits_u8",
+    "unpack_5trits_u8",
+    "pack_4trits_and_mirror",
+    "surgical_overlay_mux",
+    "eval_lut6_single",
+    "is_wobble_invariant_u64"
+  ],
+  "aeneas_lean_kernel_typechecked": true,
+  "aeneas_lean_toolchain": "Lean (version 4.36.0, x86_64-unknown-linux-gnu, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)",
+  "board_metered": false,
+  "measured_j": null
+}

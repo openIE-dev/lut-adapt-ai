@@ -11,7 +11,16 @@ compile_error!("lut6-core requires a little-endian target matching canonical .lu
 pub mod bootstrap;
 pub mod generated_proof_vectors;
 pub mod ratchet_demo;
+pub mod seu_resilience;
 pub mod tmac_tail;
+#[cfg(target_arch = "wasm32")]
+pub mod wasm_api;
+
+#[cfg(all(target_arch = "wasm32", not(test), not(feature = "std")))]
+#[panic_handler]
+fn wasm_panic_handler(_info: &core::panic::PanicInfo) -> ! {
+    core::arch::wasm32::unreachable()
+}
 
 pub const MAX_WIRES: usize = 64;
 pub const MAX_GATES: usize = 256;
@@ -556,7 +565,7 @@ impl CompactLut6Page {
             } => {
                 if (self.flags & FLAG_HAS_TMAC_TAIL) != 0 {
                     let (tmac_payload, tmac_votes, _) =
-                        tmac_tail::eval_tmac_from_pad(&self._pad, signed_features);
+                        tmac_tail::eval_tmac_antisym_from_pad(&self._pad, signed_features);
                     if tmac_votes >= self.conformal_thresh {
                         ledger.escalations = ledger.escalations.wrapping_sub(1);
                         ledger.hits = ledger.hits.wrapping_add(1);

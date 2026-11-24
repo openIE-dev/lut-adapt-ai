@@ -1,0 +1,120 @@
+                                                $auto$xilinx_dffopt.cc:347:execute$10062      1 0.5ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9950      1 0.5ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10004      1 0.5ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9970      1 0.5ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9958      1 0.5ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10048      1 0.5ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9954      1 0.5ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9972      1 0.5ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10050      1 0.5ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9974      1 0.4ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10028      1 0.4ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10056      1 0.4ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10038      1 0.4ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9956      1 0.4ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9982      1 0.4ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9948      1 0.4ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10008      1 0.4ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9952      1 0.4ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10046      1 0.4ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9992      1 0.4ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10030      1 0.4ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10034      1 0.4ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10044      1 0.4ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9990      1 0.3ms
+                                                                     $abc$9772$aiger$o63     79 0.2ms
+                                                $auto$xilinx_dffopt.cc:347:execute$10012      1 0.0ms
+                                                 $auto$xilinx_dffopt.cc:347:execute$9968      1 0.0ms
+                                                                         operon_codon[4]      1 0.0ms
+                                                                               out_valid      1 0.0ms
+                                                                         operon_codon[0]      1 0.0ms
+                                                                         operon_codon[5]      1 0.0ms
+                                                                         operon_codon[1]      1 0.0ms
+                                                                 secded_double_apoptosis      1 0.0ms
+                                                                $iopadmap$stream_byte[7]      0 0.0ms
+                                                                $iopadmap$stream_byte[3]      0 0.0ms
+                                                                         operon_codon[3]      1 0.0ms
+                                                                         operon_codon[2]      1 0.0ms
+                                                                     secded_single_fixed      1 0.0ms
+                                                                          stream_byte[7]      2 0.0ms
+                                                                $iopadmap$stream_byte[6]      0 0.0ms
+                                                                          stream_byte[6]      2 0.0ms
+                                                                $iopadmap$stream_byte[5]      0 0.0ms
+                                                                          stream_byte[5]      2 0.0ms
+                                                                $iopadmap$stream_byte[4]      0 0.0ms
+                                                                          stream_byte[4]      2 0.0ms
+                                                                          stream_byte[3]      2 0.0ms
+                                                                $iopadmap$stream_byte[2]      0 0.0ms
+                                                                          stream_byte[2]      2 0.0ms
+                                                                $iopadmap$stream_byte[1]      0 0.0ms
+                                                                          stream_byte[1]      2 0.0ms
+                                                                $iopadmap$stream_byte[0]      0 0.0ms
+                                                                          stream_byte[0]      2 0.0ms
+                                                                       ecc_inject_pos[5]      2 0.0ms
+                                                                       ecc_inject_pos[4]      2 0.0ms
+                                                                       ecc_inject_pos[3]      2 0.0ms
+                                                                       ecc_inject_pos[2]      2 0.0ms
+                                                                       ecc_inject_pos[1]      2 0.0ms
+                                                                       ecc_inject_pos[0]      2 0.0ms
+                                                                                   rst_n      2 0.0ms
+                                                                                in_valid      2 0.0ms
+                                                                                     clk      2 0.0ms
+Info: Router2 time 7.39s
+Info: Running router1 to check that route is legal...
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 0 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:          0 |        0          0 |    0     0 |         0|       0.01       0.01|
+Info: Routing complete.
+Info: Router1 time 0.01s
+Info: Checksum: 0x548f8275
+
+Info: Critical path report for clock '$abc$9772$aiger$o63' (posedge -> posedge):
+Info: curr total
+Info:  0.1  0.1  Source $auto$ff.cc:337:slice$2324.Q
+Info:  0.6  0.7    Net ramb36_word_s2[11] budget 0.645000 ns (14,99) -> (14,98)
+Info:                Sink $abc$9772$lut$aiger9771$122.A1
+Info:  0.1  0.8  Source $abc$9772$lut$aiger9771$122.O5
+Info:  0.5  1.3    Net $techmap9800$abc$9772$lut$aiger9771$128.A[2] budget 0.257000 ns (14,98) -> (14,98)
+Info:                Sink $abc$9772$lut$aiger9771$128.A3
+Info:  0.1  1.5  Source $abc$9772$lut$aiger9771$128.O6
+Info:  0.6  2.1    Net $techmap9805$abc$9772$lut$aiger9771$167.A[2] budget 0.656000 ns (14,98) -> (13,97)
+Info:                Sink $abc$9772$lut$aiger9771$648.A5
+Info:  0.1  2.2  Source $abc$9772$lut$aiger9771$648.O6
+Info:  0.6  2.9    Net $techmap9828$auto$abc_ops_reintegrate.cc:611:reintegrate$9773.A[5] budget 0.407000 ns (13,97) -> (13,97)
+Info:                Sink $auto$abc_ops_reintegrate.cc:611:reintegrate$9773.A6
+Info:  0.1  3.0  Source $auto$abc_ops_reintegrate.cc:611:reintegrate$9773.O6
+Info:  0.0  3.0    Net syn_comb[3] budget 0.256000 ns (13,97) -> (13,97)
+Info:                Sink $auto$ff.cc:337:slice$2302.D
+Info:  0.1  3.1  Setup $auto$ff.cc:337:slice$2302.D
+Info: 0.7 ns logic, 2.4 ns routing
+
+Info: Max frequency for clock '$abc$9772$aiger$o63': 320.62 MHz (PASS at 250.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 1 endpoint(s)
+Info:          + represents [1,1) endpoint(s)
+Info: [   881,   1004) |** 
+Info: [  1004,   1127) |** 
+Info: [  1127,   1250) |* 
+Info: [  1250,   1373) | 
+Info: [  1373,   1496) | 
+Info: [  1496,   1619) |* 
+Info: [  1619,   1742) |* 
+Info: [  1742,   1865) | 
+Info: [  1865,   1988) |***** 
+Info: [  1988,   2111) |**** 
+Info: [  2111,   2234) |*** 
+Info: [  2234,   2357) |*** 
+Info: [  2357,   2480) |*** 
+Info: [  2480,   2603) |*** 
+Info: [  2603,   2726) |************ 
+Info: [  2726,   2849) |*** 
+Info: [  2849,   2972) |**************** 
+Info: [  2972,   3095) |******************* 
+Info: [  3095,   3218) |******* 
+Info: [  3218,   3341) |**** 
+Info: Running post-routing legalisation...

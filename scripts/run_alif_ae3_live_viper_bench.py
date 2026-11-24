@@ -148,6 +148,123 @@ def bench_zero_mul_tmac_1k(codes: ptr32, luts: ptr32, bias: ptr32) -> int:
         it += 1
     return acc_all
 
+# 3b. Phase 33 Antisymmetric 40-Entry `LUT Tensor Core` (ISCA '25) Table Build + Eval (`200` full passes)
+l81_scratch = array.array('i', [0] * (16 * 81))
+l41_scratch = array.array('i', [0] * (16 * 41))
+act64 = array.array('i', [((j * 7 + 5) & 31) - 16 for j in range(64)])
+
+@micropython.viper
+def bench_full81_precomp_eval_200(codes: ptr32, luts: ptr32, bias: ptr32, x: ptr32) -> int:
+    acc_all: int = 0
+    it: int = 0
+    while it < 200:
+        # Step 1: Build all 16 x 81 group LUTs (`1,296` entries)
+        g: int = 0
+        while g < 16:
+            c0: int = g << 2
+            x0: int = x[c0]; x1: int = x[c0 + 1]; x2: int = x[c0 + 2]; x3: int = x[c0 + 3]
+            base: int = g * 81
+            idx: int = 0
+            u3: int = -1
+            while u3 <= 1:
+                s3: int = u3 * x3
+                u2: int = -1
+                while u2 <= 1:
+                    s2: int = s3 + u2 * x2
+                    u1: int = -1
+                    while u1 <= 1:
+                        s1: int = s2 + u1 * x1
+                        luts[base + idx] = s1 - x0
+                        luts[base + idx + 1] = s1
+                        luts[base + idx + 2] = s1 + x0
+                        idx += 3
+                        u1 += 1
+                    u2 += 1
+                u3 += 1
+            g += 1
+        # Step 2: Gather across 16 channels
+        out_bits: int = 0
+        r: int = 0
+        while r < 16:
+            s: int = bias[r]
+            row_off: int = r << 4
+            grp: int = 0
+            lut_off: int = 0
+            while grp < 16:
+                s += luts[lut_off + codes[row_off + grp]]
+                grp += 1
+                lut_off += 81
+            if s > 0:
+                out_bits |= 1 << r
+            r += 1
+        acc_all ^= out_bits
+        it += 1
+    return acc_all
+
+@micropython.viper
+def bench_antisym40_precomp_eval_200(codes: ptr32, luts41: ptr32, bias: ptr32, x: ptr32) -> int:
+    acc_all: int = 0
+    it: int = 0
+    while it < 200:
+        # Step 1: Build ONLY 16 x 40 antisymmetric entries (`640` entries = `2.025x` fewer!)
+        g: int = 0
+        while g < 16:
+            c0: int = g << 2
+            x0: int = x[c0]; x1: int = x[c0 + 1]; x2: int = x[c0 + 2]; x3: int = x[c0 + 3]
+            base: int = g * 41
+            idx: int = 0
+            # u3 = -1 -> 27 entries
+            u2: int = -1
+            while u2 <= 1:
+                s2: int = -x3 + u2 * x2
+                u1: int = -1
+                while u1 <= 1:
+                    s1: int = s2 + u1 * x1
+                    luts41[base + idx] = s1 - x0
+                    luts41[base + idx + 1] = s1
+                    luts41[base + idx + 2] = s1 + x0
+                    idx += 3
+                    u1 += 1
+                u2 += 1
+            # u3 = 0, u2 = -1 -> 9 entries (`27..35`)
+            u1 = -1
+            while u1 <= 1:
+                s1b: int = -x2 + u1 * x1
+                luts41[base + idx] = s1b - x0
+                luts41[base + idx + 1] = s1b
+                luts41[base + idx + 2] = s1b + x0
+                idx += 3
+                u1 += 1
+            # u3 = 0, u2 = 0 -> 4 entries (`36..39`) + midpoint 40 = 0
+            luts41[base + 36] = -x1 - x0
+            luts41[base + 37] = -x1
+            luts41[base + 38] = -x1 + x0
+            luts41[base + 39] = -x0
+            luts41[base + 40] = 0
+            g += 1
+        # Step 2: Antisymmetric gather (`code > 40 -> -luts41[80 - code]`)
+        out_bits: int = 0
+        r: int = 0
+        while r < 16:
+            s: int = bias[r]
+            row_off: int = r << 4
+            grp: int = 0
+            lut_off: int = 0
+            while grp < 16:
+                cd: int = codes[row_off + grp]
+                if cd > 40:
+                    s -= luts41[lut_off + (80 - cd)]
+                else:
+                    s += luts41[lut_off + cd]
+                grp += 1
+                lut_off += 41
+            if s > 0:
+                out_bits |= 1 << r
+            r += 1
+        acc_all ^= out_bits
+        it += 1
+    return acc_all
+
 # 4. Baseline Full `64 -> 32 -> 16` INT8 Micro-MLP (`2,560` MACs per decision)
 w1_i8 = array.array('i', [((j * 17 + 3) & 0x7F) - 64 for j in range(2048)])
 w2_i8 = array.array('i', [((j * 13 + 7) & 0x7F) - 64 for j in range(512)])
@@ -218,19 +335,32 @@ t8 = time.ticks_us(); c8 = dwt_read()
 v5 = bench_int8_mlp_64_32_16_200(w1_i8, w2_i8, x64_i8, h32_i8)
 c9 = dwt_read(); t9 = time.ticks_us()
 
+t10 = time.ticks_us(); c10 = dwt_read()
+v6 = bench_full81_precomp_eval_200(tmac_codes, l81_scratch, tmac_bias, act64)
+c11 = dwt_read(); t11 = time.ticks_us()
+
+t12 = time.ticks_us(); c12 = dwt_read()
+v7 = bench_antisym40_precomp_eval_200(tmac_codes, l41_scratch, tmac_bias, act64)
+c13 = dwt_read(); t13 = time.ticks_us()
+
 import json
 print("AE3_JSON:" + json.dumps({
     "innate_1k_us": time.ticks_diff(t1, t0),
-    "innate_1k_cyc": (c1 - c0) & 0x7FFFFFFF,
+    "innate_1k_cyc": (c1 - c0) & 0x3FFFFFFF,
     "wobble_1k_us": time.ticks_diff(t3, t2),
-    "wobble_1k_cyc": (c3 - c2) & 0x7FFFFFFF,
+    "wobble_1k_cyc": (c3 - c2) & 0x3FFFFFFF,
     "bitsliced_32k_us": time.ticks_diff(t5, t4),
-    "bitsliced_32k_cyc": (c5 - c4) & 0x7FFFFFFF,
+    "bitsliced_32k_cyc": (c5 - c4) & 0x3FFFFFFF,
     "tmac_1k_us": time.ticks_diff(t7, t6),
-    "tmac_1k_cyc": (c7 - c6) & 0x7FFFFFFF,
+    "tmac_1k_cyc": (c7 - c6) & 0x3FFFFFFF,
     "int8_mlp_200_us": time.ticks_diff(t9, t8),
-    "int8_mlp_200_cyc": (c9 - c8) & 0x7FFFFFFF,
-    "checks": [v1, v2, v3, v4, v5],
+    "int8_mlp_200_cyc": (c9 - c8) & 0x3FFFFFFF,
+    "full81_precomp_200_us": time.ticks_diff(t11, t10),
+    "full81_precomp_200_cyc": (c11 - c10) & 0x3FFFFFFF,
+    "antisym40_precomp_200_us": time.ticks_diff(t13, t12),
+    "antisym40_precomp_200_cyc": (c13 - c12) & 0x3FFFFFFF,
+    "antisym_parity_ok": (v6 == v7),
+    "checks": [v1, v2, v3, v4, v5, v6, v7],
 }))
 """
 
@@ -320,6 +450,11 @@ def main() -> None:
     bits_us = round(m["bitsliced_32k_us"] / 32000.0, 5)
     tmac_cyc = round(m["tmac_1k_cyc"] / 1000.0, 2)
     tmac_us = round(m["tmac_1k_us"] / 1000.0, 4)
+    full81_p_cyc = round(m["full81_precomp_200_cyc"] / 200.0, 2)
+    full81_p_us = round(m["full81_precomp_200_us"] / 200.0, 3)
+    antisym40_p_cyc = round(m["antisym40_precomp_200_cyc"] / 200.0, 2)
+    antisym40_p_us = round(m["antisym40_precomp_200_us"] / 200.0, 3)
+    assert m.get("antisym_parity_ok") is True, f"Antisym-40 parity failed on OpenMV-AE3: {m}"
     mlp_cyc = round(m["int8_mlp_200_cyc"] / 200.0, 2)
     mlp_us = round(m["int8_mlp_200_us"] / 200.0, 3)
 
@@ -336,10 +471,16 @@ def main() -> None:
         "vertical_bitsliced_batch32_us_per_decision": bits_us,
         "zero_mul_tmac_tail_dwt_cycles_per_decision": tmac_cyc,
         "zero_mul_tmac_tail_us_per_decision": tmac_us,
+        "full81_tmac_precomp_dwt_cycles_per_decision": full81_p_cyc,
+        "full81_tmac_precomp_us_per_decision": full81_p_us,
+        "antisym40_tmac_precomp_dwt_cycles_per_decision": antisym40_p_cyc,
+        "antisym40_tmac_precomp_us_per_decision": antisym40_p_us,
+        "antisym40_speedup_over_full81_precomp": round(full81_p_cyc / antisym40_p_cyc, 2),
         "int8_micro_mlp_dwt_cycles_per_decision": mlp_cyc,
         "int8_micro_mlp_us_per_decision": mlp_us,
         "speedup_innate_vs_int8_mlp": round(mlp_cyc / innate_cyc, 2),
         "speedup_tmac_tail_vs_int8_mlp": round(mlp_cyc / tmac_cyc, 2),
+        "speedup_antisym40_precomp_vs_int8_mlp": round(mlp_cyc / antisym40_p_cyc, 2),
         "speedup_bitsliced_vs_int8_mlp": round(mlp_cyc / bits_cyc, 2),
         "board_metered": False,
         "measured_j": None,

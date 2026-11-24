@@ -23,7 +23,9 @@ use std::time::{Duration, Instant};
 use lut6_core::bootstrap::SEED_AGENCY;
 use lut6_core::generated_proof_vectors::{VERIFIED_TMAC_SKILL_ANCHORS, mol_skills_tmac_crystal};
 use lut6_core::ratchet_demo::{SEED_KNOWLEDGE, synthesize_wobble_patch};
-use lut6_core::tmac_tail::{eval_tmac_from_pad, wire_state_to_bipolar_i8};
+use lut6_core::tmac_tail::{
+    eval_tmac_antisym_from_pad, eval_tmac_from_pad, wire_state_to_bipolar_i8,
+};
 use lut6_core::{AgencyAction, CompactLut6Page, Nucleus, PageLedger};
 
 // ============================================================================
@@ -542,7 +544,34 @@ fn main() {
         },
     );
 
-    let windows = [w1, w2, w3, w4, w5, w6, w7, w8];
+    // Verify 100% bit-exact parity between 81-entry T-MAC and ISCA'25 Antisymmetric 40-entry T-MAC
+    for f in &pre_feats {
+        assert_eq!(
+            eval_tmac_from_pad(&skills_page._pad, f),
+            eval_tmac_antisym_from_pad(&skills_page._pad, f),
+            "Antisymmetric 40-entry T-MAC diverged from full 81-entry T-MAC!"
+        );
+    }
+
+    // Window 9: Antisymmetric 40-Entry `LUT Tensor Core` (ISCA 2025) Zero-MUL `T-MAC` Tail (`1,312 B` stack vs `2,592 B`)
+    let w9 = measure_window(
+        "Window9_Antisym40_ZeroMul_TMAC_Tail",
+        mlp_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut acc = 0u64;
+            for step in 0..mlp_iters {
+                let f = &pre_feats[(step & 3) as usize];
+                let (pay, votes, _) =
+                    eval_tmac_antisym_from_pad(black_box(&skills_page._pad), black_box(f));
+                acc ^= pay ^ (votes as u64);
+            }
+            black_box(acc);
+        },
+    );
+
+    let windows = [w1, w2, w3, w4, w5, w6, w7, w8, w9];
     let mut json_rows = Vec::new();
     for w in &windows {
         println!(

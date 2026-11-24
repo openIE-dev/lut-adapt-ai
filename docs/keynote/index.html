@@ -115,9 +115,10 @@
     const SLIDES = [
       "1 · 9-Rung Avalanche & Threshold",
       "2 · The Trinity Stack",
-      "3 · 6-Kernel Proof Assurance (42 Thms)",
-      "4 · 4 KB LUT6 + Zero-MUL T-MAC Nucleus",
-      "5 · Keynote Script & Translation Matrix"
+      "3 · 6-Kernel Proof Assurance (50 Thms)",
+      "4 · 4 KB LUT6 + Antisym-40 T-MAC Nucleus",
+      "5 · Global Frontiers: SEU, openXC7, Aeneas & WASM",
+      "6 · Keynote Script & Translation Matrix"
     ];
     let idx = 0;
 
@@ -198,8 +199,8 @@
           <section class="panel">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
               <div>
-                <h2>Six-Kernel Paranoid Proof Assurance (Claim LA-19 · CVE-2026-72844-Hardened)</h2>
-                <p class="sub">All 42 LutAdapt theorems (and 1,406 across the 4 OpenIE Lean suites) pass six independent checkers via lake check --paranoid, including set-theory-consistent con-leche and Aeneas-verified Rust con-ron.</p>
+                <h2>Six-Kernel Paranoid Proof Assurance (Claim LA-19 · 50 Theorems · CVE-2026-72844-Hardened)</h2>
+                <p class="sub">All 50 LutAdapt theorems (and 1,414 across the 4 OpenIE Lean suites) pass six independent checkers via lake check --paranoid, paired with Inria Charon + Aeneas mechanical #![no_std] Rust MIR to Lean 4.36.0 verification.</p>
               </div>
               <span class="pill">6 / 6 Independent Kernels Accept</span>
             </div>
@@ -213,13 +214,28 @@
           <section class="panel">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
               <div>
-                <h2>4 KB #![no_std] LUT6 + Zero-MUL T-MAC Nucleus, Wobble Harmonics &amp; Nov 2026 Looped Models</h2>
-                <p class="sub">Jetson AGX Thor physical DC shunt measured_j (84.65× bit-sliced CpJ, 1.33× Zero-MUL T-MAC CpJ), live Alif Ensemble E3 Cortex-M55 DWT cycles (172× scalar, 11.1× T-MAC, 47,080× bit-sliced), DiffLUT-Net -64.06% gate pruning, and Inkling-2-Mini / Dory1.0-4B.</p>
+                <h2>4 KB #![no_std] LUT6 + Antisym-40 T-MAC Nucleus, Wobble Harmonics &amp; Nov 2026 Looped Models</h2>
+                <p class="sub">Jetson AGX Thor physical DC shunt measured_j (87.00× bit-sliced CpJ, 1.65× Antisym-40 T-MAC CpJ), live Alif Ensemble E3 Cortex-M55 DWT cycles (173.8× scalar, 11.17× T-MAC, 44,404× bit-sliced), DiffLUT-Net -64.06% gate pruning, and Inkling-2-Mini / Dory1.0-4B.</p>
               </div>
-              <span class="pill">Claims LA-26..LA-31 · 0 Wasted Bytes</span>
+              <span class="pill">Claims LA-26..LA-33 · 0 Wasted Bytes</span>
             </div>
             <div class="fig-frame">
               <img src="lut6-nucleus-codon-and-means-test.svg" alt="4 KB LUT6 + Zero-MUL T-MAC Nucleus, Wobble Harmonics, DiffLUT-Net, and Nov 2026 Looped Models" />
+            </div>
+          </section>
+        `;
+      } else if (idx === 4) {
+        body.innerHTML = `
+          <section class="panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <div>
+                <h2>Global Multi-Frontier Advancement: Antisym-40, SEU SECDED, openXC7 320.62 MHz .bit, Aeneas &amp; 14.74 KB WASM</h2>
+                <p class="sub">Zen 5 1.12× CpJ flip, 100.0% survival &amp; 0.0% silent corruption at BER = 1% via (72,64) RAMB36 SECDED + 0x3C apoptosis, Lupanov -72.5% / TreeLUT / KAN-LUT, license-free openXC7 XC7A200T .bit closure, Inria Aeneas Rust-&gt;Lean, and 14.74 KB lut6_core.wasm.</p>
+              </div>
+              <span class="pill">Claims LA-33..LA-35 · 8 #![no_std] Targets</span>
+            </div>
+            <div class="fig-frame">
+              <img src="global-frontiers-antisym-seu-wasm.svg" alt="Global Multi-Frontier Advancement: Antisym-40 T-MAC, SEU SECDED, openXC7 Post-PAR Bitstream, Aeneas, and WASM" />
             </div>
           </section>
         `;

@@ -89,6 +89,10 @@ def main() -> None:
         ae3_win_list.append(
             ("Window8_ZeroMul_Ternary_TMAC_Tail", ae3["zero_mul_tmac_tail_us_per_decision"], ae3["zero_mul_tmac_tail_dwt_cycles_per_decision"])
         )
+    if "antisym40_tmac_precomp_dwt_cycles_per_decision" in ae3:
+        ae3_win_list.append(
+            ("Window9_Antisym40_ZeroMul_TMAC_Tail", ae3["antisym40_tmac_precomp_us_per_decision"], ae3["antisym40_tmac_precomp_dwt_cycles_per_decision"])
+        )
     ae3_win_list.append(("Window6_Baseline_INT8_MicroMLP", ae3["int8_micro_mlp_us_per_decision"], mlp_cyc))
     for win_name, us_val, cyc_val in ae3_win_list:
         rows.append(
@@ -117,6 +121,11 @@ def main() -> None:
         if "Window8_ZeroMul_Ternary_TMAC_Tail" in thor_win_map
         else None
     )
+    antisym40_nj = (
+        round(thor_win_map["Window9_Antisym40_ZeroMul_TMAC_Tail"]["measured_nj_per_op_vdd_cpu"], 2)
+        if "Window9_Antisym40_ZeroMul_TMAC_Tail" in thor_win_map
+        else None
+    )
     unrolled4_nj = (
         round(thor_win_map["Window7_Unrolled4_Scalar_LUT6"]["measured_nj_per_op_vdd_cpu"], 2)
         if "Window7_Unrolled4_Scalar_LUT6" in thor_win_map
@@ -132,6 +141,7 @@ def main() -> None:
             "thumbv6m-none-eabi",
             "thumbv7em-none-eabihf",
             "riscv32imac-unknown-none-elf",
+            "wasm32-unknown-unknown",
         ],
         "alif_e3_e4_cortex_m55_elf": {
             "target": "thumbv8m.main-none-eabihf (-C target-cpu=cortex-m55)",
@@ -149,9 +159,20 @@ def main() -> None:
             "bitsliced_batch64_measured_nj": round(thor["windows"][4]["measured_nj_per_op_vdd_cpu"], 2),
             "unrolled4_scalar_measured_nj": unrolled4_nj,
             "zero_mul_tmac_tail_measured_nj": tmac_nj,
+            "antisym40_tmac_tail_measured_nj": antisym40_nj,
             "tmac_cpj_gain_vs_int8_mlp": (
                 round(thor["windows"][5]["measured_nj_per_op_vdd_cpu"] / tmac_nj, 2)
                 if tmac_nj
+                else None
+            ),
+            "antisym40_cpj_gain_vs_int8_mlp": (
+                round(thor["windows"][5]["measured_nj_per_op_vdd_cpu"] / antisym40_nj, 2)
+                if antisym40_nj
+                else None
+            ),
+            "antisym40_gain_over_full81_tmac": (
+                round(tmac_nj / antisym40_nj, 2)
+                if (tmac_nj and antisym40_nj)
                 else None
             ),
             "int8_mlp_measured_nj": round(thor["windows"][5]["measured_nj_per_op_vdd_cpu"], 2),

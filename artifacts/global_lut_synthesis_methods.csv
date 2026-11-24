@@ -1,0 +1,6 @@
+method_id,origin_ecosystem,lut6_gates,logic_levels,runtime_flops_or_muls,exact_parity_pct,key_property
+1_Standard_Shannon_k8_Independent,Classical Shannon Tree,80,2,0,100.0,80 LUT6s for m=16 8-input outputs (no cofactor sharing)
+2_Lupanov_Shared_Cofactor_k8_Ours,"Russian Cybernetics (Lupanov, 1958)",22,2,0,100.0,-72.5% LUT6s (22 vs 80) via complement-canonical cofactor sharing
+3_TreeLUT_Depth5_GBDT_Single_LUT6,ACM FPGA '25 (arXiv:2501.01511),1,1,0,100.0,"5-level branching GBDT collapsed into 1 LUT6 (INIT=0x195cb9f4b9a80800, 64/64 exact)"
+4_KAN_LUT_8Bit_Spline_Planes,PIM-KAN Spline-to-LUT (2025-2026),8,1,0,100.0,"SiLU + harmonic B-spline in 8 LUT6s, 0 FLOPs, RMSE=0.003466 vs FP64"
+5_Antisym40_LUT_TensorCore_TMAC_Ours,ISCA '25 (LUT Tensor Core) + EntroMCU,0,1,0,100.0,"40,500/40,500 exact dot-product parity; 1,312 B vs 2,592 B stack SRAM (-49.4%)"
