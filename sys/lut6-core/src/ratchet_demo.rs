@@ -281,6 +281,71 @@ mod tests {
         let a_batch = SEED_AGENCY.eval_batch64(&inputs);
         for i in 0..64 {
             assert_eq!(a_batch[i], SEED_AGENCY.eval_raw(inputs[i]));
+            assert_eq!(
+                SEED_AGENCY.eval_raw_unrolled4(inputs[i]),
+                SEED_AGENCY.eval_raw(inputs[i])
+            );
+            assert_eq!(
+                SEED_KNOWLEDGE.eval_raw_unrolled4(inputs[i]),
+                SEED_KNOWLEDGE.eval_raw(inputs[i])
+            );
+        }
+    }
+
+    #[test]
+    fn two_tier_tmac_tail_and_compile_time_crystals() {
+        use crate::EvalOutcome;
+        use crate::generated_proof_vectors::{
+            HOT_TIER1_SKILL_PAYLOAD, HOT_TIER1_SKILL_WORD, VERIFIED_TMAC_OOD_VECTORS,
+            VERIFIED_TMAC_SKILL_ANCHORS, mol_skills_tmac_crystal, yosys_operon_crystal,
+        };
+        use crate::tmac_tail::{pack_5trits, unpack_5trits, wire_state_to_bipolar_i8};
+
+        // 1. Exhaustive 243-state EntroMCU 5-trit bijection check
+        for b in 0u8..243 {
+            let trits = unpack_5trits(b);
+            assert_eq!(
+                pack_5trits(trits[0], trits[1], trits[2], trits[3], trits[4]),
+                b
+            );
+        }
+
+        // 2. Verify Yosys Operon crystal & Two-Tier T-MAC crystal runtime evaluation
+        let op = yosys_operon_crystal();
+        assert!(op.verify_crc32());
+
+        let skills = mol_skills_tmac_crystal();
+        assert!(skills.verify_crc32());
+        let mut ledger = PageLedger::default();
+
+        // Tier-1 Rung-6 36-wire 2-layer Boolean hit (`HOT_TIER1_SKILL_WORD -> 0x11` without touching T-MAC tail)
+        let f_hot = wire_state_to_bipolar_i8(HOT_TIER1_SKILL_WORD);
+        assert_eq!(
+            skills.evaluate_two_tier(HOT_TIER1_SKILL_WORD, &f_hot, None, &mut ledger),
+            Ok(EvalOutcome::Act {
+                output_bits: HOT_TIER1_SKILL_PAYLOAD,
+                votes: 8
+            })
+        );
+
+        // Tier-2 Zero-MUL T-MAC tail resolves all 5 harvested noisy skill paraphrases locally
+        for &(word, expected_pay) in &VERIFIED_TMAC_SKILL_ANCHORS {
+            let feats = wire_state_to_bipolar_i8(word);
+            let Ok(res) = skills.evaluate_two_tier(word, &feats, None, &mut ledger);
+            match res {
+                EvalOutcome::Act { output_bits, votes } => {
+                    assert_eq!(output_bits, expected_pay);
+                    assert!(votes >= skills.conformal_thresh);
+                }
+                other => panic!("Expected Two-Tier T-MAC Act, got {other:?}"),
+            }
+        }
+
+        // Tier-2 OOD hostile queries cleanly escalate (`votes < 6`)
+        for &ood_word in &VERIFIED_TMAC_OOD_VECTORS {
+            let feats = wire_state_to_bipolar_i8(ood_word);
+            let Ok(res) = skills.evaluate_two_tier(ood_word, &feats, None, &mut ledger);
+            assert!(matches!(res, EvalOutcome::Escalate { .. }));
         }
     }
 }

@@ -71,6 +71,12 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("NucleusCodon", "LutAdapt.NucleusCodon.wobble_quartet_high_harmonic_cancels", "Section 4.28", "Universal 0 degree-5/6 Walsh energy on wobble LUT6s"),
     ("NucleusCodon", "LutAdapt.NucleusCodon.one_hot_parseval_decomposition", "Section 4.28", "1-hot Parseval 3844 + 63*4 = 4096 & 28 AC noise leak"),
     ("NucleusCodon", "LutAdapt.NucleusCodon.apoptosis_rollback_restores_seed", "Section 4.28", "0x3C apoptosis rollback evicts overlay & keeps seed"),
+    ("TernaryTmac", "LutAdapt.TernaryTmac.entromcu_five_trits_fits_uint8", "Section 4.30", "EntroMCU 5-trits/byte base-3 < 243 <= 256 uint8 fit"),
+    ("TernaryTmac", "LutAdapt.TernaryTmac.entromcu_five_trits_roundtrip", "Section 4.30", "Lossless EntroMCU 5-trits/byte pack/unpack bijection"),
+    ("TernaryTmac", "LutAdapt.TernaryTmac.tmac_4trit_lut_matches_ternary_dot", "Section 4.30", "Zero-multiplier PALUTE/T-MAC 4-trit LUT == ternary dot"),
+    ("TernaryTmac", "LutAdapt.TernaryTmac.three_tier_lut6_tmac_cascade_iff", "Section 4.30", "Two-tier LUT6 + T-MAC tail cascade amortization iff"),
+    ("TernaryTmac", "LutAdapt.TernaryTmac.parseval_three_band_conservation", "Section 4.30", "3-band Walsh Parseval conservation under wobble vanishing"),
+    ("TernaryTmac", "LutAdapt.TernaryTmac.const_proof_vector_gate_soundness", "Section 4.30", "Compile-time rustc const proof-vector gate soundness"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

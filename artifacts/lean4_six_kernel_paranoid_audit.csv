@@ -1,7 +1,7 @@
 kernel_id,implementation,soundness_basis,verified_declarations,verdict,mitigates_vectors
-con-leche --verified,Minimal Lean/Haskell reference kernel (Joachim Breitner),Formally proved consistent in set theory (cannot accept False),58729,ACCEPTS,CVE-2026-72844 (nested inductive .proj); CVE-2026-72711 (add_opaque fvar); WHNF cache bugs
-con-ron --verified,Aeneas-verified Rust refinement of con-leche,Machine-verified Rust memory/refinement equivalence to con-leche,58729,ACCEPTS,CVE-2026-72844; CVE-2026-72711; C++ memory/GMP bignum runtime bugs (#14833)
-lean4lean,Lean-in-Lean typechecker (Mario Carneiro),Independent pure-Lean reimplementation of CIC typechecking,58731,ACCEPTS,C++ kernel implementation divergence & structure projection bugs
-nanoda,Independent standalone Rust export verifier,Zero-Lean-runtime Rust checker (sorryAx blocked=True),58731,ACCEPTS,olean serialization tampering & unpermitted sorryAx injection
-leanchecker --paranoid,Fresh-environment Lean C++ kernel replay,Replays exported environment from scratch with zero tactic/elaborator trust,58731,ACCEPTS,Elaborator metaprogramming environment mutation & skipKernelTC
-Lean v4.36.0 (default),"Post-CVE Lean 4.36.0 C++ kernel (commit 611c117bfaf7, Nov 2026)","Includes PRs #14498, #14577, #14613, #14806, #14807, #14833 patches",58731,ACCEPTS,All Summer/Autumn 2026 CVEs patched; #print axioms enforced
+con-leche --verified,Minimal Lean/Haskell reference kernel (Joachim Breitner),Formally proved consistent in set theory (cannot accept False),58762,ACCEPTS,CVE-2026-72844 (nested inductive .proj); CVE-2026-72711 (add_opaque fvar); WHNF cache bugs
+con-ron --verified,Aeneas-verified Rust refinement of con-leche,Machine-verified Rust memory/refinement equivalence to con-leche,58762,ACCEPTS,CVE-2026-72844; CVE-2026-72711; C++ memory/GMP bignum runtime bugs (#14833)
+lean4lean,Lean-in-Lean typechecker (Mario Carneiro),Independent pure-Lean reimplementation of CIC typechecking,58764,ACCEPTS,C++ kernel implementation divergence & structure projection bugs
+nanoda,Independent standalone Rust export verifier,Zero-Lean-runtime Rust checker (sorryAx blocked=True),58764,ACCEPTS,olean serialization tampering & unpermitted sorryAx injection
+leanchecker --paranoid,Fresh-environment Lean C++ kernel replay,Replays exported environment from scratch with zero tactic/elaborator trust,58764,ACCEPTS,Elaborator metaprogramming environment mutation & skipKernelTC
+Lean v4.36.0 (default),"Post-CVE Lean 4.36.0 C++ kernel (commit 611c117bfaf7, Nov 2026)","Includes PRs #14498, #14577, #14613, #14806, #14807, #14833 patches",58764,ACCEPTS,All Summer/Autumn 2026 CVEs patched; #print axioms enforced

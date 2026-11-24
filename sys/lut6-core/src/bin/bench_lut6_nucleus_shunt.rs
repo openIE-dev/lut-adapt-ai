@@ -21,7 +21,9 @@ use std::thread;
 use std::time::{Duration, Instant};
 
 use lut6_core::bootstrap::SEED_AGENCY;
+use lut6_core::generated_proof_vectors::{VERIFIED_TMAC_SKILL_ANCHORS, mol_skills_tmac_crystal};
 use lut6_core::ratchet_demo::{SEED_KNOWLEDGE, synthesize_wobble_patch};
+use lut6_core::tmac_tail::{eval_tmac_from_pad, wire_state_to_bipolar_i8};
 use lut6_core::{AgencyAction, CompactLut6Page, Nucleus, PageLedger};
 
 // ============================================================================
@@ -500,7 +502,47 @@ fn main() {
         },
     );
 
-    let windows = [w1, w2, w3, w4, w5, w6];
+    // Window 7: 4-Way Unrolled Scalar `eval_raw_unrolled4` (`SEED_AGENCY` 64-gate page)
+    let w7 = measure_window(
+        "Window7_Unrolled4_Scalar_LUT6",
+        scale_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut acc = 0u64;
+            for step in 0..scale_iters {
+                let st = (1u64 << 40) | (1u64 << 48) | (step & 0xFF);
+                acc ^= SEED_AGENCY.eval_raw_unrolled4(black_box(st));
+            }
+            black_box(acc);
+        },
+    );
+
+    // Window 8: Zero-Multiplier `EntroMCU` / `T-MAC` Ternary Lookup Tail (`672 B` inside `mol_skills_tmac_tail.lut6`)
+    let skills_page = mol_skills_tmac_crystal();
+    let pre_feats: [[i8; 64]; 4] = [
+        wire_state_to_bipolar_i8(VERIFIED_TMAC_SKILL_ANCHORS[0].0),
+        wire_state_to_bipolar_i8(VERIFIED_TMAC_SKILL_ANCHORS[1].0),
+        wire_state_to_bipolar_i8(VERIFIED_TMAC_SKILL_ANCHORS[2].0),
+        wire_state_to_bipolar_i8(VERIFIED_TMAC_SKILL_ANCHORS[3].0),
+    ];
+    let w8 = measure_window(
+        "Window8_ZeroMul_Ternary_TMAC_Tail",
+        mlp_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut acc = 0u64;
+            for step in 0..mlp_iters {
+                let f = &pre_feats[(step & 3) as usize];
+                let (pay, votes, _) = eval_tmac_from_pad(black_box(&skills_page._pad), black_box(f));
+                acc ^= pay ^ (votes as u64);
+            }
+            black_box(acc);
+        },
+    );
+
+    let windows = [w1, w2, w3, w4, w5, w6, w7, w8];
     let mut json_rows = Vec::new();
     for w in &windows {
         println!(

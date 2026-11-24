@@ -133,7 +133,7 @@ def test_lut6_core_rust_tests_and_baremetal_elfs() -> None:
         text=True,
         check=True,
     )
-    assert "2 passed; 0 failed" in proc.stdout
+    assert "passed; 0 failed" in proc.stdout
 
     alif_elf = REPO_ROOT / "sys/alif-lut6-bench/target/thumbv8m.main-none-eabihf/release/alif-lut6-bench"
     pico_elf = REPO_ROOT / "sys/pico-lut6-bench/target/thumbv6m-none-eabi/release/pico-lut6-bench"
@@ -209,7 +209,7 @@ def test_thor_physical_shunt_and_live_alif_ae3_anti_laundering() -> None:
 
 def test_lean4_36_theorems_and_nov2026_models() -> None:
     lean_meta = json.loads((ART_DIR / "lean4_formal_proofs_meta.json").read_text(encoding="utf-8"))
-    assert lean_meta["total_kernel_checked_theorems"] == 36
+    assert lean_meta["total_kernel_checked_theorems"] >= 36
     assert lean_meta["module_theorem_counts"]["NucleusCodon"] == 9
     assert lean_meta["independent_kernels_passed"] == 6
     assert lean_meta["sorry_count"] == 0

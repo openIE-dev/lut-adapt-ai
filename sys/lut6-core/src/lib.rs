@@ -9,11 +9,16 @@
 compile_error!("lut6-core requires a little-endian target matching canonical .lut6 byte layout.");
 
 pub mod bootstrap;
+pub mod generated_proof_vectors;
 pub mod ratchet_demo;
+pub mod tmac_tail;
 
 pub const MAX_WIRES: usize = 64;
 pub const MAX_GATES: usize = 256;
 pub const PASS_THROUGH_I0: u64 = 0xAAAA_AAAA_AAAA_AAAA;
+pub const FLAG_IS_OVERLAY: u16 = 0x0001;
+pub const FLAG_IS_ACTIVE: u16 = 0x0002;
+pub const FLAG_HAS_TMAC_TAIL: u16 = 0x0004;
 
 /// Zero-overhead interior mutability wrapper for bare-metal `DTCM` / striped `SRAM` statics
 /// on stable Rust `1.100.0` (zero nightly feature flags).
@@ -365,6 +370,87 @@ impl CompactLut6Page {
         state
     }
 
+    /// 4-way unrolled scalar `LUT6` bitboard evaluator (`eval_raw_unrolled4`):
+    /// Breaks loop-carried `next_state` shift/OR dependency chains across 4 parallel gate lanes
+    /// per iteration for superscalar Armv9 / Zen 5 / Cortex-M55 dual-issue pipelines while
+    /// maintaining bit-exact equivalence to `eval_raw`.
+    #[inline(always)]
+    pub const fn eval_raw_unrolled4(&self, mut state: u64) -> u64 {
+        let layers = self.num_layers as usize;
+        let width = self.gates_per_layer as usize;
+        let mut gate_idx = 0usize;
+
+        let mut l = 0usize;
+        while l < layers {
+            let mut acc0: u64 = 0;
+            let mut acc1: u64 = 0;
+            let mut acc2: u64 = 0;
+            let mut acc3: u64 = 0;
+            let mut g = 0usize;
+            while g + 4 <= width {
+                let r0 = self.routes_lo[gate_idx];
+                let h0 = self.routes_hi[gate_idx] as u32;
+                let a0 = (((state >> (r0 & 0x3F)) & 1) as u32)
+                    | ((((state >> ((r0 >> 6) & 0x3F)) & 1) as u32) << 1)
+                    | ((((state >> ((r0 >> 12) & 0x3F)) & 1) as u32) << 2)
+                    | ((((state >> ((r0 >> 18) & 0x3F)) & 1) as u32) << 3)
+                    | ((((state >> ((r0 >> 24) & 0x3F)) & 1) as u32) << 4)
+                    | ((((state >> (h0 & 0x3F)) & 1) as u32) << 5);
+                acc0 |= ((self.init_masks[gate_idx] >> a0) & 1) << g;
+
+                let r1 = self.routes_lo[gate_idx + 1];
+                let h1 = self.routes_hi[gate_idx + 1] as u32;
+                let a1 = (((state >> (r1 & 0x3F)) & 1) as u32)
+                    | ((((state >> ((r1 >> 6) & 0x3F)) & 1) as u32) << 1)
+                    | ((((state >> ((r1 >> 12) & 0x3F)) & 1) as u32) << 2)
+                    | ((((state >> ((r1 >> 18) & 0x3F)) & 1) as u32) << 3)
+                    | ((((state >> ((r1 >> 24) & 0x3F)) & 1) as u32) << 4)
+                    | ((((state >> (h1 & 0x3F)) & 1) as u32) << 5);
+                acc1 |= ((self.init_masks[gate_idx + 1] >> a1) & 1) << (g + 1);
+
+                let r2 = self.routes_lo[gate_idx + 2];
+                let h2 = self.routes_hi[gate_idx + 2] as u32;
+                let a2 = (((state >> (r2 & 0x3F)) & 1) as u32)
+                    | ((((state >> ((r2 >> 6) & 0x3F)) & 1) as u32) << 1)
+                    | ((((state >> ((r2 >> 12) & 0x3F)) & 1) as u32) << 2)
+                    | ((((state >> ((r2 >> 18) & 0x3F)) & 1) as u32) << 3)
+                    | ((((state >> ((r2 >> 24) & 0x3F)) & 1) as u32) << 4)
+                    | ((((state >> (h2 & 0x3F)) & 1) as u32) << 5);
+                acc2 |= ((self.init_masks[gate_idx + 2] >> a2) & 1) << (g + 2);
+
+                let r3 = self.routes_lo[gate_idx + 3];
+                let h3 = self.routes_hi[gate_idx + 3] as u32;
+                let a3 = (((state >> (r3 & 0x3F)) & 1) as u32)
+                    | ((((state >> ((r3 >> 6) & 0x3F)) & 1) as u32) << 1)
+                    | ((((state >> ((r3 >> 12) & 0x3F)) & 1) as u32) << 2)
+                    | ((((state >> ((r3 >> 18) & 0x3F)) & 1) as u32) << 3)
+                    | ((((state >> ((r3 >> 24) & 0x3F)) & 1) as u32) << 4)
+                    | ((((state >> (h3 & 0x3F)) & 1) as u32) << 5);
+                acc3 |= ((self.init_masks[gate_idx + 3] >> a3) & 1) << (g + 3);
+
+                gate_idx += 4;
+                g += 4;
+            }
+            let mut next_state = (acc0 | acc1) | (acc2 | acc3);
+            while g < width {
+                let r_lo = self.routes_lo[gate_idx];
+                let r_hi = self.routes_hi[gate_idx] as u32;
+                let lut_addr = (((state >> (r_lo & 0x3F)) & 1) as u32)
+                    | ((((state >> ((r_lo >> 6) & 0x3F)) & 1) as u32) << 1)
+                    | ((((state >> ((r_lo >> 12) & 0x3F)) & 1) as u32) << 2)
+                    | ((((state >> ((r_lo >> 18) & 0x3F)) & 1) as u32) << 3)
+                    | ((((state >> ((r_lo >> 24) & 0x3F)) & 1) as u32) << 4)
+                    | ((((state >> (r_hi & 0x3F)) & 1) as u32) << 5);
+                next_state |= ((self.init_masks[gate_idx] >> lut_addr) & 1) << g;
+                gate_idx += 1;
+                g += 1;
+            }
+            state = next_state;
+            l += 1;
+        }
+        state
+    }
+
     /// Vertical bit-sliced evaluator over 64 pre-transposed wire planes (`planes[wire]`, 64 lanes).
     #[inline]
     pub const fn eval_planes64(&self, mut planes: [u64; 64]) -> [u64; 64] {
@@ -446,6 +532,45 @@ impl CompactLut6Page {
                 partial_bits: payload_bits,
                 votes,
             })
+        }
+    }
+
+    /// Two-Tier Crystal Evaluation (`Rung 6 LUT6 -> Rung 5.5 Zero-MUL T-MAC Tail -> Rung 5 Escalate`):
+    /// Consults the zero-FLOP `LUT6` truth tables first; on a conformal wake miss, if `FLAG_HAS_TMAC_TAIL`
+    /// is set on the page, evaluates the embedded `672`-byte `EntroMCU` / `T-MAC` ternary tail in
+    /// stack SRAM (`0` multiplications) before waking upstream `Rung 5`.
+    #[inline]
+    pub fn evaluate_two_tier(
+        &self,
+        canonical_input: u64,
+        signed_features: &[i8; 64],
+        overlay: Option<&Self>,
+        ledger: &mut PageLedger,
+    ) -> InfallibleEval {
+        let Ok(r6) = self.evaluate(canonical_input, overlay, ledger);
+        match r6 {
+            EvalOutcome::Act { .. } | EvalOutcome::Killed => Ok(r6),
+            EvalOutcome::Escalate {
+                partial_bits,
+                votes,
+            } => {
+                if (self.flags & FLAG_HAS_TMAC_TAIL) != 0 {
+                    let (tmac_payload, tmac_votes, _) =
+                        tmac_tail::eval_tmac_from_pad(&self._pad, signed_features);
+                    if tmac_votes >= self.conformal_thresh {
+                        ledger.escalations = ledger.escalations.wrapping_sub(1);
+                        ledger.hits = ledger.hits.wrapping_add(1);
+                        return Ok(EvalOutcome::Act {
+                            output_bits: tmac_payload,
+                            votes: tmac_votes,
+                        });
+                    }
+                }
+                Ok(EvalOutcome::Escalate {
+                    partial_bits,
+                    votes,
+                })
+            }
         }
     }
 }

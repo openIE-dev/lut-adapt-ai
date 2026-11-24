@@ -274,7 +274,7 @@ def build_six_kernel_and_stack_svg() -> str:
     parts: list[str] = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-labelledby="sk-t sk-d">',
         '  <title id="sk-t">Six-Kernel Paranoid Proof Audit (Claim LA-19) and Three-Layer Compiled Intelligence Stack</title>',
-        '  <desc id="sk-d">Left panel shows the 27 LutAdapt Lean 4.36.0 theorems passing six independent proof checkers via lake check --paranoid (con-leche --verified, con-ron --verified, lean4lean, nanoda, leanchecker --paranoid, and Lean 4.36.0), neutralizing CVE-2026-72844, CVE-2026-72711, and native_decide exploits. Right panel shows the three-layer compiled intelligence architecture spanning physical L0 control &amp; LUT6 silicon, cognitive MoL downward compilation, and verifier-first Rust MCP runtime with tier-typed Joule receipts.</desc>',
+        '  <desc id="sk-d">Left panel shows the 42 LutAdapt Lean 4.36.0 theorems passing six independent proof checkers via lake check --paranoid (con-leche --verified, con-ron --verified, lean4lean, nanoda, leanchecker --paranoid, and Lean 4.36.0), neutralizing CVE-2026-72844, CVE-2026-72711, and native_decide exploits. Right panel shows the three-layer compiled intelligence architecture spanning physical L0 control &amp; LUT6 silicon, cognitive MoL downward compilation, and verifier-first Rust MCP runtime with tier-typed Joule receipts.</desc>',
         "  <defs>",
         '    <marker id="sk-emerald" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">',
         '      <path d="M0 0 L10 5 L0 10 z" fill="#10b981"/>',
@@ -297,8 +297,8 @@ def build_six_kernel_and_stack_svg() -> str:
         f'  <text x="46" y="124" font-family="{FONT_SANS}" font-size="10.3" fill="#94a3b8">Mechanized Section 2 theorems exported from Lean 4.36.0 and re-verified from scratch</text>',
         # Source theorem box
         '  <rect x="46" y="138" width="528" height="78" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>',
-        f'  <text x="62" y="160" font-family="{FONT_MONO}" font-size="10.8" font-weight="800" fill="#38bdf8">proofs/LutAdapt/{{Cascade, BenesCopy, JointMinterm, ConformalProvenance}}.lean</text>',
-        f'  <text x="62" y="181" font-family="{FONT_SANS}" font-size="10.4" fill="#e2e8f0">27 Machine-Checked Theorems · 5 Zero-Axiom · 23/27 Choice-Free · Standard ZFC Only</text>',
+        f'  <text x="58" y="160" font-family="{FONT_MONO}" font-size="8.0" font-weight="800" fill="#38bdf8">proofs/LutAdapt/{{Cascade,BenesCopy,JointMinterm,ConformalProvenance,NucleusCodon,TernaryTmac}}.lean</text>',
+        f'  <text x="62" y="181" font-family="{FONT_SANS}" font-size="10.4" fill="#e2e8f0">42 Machine-Checked Theorems · 8 Zero-Axiom · 33/42 Choice-Free · Standard ZFC Only</text>',
         f'  <text x="62" y="200" font-family="{FONT_MONO}" font-size="9.6" fill="#6ee7b7">0 sorry · 0 custom axioms · 0 opaque · 0 Lean.ofReduceBool (native_decide)</text>',
         # Neutralized 2026 Vulnerability Banner
         '  <rect x="46" y="228" width="528" height="76" rx="10" fill="#1c1219" stroke="#f43f5e" stroke-width="1.4"/>',
@@ -309,12 +309,12 @@ def build_six_kernel_and_stack_svg() -> str:
     ]
 
     kernels = [
-        ("1 · con-leche (--verified)", "Set-Theory Consistency Proof", "Breitner minimal kernel proved", "never to accept False · 58,683 decls", "#10b981"),
-        ("2 · con-ron (--verified)", "Aeneas-Verified Rust Kernel", "Formally refined Rust port of", "con-leche · 58,683 decls checked", "#10b981"),
-        ("3 · lean4lean", "Lean-in-Lean Typechecker", "Carneiro independent kernel;", "58,685 declarations replayed", "#22d3ee"),
+        ("1 · con-leche (--verified)", "Set-Theory Consistency Proof", "Breitner minimal kernel proved", "never to accept False · 58,762 decls", "#10b981"),
+        ("2 · con-ron (--verified)", "Aeneas-Verified Rust Kernel", "Formally refined Rust port of", "con-leche · 58,762 decls checked", "#10b981"),
+        ("3 · lean4lean", "Lean-in-Lean Typechecker", "Carneiro independent kernel;", "58,764 declarations replayed", "#22d3ee"),
         ("4 · nanoda", "Independent Rust Checker", "Standalone Rust export verifier;", "sorryAx explicitly unpermitted", "#22d3ee"),
         ("5 · leanchecker --paranoid", "Fresh-Env C++ Kernel Replay", "Replays .olean environment from", "scratch with zero tactic trust", "#38bdf8"),
-        ("6 · Lean v4.36.0 (Nov 2026)", "Post-CVE Default C++ Kernel", "Includes WHNF cache & GMP fixes;", "clean lake build in ~2.26 s", "#a78bfa"),
+        ("6 · Lean v4.36.0 (Nov 2026)", "Post-CVE Default C++ Kernel", "Includes WHNF cache & GMP fixes;", "clean lake build in ~0.89 s", "#a78bfa"),
     ]
     for i, (kname, ksub, kl1, kl2, col) in enumerate(kernels):
         col_idx = i % 2

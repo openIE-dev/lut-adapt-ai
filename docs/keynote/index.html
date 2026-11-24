@@ -115,8 +115,9 @@
     const SLIDES = [
       "1 · 9-Rung Avalanche & Threshold",
       "2 · The Trinity Stack",
-      "3 · 6-Kernel Proof Assurance",
-      "4 · Keynote Script & Translation Matrix"
+      "3 · 6-Kernel Proof Assurance (42 Thms)",
+      "4 · 4 KB LUT6 + Zero-MUL T-MAC Nucleus",
+      "5 · Keynote Script & Translation Matrix"
     ];
     let idx = 0;
 
@@ -198,12 +199,27 @@
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
               <div>
                 <h2>Six-Kernel Paranoid Proof Assurance (Claim LA-19 · CVE-2026-72844-Hardened)</h2>
-                <p class="sub">All 27 Section 2 theorems pass six independent checkers via lake check --paranoid, including set-theory-consistent con-leche and Aeneas-verified Rust con-ron.</p>
+                <p class="sub">All 42 LutAdapt theorems (and 1,406 across the 4 OpenIE Lean suites) pass six independent checkers via lake check --paranoid, including set-theory-consistent con-leche and Aeneas-verified Rust con-ron.</p>
               </div>
               <span class="pill">6 / 6 Independent Kernels Accept</span>
             </div>
             <div class="fig-frame">
               <img src="six-kernel-trust-and-stack.svg" alt="Six-Kernel Formal Proof Assurance and Three-Layer Compiled Stack" />
+            </div>
+          </section>
+        `;
+      } else if (idx === 3) {
+        body.innerHTML = `
+          <section class="panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <div>
+                <h2>4 KB #![no_std] LUT6 + Zero-MUL T-MAC Nucleus, Wobble Harmonics &amp; Nov 2026 Looped Models</h2>
+                <p class="sub">Jetson AGX Thor physical DC shunt measured_j (84.65× bit-sliced CpJ, 1.33× Zero-MUL T-MAC CpJ), live Alif Ensemble E3 Cortex-M55 DWT cycles (172× scalar, 11.1× T-MAC, 47,080× bit-sliced), DiffLUT-Net -64.06% gate pruning, and Inkling-2-Mini / Dory1.0-4B.</p>
+              </div>
+              <span class="pill">Claims LA-26..LA-31 · 0 Wasted Bytes</span>
+            </div>
+            <div class="fig-frame">
+              <img src="lut6-nucleus-codon-and-means-test.svg" alt="4 KB LUT6 + Zero-MUL T-MAC Nucleus, Wobble Harmonics, DiffLUT-Net, and Nov 2026 Looped Models" />
             </div>
           </section>
         `;

@@ -100,6 +100,101 @@ def pack_route6(wires_6: Sequence[int]) -> tuple[int, int]:
     return r_lo, r_hi
 
 
+def pack_5trits(trits5: Sequence[int]) -> int:
+    """Packs 5 signed trits `{-1, 0, +1}` into one canonical `EntroMCU` base-3 byte (`0..242`)."""
+    assert len(trits5) == 5 and all(int(t) in (-1, 0, 1) for t in trits5)
+    return sum((int(t) + 1) * (3**k) for k, t in enumerate(trits5))
+
+
+def unpack_5trits(byte_val: int) -> tuple[int, int, int, int, int]:
+    assert 0 <= int(byte_val) < 243
+    rem = int(byte_val)
+    out: list[int] = []
+    for _ in range(5):
+        out.append((rem % 3) - 1)
+        rem //= 3
+    return (out[0], out[1], out[2], out[3], out[4])
+
+
+def build_tmac_tail_bytes(
+    weights_16x64: Sequence[Sequence[int]],
+    biases_16: Sequence[int],
+    *,
+    margin_thresh: int = 96,
+) -> bytes:
+    """Serializes the exact `672`-byte `EntroMCU` + `PALUTE`/`T-MAC` ternary lookup tail matching
+    `sys/lut6-core/src/tmac_tail.rs` (`0` wasted bytes inside `CompactLut6Page._pad`)."""
+    assert len(weights_16x64) == 16 and all(len(row) == 64 for row in weights_16x64)
+    assert len(biases_16) == 16
+
+    flat = [int(w) for row in weights_16x64 for w in row] + [0]
+    assert len(flat) == 1025
+    entromcu_205 = bytes(pack_5trits(flat[5 * i : 5 * i + 5]) for i in range(205))
+
+    group_codes = bytearray(256)
+    for r in range(16):
+        for g in range(16):
+            w0, w1, w2, w3 = (int(weights_16x64[r][4 * g + k]) for k in range(4))
+            group_codes[r * 16 + g] = (w0 + 1) + 3 * (w1 + 1) + 9 * (w2 + 1) + 27 * (w3 + 1)
+
+    bias_bytes = struct.pack("<16h", *(int(b) for b in biases_16))
+    hdr = struct.pack("<4sBBh", b"TMAC", 16, 16, int(margin_thresh))
+    core_payload = hdr + entromcu_205 + b"\x00\x00\x00" + bytes(group_codes) + bias_bytes
+    assert len(core_payload) == 504
+    tail_sha = hashlib.sha256(core_payload).digest()
+    pad_672 = core_payload + tail_sha + (b"\x00" * 136)
+    assert len(pad_672) == 672
+    return pad_672
+
+
+def eval_tmac_tail_bytes(pad_672: bytes, features_64: Sequence[int]) -> tuple[int, int, list[int]]:
+    """Pure integer zero-multiplier `PALUTE`/`T-MAC` evaluator matching `tmac_tail.rs`."""
+    assert len(pad_672) == 672 and len(features_64) == 64
+    magic, out_ch, in_grp, margin_thresh = struct.unpack("<4sBBh", pad_672[:8])
+    if magic != b"TMAC" or out_ch != 16 or in_grp != 16:
+        return 0, 0, [0] * 16
+
+    # Build 16 x 81 zero-multiplier lookup tables using pure additions/subtractions
+    group_luts: list[list[int]] = []
+    for g in range(16):
+        x0, x1, x2, x3 = (int(features_64[4 * g + k]) for k in range(4))
+        v0 = (-x0, 0, x0)
+        v1 = (-x1, 0, x1)
+        v2 = (-x2, 0, x2)
+        v3 = (-x3, 0, x3)
+        lut = [0] * 81
+        idx = 0
+        for u3 in range(3):
+            s3 = v3[u3]
+            for u2 in range(3):
+                s2 = s3 + v2[u2]
+                for u1 in range(3):
+                    s1 = s2 + v1[u1]
+                    lut[idx] = s1 + v0[0]
+                    lut[idx + 1] = s1 + v0[1]
+                    lut[idx + 2] = s1 + v0[2]
+                    idx += 3
+        group_luts.append(lut)
+
+    biases = struct.unpack("<16h", pad_672[472:504])
+    accs: list[int] = []
+    payload_bits = 0
+    votes = 0
+    for r in range(16):
+        total = int(biases[r])
+        row_off = 216 + (r << 4)
+        for g in range(16):
+            total += group_luts[g][pad_672[row_off + g]]
+        clamped = max(-32768, min(32767, total))
+        accs.append(clamped)
+        if r < 8:
+            if clamped > 0:
+                payload_bits |= 1 << r
+        elif clamped >= margin_thresh:
+            votes += 1
+    return payload_bits, votes, accs
+
+
 def build_compact_lut6_page_bytes(
     layers: Sequence[Sequence[tuple[Sequence[int], int]]],
     *,
@@ -111,12 +206,15 @@ def build_compact_lut6_page_bytes(
     kill_max_rejects: int = 3,
     is_overlay: bool = False,
     proof_digest: bytes = b"\x00" * 32,
+    tmac_tail: bytes | None = None,
 ) -> bytes:
     """Serializes an exact `4,096`-byte `CompactLut6Page` byte-for-byte identical to `lut6-core`."""
     num_layers = len(layers)
     width = max((len(layer) for layer in layers), default=0)
     assert 1 <= num_layers <= 16 and 1 <= width <= 64 and num_layers * width <= 256
     assert len(parent_commit) == 16 and len(proof_digest) == 32
+    if tmac_tail is not None:
+        assert len(tmac_tail) == 672
 
     routes_lo = [0] * 256
     routes_hi = [0] * 256
@@ -134,6 +232,9 @@ def build_compact_lut6_page_bytes(
             idx += 1
 
     flags = 0x0003 if is_overlay else 0x0002
+    if tmac_tail is not None:
+        flags |= 0x0004
+    pad_bytes = tmac_tail if tmac_tail is not None else (b"\x00" * 672)
     header_wo_crc = struct.pack(
         "<4sHHQ16sQQHBBI",
         b"LUT6",
@@ -152,7 +253,7 @@ def build_compact_lut6_page_bytes(
         struct.pack("<256I", *routes_lo)
         + struct.pack("<256B", *routes_hi)
         + proof_digest
-        + (b"\x00" * 672)
+        + pad_bytes
         + struct.pack("<256Q", *init_masks)
     )
     crc = zlib.crc32(header_wo_crc + body) & 0xFFFF_FFFF

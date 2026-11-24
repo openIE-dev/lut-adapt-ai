@@ -50,7 +50,7 @@ def diff_rapl_j(start: tuple[int, int], end: tuple[int, int]) -> float | None:
 def scan_lean_sources(proof_dir: Path) -> dict:
     lean_files = sorted(
         p for p in proof_dir.rglob("*.lean")
-        if ".lake" not in p.parts
+        if ".lake" not in p.parts and not p.name.startswith("._")
     )
     sorry_cnt = 0
     custom_ax_cnt = 0

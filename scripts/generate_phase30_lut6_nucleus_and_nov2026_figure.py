@@ -76,8 +76,8 @@ def main() -> None:
     ]
 
     # Header
-    p.append(f'  <text x="34" y="36" fill="#f8fafc" font-family="{FONT_SANS}" font-size="19.5" font-weight="700">4 KB LUT6 Bootstrap Nucleus, Wobble Harmonics, DiffLUT-Net Means Test &amp; Nov 2026 Looped Models</text>')
-    p.append(f'  <text x="34" y="56" fill="#94a3b8" font-family="{FONT_MONO}" font-size="10.6">Claims LA-19 (36 Thms), LA-26..LA-29  |  Rust 1.100.0 #![no_std] lut6-core  |  Thor Shunt measured_j != Host reported_j != Bare-Metal Cycles</text>')
+    p.append(f'  <text x="34" y="36" fill="#f8fafc" font-family="{FONT_SANS}" font-size="19.2" font-weight="700">4 KB LUT6 + Zero-MUL T-MAC Nucleus, Wobble Harmonics, DiffLUT-Net &amp; Nov 2026 Looped Models</text>')
+    p.append(f'  <text x="34" y="56" fill="#94a3b8" font-family="{FONT_MONO}" font-size="10.4">Claims LA-19 (42 Thms), LA-26..LA-31  |  Rust 1.100.0 #![no_std] lut6-core  |  Thor Shunt measured_j != Host reported_j != Bare-Metal Cycles</text>')
 
     # =========================================================================
     # PANEL A (Top-Left): Thor Physical Shunt + Live Alif E3 Cortex-M55 Cycles
@@ -91,40 +91,42 @@ def main() -> None:
 
     thor_bars = [
         ("INT8 Micro-MLP (64->32->16)", thor_s["int8_mlp_measured_nj"], "g-rose", "#fda4af"),
+        ("Zero-MUL T-MAC Tail (672B)", thor_s["zero_mul_tmac_tail_measured_nj"], "g-amber", "#fde68a"),
         ("Nucleus Wobble Overlay Hit", thor_s["wobble_hit_measured_nj"], "g-indigo", "#93c5fd"),
         ("Nucleus Innate Rung-6 Hit", thor_s["innate_hit_measured_nj"], "g-emerald", "#6ee7b7"),
         ("Vertical Bit-Sliced Batch-64", thor_s["bitsliced_batch64_measured_nj"], "g-emerald", "#34d399"),
     ]
     max_nj = thor_s["int8_mlp_measured_nj"]
     bx0 = ax + 186
-    bw_max = 240.0
-    p.append(f'  <text x="{ax+14}" y="{ay+68}" fill="#cbd5e1" font-family="{FONT_SANS}" font-size="11.2" font-weight="600">1. Jetson AGX Thor Physical DC Shunt (measured_j per decision):</text>')
+    bw_max = 235.0
+    p.append(f'  <text x="{ax+14}" y="{ay+66}" fill="#cbd5e1" font-family="{FONT_SANS}" font-size="11.0" font-weight="600">1. Jetson AGX Thor Physical DC Shunt (measured_j per decision):</text>')
     for idx, (lbl, nj, grad, col) in enumerate(thor_bars):
-        ry = ay + 80 + idx * 28
+        ry = ay + 76 + idx * 23
         w_px = max(6.0, (nj / max_nj) * bw_max)
-        p.append(f'  <text x="{bx0-8}" y="{ry+12}" text-anchor="end" fill="{col}" font-family="{FONT_MONO}" font-size="9.3">{esc(lbl)}</text>')
-        p.append(f'  <rect x="{bx0}" y="{ry+2}" width="{w_px:.1f}" height="13" rx="3" fill="url(#{grad})"/>')
+        p.append(f'  <text x="{bx0-8}" y="{ry+11}" text-anchor="end" fill="{col}" font-family="{FONT_MONO}" font-size="9.0">{esc(lbl)}</text>')
+        p.append(f'  <rect x="{bx0}" y="{ry+2}" width="{w_px:.1f}" height="11" rx="3" fill="url(#{grad})"/>')
         gain = max_nj / nj
-        suffix = f" ({gain:.1f}x CpJ)" if idx > 0 else " (1.0x base)"
-        p.append(f'  <text x="{bx0+w_px+7:.1f}" y="{ry+12}" fill="#e2e8f0" font-family="{FONT_MONO}" font-size="9.2">{nj:.1f} nJ{suffix}</text>')
+        suffix = f" ({gain:.2f}x CpJ)" if idx == 1 else (f" ({gain:.1f}x CpJ)" if idx > 1 else " (1.0x base)")
+        p.append(f'  <text x="{bx0+w_px+7:.1f}" y="{ry+11}" fill="#e2e8f0" font-family="{FONT_MONO}" font-size="9.0">{nj:.1f} nJ{suffix}</text>')
 
     # Live Alif E3 Cortex-M55 DWT cycles sub-panel
-    p.append(f'  <text x="{ax+14}" y="{ay+208}" fill="#cbd5e1" font-family="{FONT_SANS}" font-size="11.2" font-weight="600">2. Attached Alif Ensemble E3 (AE302F80F55D5AE Cortex-M55 @ 400 MHz):</text>')
+    p.append(f'  <text x="{ax+14}" y="{ay+208}" fill="#cbd5e1" font-family="{FONT_SANS}" font-size="11.0" font-weight="600">2. Attached Alif Ensemble E3 (AE302F80F55D5AE Cortex-M55 @ 400 MHz):</text>')
     ae3_rows = [
-        ("INT8 Micro-MLP", f"{ae3['int8_micro_mlp_dwt_cycles_per_decision']:.1f} cyc", f"{ae3['int8_micro_mlp_us_per_decision']:.2f} us", "1.0x"),
+        ("INT8 Micro-MLP (2L)", f"{ae3['int8_micro_mlp_dwt_cycles_per_decision']:.1f} cyc", f"{ae3['int8_micro_mlp_us_per_decision']:.1f} us", "1.0x"),
+        ("Zero-MUL T-MAC Tail", f"{ae3['zero_mul_tmac_tail_dwt_cycles_per_decision']:.1f} cyc", f"{ae3['zero_mul_tmac_tail_us_per_decision']:.2f} us", f"{ae3['speedup_tmac_tail_vs_int8_mlp']:.1f}x"),
         ("LUT6 Wobble Overlay", f"{ae3['wobble_overlay_dwt_cycles_per_decision']:.1f} cyc", f"{ae3['wobble_overlay_us_per_decision']:.2f} us", f"{ae3['int8_micro_mlp_dwt_cycles_per_decision']/ae3['wobble_overlay_dwt_cycles_per_decision']:.1f}x"),
         ("LUT6 Scalar Innate", f"{ae3['innate_lut6_dwt_cycles_per_decision']:.1f} cyc", f"{ae3['innate_lut6_us_per_decision']:.2f} us", f"{ae3['speedup_innate_vs_int8_mlp']:.1f}x"),
         ("LUT6 Bit-Sliced B32", f"{ae3['vertical_bitsliced_batch32_dwt_cycles_per_decision']:.2f} cyc", f"{ae3['vertical_bitsliced_batch32_us_per_decision']*1000:.1f} ns", f"{ae3['speedup_bitsliced_vs_int8_mlp']:.0f}x"),
     ]
     for idx, (nm, cyc_s, lat_s, sp_s) in enumerate(ae3_rows):
-        ry = ay + 224 + idx * 21
-        hi = idx == 3
-        col = "#34d399" if hi else ("#fda4af" if idx == 0 else "#a5f3fc")
-        budget_tag = "(&gt;10 us)" if idx == 0 else "(&lt;10 us)"
-        p.append(f'  <text x="{ax+22}" y="{ry}" fill="{col}" font-family="{FONT_MONO}" font-size="9.4">{esc(nm):<20}</text>')
-        p.append(f'  <text x="{ax+210}" y="{ry}" fill="#e2e8f0" font-family="{FONT_MONO}" font-size="9.4">{cyc_s}</text>')
-        p.append(f'  <text x="{ax+335}" y="{ry}" fill="#cbd5e1" font-family="{FONT_MONO}" font-size="9.4">{lat_s} {budget_tag}</text>')
-        p.append(f'  <text x="{ax+aw-18}" y="{ry}" text-anchor="end" fill="{col}" font-family="{FONT_MONO}" font-size="9.4" font-weight="700">{sp_s}</text>')
+        ry = ay + 224 + idx * 18
+        hi = idx == 4
+        col = "#34d399" if hi else ("#fda4af" if idx == 0 else ("#fde68a" if idx == 1 else "#a5f3fc"))
+        budget_tag = "(&gt;10 us)" if idx <= 1 else "(&lt;10 us)"
+        p.append(f'  <text x="{ax+22}" y="{ry}" fill="{col}" font-family="{FONT_MONO}" font-size="9.0">{esc(nm):<20}</text>')
+        p.append(f'  <text x="{ax+204}" y="{ry}" fill="#e2e8f0" font-family="{FONT_MONO}" font-size="9.0">{cyc_s}</text>')
+        p.append(f'  <text x="{ax+335}" y="{ry}" fill="#cbd5e1" font-family="{FONT_MONO}" font-size="9.0">{lat_s} {budget_tag}</text>')
+        p.append(f'  <text x="{ax+aw-18}" y="{ry}" text-anchor="end" fill="{col}" font-family="{FONT_MONO}" font-size="9.0" font-weight="700">{sp_s}</text>')
 
     p.append(f'  <rect x="{ax+14}" y="{ay+ah-36}" width="{aw-28}" height="24" rx="6" fill="#091e1a" stroke="#059669" stroke-opacity="0.55"/>')
     p.append(
@@ -140,7 +142,7 @@ def main() -> None:
     p.append(f'  <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="1.4"/>')
     p.append(f'  <rect x="{bx+14}" y="{by+12}" width="146" height="21" rx="10.5" fill="#0c4a6e" stroke="#38bdf8"/>')
     p.append(f'  <text x="{bx+87}" y="{by+26}" text-anchor="middle" fill="#7dd3fc" font-family="{FONT_MONO}" font-size="9.6" font-weight="700">6/6 Lean Kernels</text>')
-    p.append(f'  <text x="{bx+170}" y="{by+27}" fill="#f8fafc" font-family="{FONT_SANS}" font-size="14" font-weight="700">B. 64-Codon Operon, Wobble FWHT &amp; 36-Thm Proof</text>')
+    p.append(f'  <text x="{bx+170}" y="{by+27}" fill="#f8fafc" font-family="{FONT_SANS}" font-size="14" font-weight="700">B. Two-Tier LUT6+T-MAC, Wobble FWHT &amp; 42-Thm Proof</text>')
     p.append(f'  <text x="{bx+14}" y="{by+47}" fill="#94a3b8" font-family="{FONT_MONO}" font-size="9.3">Parseval sum_S f_hat(S)^2 = 4096  |  con-leche &amp; con-ron --verified ({lean["con_leche_verified_declarations"]} decls)</text>')
 
     p.append(f'  <text x="{bx+14}" y="{by+69}" fill="#cbd5e1" font-family="{FONT_SANS}" font-size="11.2" font-weight="600">1. Boolean Fourier High-Harmonic Noise (|S| &gt;= 5 out of 4,096):</text>')
@@ -171,12 +173,12 @@ def main() -> None:
         p.append(f'  <text x="{cx+86}" y="{cy+37}" text-anchor="middle" fill="#f1f5f9" font-family="{FONT_SANS}" font-size="10.2" font-weight="600">{t2}</text>')
         p.append(f'  <text x="{cx+86}" y="{cy+54}" text-anchor="middle" fill="#94a3b8" font-family="{FONT_MONO}" font-size="7.6">{t3}</text>')
 
-    p.append(f'  <text x="{bx+14}" y="{by+284}" fill="#cbd5e1" font-family="{FONT_MONO}" font-size="9.1">Yosys 0.71+ abc -lut 6 Miter: 64/64 vectors PASS (CRC32 0xd1cc025a, 4,096 B)</text>')
-    p.append(f'  <text x="{bx+14}" y="{by+302}" fill="#93c5fd" font-family="{FONT_MONO}" font-size="9.1">Lean 4.36.0 Modules: Cascade(7) + Benes(7) + Minterm(7) + Conformal(6) + NucleusCodon(9)</text>')
+    p.append(f'  <text x="{bx+14}" y="{by+284}" fill="#cbd5e1" font-family="{FONT_MONO}" font-size="8.8">Yosys Miter: 64/64 PASS + 672B T-MAC Tail (1.60 bpw, 0 MULs, rustc const gate)</text>')
+    p.append(f'  <text x="{bx+14}" y="{by+302}" fill="#93c5fd" font-family="{FONT_MONO}" font-size="8.8">Lean 4.36.0: Cascade(7)+Benes(7)+Minterm(7)+Conformal(6)+Nucleus(9)+TernaryTmac(6)</text>')
     p.append(f'  <rect x="{bx+14}" y="{by+bh-36}" width="{bw-28}" height="24" rx="6" fill="#0b1d33" stroke="#0284c7" stroke-opacity="0.55"/>')
     p.append(
         f'  <text x="{bx+bw/2:.0f}" y="{by+bh-20}" text-anchor="middle" fill="#bae6fd" font-family="{FONT_MONO}" font-size="8.2">'
-        f'{lean["total_kernel_checked_theorems"]}/36 Theorems Verified Across 6 Kernels (Darwin + Linux bwrap)  |  0 sorryAx  |  0 ofReduceBool'
+        f'{lean["total_kernel_checked_theorems"]}/42 Theorems Verified Across 6 Kernels (Darwin + Linux bwrap)  |  0 sorryAx  |  0 ofReduceBool'
         f"</text>"
     )
 

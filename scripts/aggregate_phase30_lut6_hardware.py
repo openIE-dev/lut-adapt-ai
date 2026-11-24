@@ -80,12 +80,17 @@ def main() -> None:
 
     # Append live Alif Ensemble E3 (OpenMV-AE3) hardware cycle rows (`measured_j = None`, `reported_nj = None`)
     mlp_cyc = ae3["int8_micro_mlp_dwt_cycles_per_decision"]
-    for win_name, us_val, cyc_val in [
+    ae3_win_list = [
         ("Window1_Innate_Rung6_Hit", ae3["innate_lut6_us_per_decision"], ae3["innate_lut6_dwt_cycles_per_decision"]),
         ("Window4_PostCompile_Noisy_Wobble_Hit", ae3["wobble_overlay_us_per_decision"], ae3["wobble_overlay_dwt_cycles_per_decision"]),
         ("Window5_Vertical_BitSliced_Batch32", ae3["vertical_bitsliced_batch32_us_per_decision"], ae3["vertical_bitsliced_batch32_dwt_cycles_per_decision"]),
-        ("Window6_Baseline_INT8_MicroMLP", ae3["int8_micro_mlp_us_per_decision"], mlp_cyc),
-    ]:
+    ]
+    if "zero_mul_tmac_tail_dwt_cycles_per_decision" in ae3:
+        ae3_win_list.append(
+            ("Window8_ZeroMul_Ternary_TMAC_Tail", ae3["zero_mul_tmac_tail_us_per_decision"], ae3["zero_mul_tmac_tail_dwt_cycles_per_decision"])
+        )
+    ae3_win_list.append(("Window6_Baseline_INT8_MicroMLP", ae3["int8_micro_mlp_us_per_decision"], mlp_cyc))
+    for win_name, us_val, cyc_val in ae3_win_list:
         rows.append(
             {
                 "host_tag": "openmv-ae3-alif-e3",
@@ -106,6 +111,17 @@ def main() -> None:
         w.writeheader()
         w.writerows(rows)
 
+    thor_win_map = {w["window"]: w for w in thor["windows"]}
+    tmac_nj = (
+        round(thor_win_map["Window8_ZeroMul_Ternary_TMAC_Tail"]["measured_nj_per_op_vdd_cpu"], 2)
+        if "Window8_ZeroMul_Ternary_TMAC_Tail" in thor_win_map
+        else None
+    )
+    unrolled4_nj = (
+        round(thor_win_map["Window7_Unrolled4_Scalar_LUT6"]["measured_nj_per_op_vdd_cpu"], 2)
+        if "Window7_Unrolled4_Scalar_LUT6" in thor_win_map
+        else None
+    )
     baremetal_meta = {
         "rust_toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09), edition = 2024",
         "cross_checked_targets": [
@@ -131,6 +147,13 @@ def main() -> None:
             "innate_hit_measured_nj": round(thor["windows"][0]["measured_nj_per_op_vdd_cpu"], 2),
             "wobble_hit_measured_nj": round(thor["windows"][3]["measured_nj_per_op_vdd_cpu"], 2),
             "bitsliced_batch64_measured_nj": round(thor["windows"][4]["measured_nj_per_op_vdd_cpu"], 2),
+            "unrolled4_scalar_measured_nj": unrolled4_nj,
+            "zero_mul_tmac_tail_measured_nj": tmac_nj,
+            "tmac_cpj_gain_vs_int8_mlp": (
+                round(thor["windows"][5]["measured_nj_per_op_vdd_cpu"] / tmac_nj, 2)
+                if tmac_nj
+                else None
+            ),
             "int8_mlp_measured_nj": round(thor["windows"][5]["measured_nj_per_op_vdd_cpu"], 2),
             "bitsliced_cpj_gain_vs_int8_mlp": round(
                 thor["windows"][5]["measured_nj_per_op_vdd_cpu"]
