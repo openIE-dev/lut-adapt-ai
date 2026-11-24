@@ -62,6 +62,15 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("ConformalProvenance", "LutAdapt.ConformalProvenance.downward_crystallize_never_deterministic", "Section 0.3", "ModelGenerated -/-> Deterministic lattice law"),
     ("ConformalProvenance", "LutAdapt.ConformalProvenance.conformal_crystallize_rank_strictly_bounded", "Section 0.3", "ConformalBounded < CheckSafe < Deterministic"),
     ("ConformalProvenance", "LutAdapt.ConformalProvenance.speculativeSweep_matches_greedy", "Section 0.3", "Target-verified LUT6 speculation = exact greedy"),
+    ("NucleusCodon", "LutAdapt.NucleusCodon.means_test_horizon_break_even", "Section 4.28", "4-part LUT6 means test thermodynamic amortization iff"),
+    ("NucleusCodon", "LutAdapt.NucleusCodon.means_test_high_freedom_or_cold_eviction", "Section 4.28", "High-freedom prose refusal & kill-budget eviction"),
+    ("NucleusCodon", "LutAdapt.NucleusCodon.surgical_mux_selects_wire", "Section 4.28", "Bitwise 2:1 surgical overlay mux wire exactness"),
+    ("NucleusCodon", "LutAdapt.NucleusCodon.surgical_overlay_anchor_non_regression", "Section 4.28", "Disjoint conformal vote anchor non-regression"),
+    ("NucleusCodon", "LutAdapt.NucleusCodon.wobble_codon_synonymous_jitter_invariance", "Section 4.28", "2-bit wobble degeneracy thermal/ADC jitter immunity"),
+    ("NucleusCodon", "LutAdapt.NucleusCodon.subset6_card_ge5_hits_wobble", "Section 4.28", "Degree >= 5 Walsh frequency hits wobble bits {0,1}"),
+    ("NucleusCodon", "LutAdapt.NucleusCodon.wobble_quartet_high_harmonic_cancels", "Section 4.28", "Universal 0 degree-5/6 Walsh energy on wobble LUT6s"),
+    ("NucleusCodon", "LutAdapt.NucleusCodon.one_hot_parseval_decomposition", "Section 4.28", "1-hot Parseval 3844 + 63*4 = 4096 & 28 AC noise leak"),
+    ("NucleusCodon", "LutAdapt.NucleusCodon.apoptosis_rollback_restores_seed", "Section 4.28", "0x3C apoptosis rollback evicts overlay & keeps seed"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

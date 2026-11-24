@@ -1,0 +1,27 @@
+[package]
+name = "lut6-core"
+version = "0.1.0"
+authors = ["David Charlot <david@openie.dev>"]
+edition = "2024"
+rust-version = "1.100.0"
+license = "Apache-2.0 OR MIT"
+description = "Zero-allocation #![no_std] 4 KB LUT6 knowledge crystal, 64-codon biological operon ABI, Walsh-Hadamard harmonic filter, and surgical overlay runtime"
+
+[features]
+default = []
+std = []
+
+[[bin]]
+name = "bench_lut6_nucleus_shunt"
+path = "src/bin/bench_lut6_nucleus_shunt.rs"
+required-features = ["std"]
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+unused_crate_dependencies = "warn"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"

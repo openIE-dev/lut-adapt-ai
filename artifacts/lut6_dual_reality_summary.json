@@ -1,0 +1,122 @@
+{
+  "difflut_vs_dwn": {
+    "dwn_active_lut6_gates": 64,
+    "difflut_raw_gates": 36,
+    "difflut_pruned_active_lut6_gates": 23,
+    "lut6_gate_reduction_vs_dwn_pct": 64.06,
+    "difflut_page_bytes": 4096,
+    "difflut_page_crc32_hex": "0x4bb4a685"
+  },
+  "sensor_wobble_verification": {
+    "target_6bit_code": 28,
+    "wobble_mask_hex": "0xf0000000",
+    "jitter_hits_out_of_4": 4,
+    "high_harmonic_energy": 0,
+    "point_1hot_high_harmonic_energy": 28
+  },
+  "dual_reality_regimes": [
+    {
+      "regime": "Uncanonicalized_1Hot_LUT6",
+      "active_lut6_gates": 64,
+      "noisy_paraphrase_wake_suppression_pct": 0.0,
+      "silent_corruption_pct": 0.0,
+      "ood_conformal_abstention_pct": 100.0,
+      "passes_ecological_rung6_gate": false,
+      "tripped_kill_criterion": true,
+      "pico_264kb_skill_slots": 248
+    },
+    {
+      "regime": "FiniteDiff_DWN_Unpruned",
+      "active_lut6_gates": 64,
+      "noisy_paraphrase_wake_suppression_pct": 95.0,
+      "silent_corruption_pct": 0.0,
+      "ood_conformal_abstention_pct": 100.0,
+      "passes_ecological_rung6_gate": true,
+      "tripped_kill_criterion": false,
+      "pico_264kb_skill_slots": 248
+    },
+    {
+      "regime": "ClosedForm_DiffLUT_Net_Pruned",
+      "active_lut6_gates": 23,
+      "noisy_paraphrase_wake_suppression_pct": 95.0,
+      "silent_corruption_pct": 0.0,
+      "ood_conformal_abstention_pct": 100.0,
+      "passes_ecological_rung6_gate": true,
+      "tripped_kill_criterion": false,
+      "pico_264kb_skill_slots": 690
+    },
+    {
+      "regime": "Nucleus_Wobble_Codon_Crystal",
+      "active_lut6_gates": 16,
+      "noisy_paraphrase_wake_suppression_pct": 95.0,
+      "silent_corruption_pct": 0.0,
+      "ood_conformal_abstention_pct": 100.0,
+      "passes_ecological_rung6_gate": true,
+      "tripped_kill_criterion": false,
+      "pico_264kb_skill_slots": 992
+    }
+  ],
+  "means_test_decisions": [
+    {
+      "skill_id": "spi_anomaly_guard",
+      "admitted": true,
+      "evicted": false,
+      "n_crit_calls": 2.282,
+      "net_horizon_joules_saved": 9.2058,
+      "cpj_gain_ratio": 209.276,
+      "rejection_reason": "admitted_all_four_criteria"
+    },
+    {
+      "skill_id": "lean_paranoid_dispatch",
+      "admitted": true,
+      "evicted": false,
+      "n_crit_calls": 0.23,
+      "net_horizon_joules_saved": 28.74336,
+      "cpj_gain_ratio": 508.475,
+      "rejection_reason": "admitted_all_four_criteria"
+    },
+    {
+      "skill_id": "open_ended_essay_writer",
+      "admitted": false,
+      "evicted": false,
+      "n_crit_calls": 0.134,
+      "net_horizon_joules_saved": 449.9248,
+      "cpj_gain_ratio": 5984.043,
+      "rejection_reason": "refused_high_behavioral_freedom_prose"
+    },
+    {
+      "skill_id": "one_off_migration_script",
+      "admitted": false,
+      "evicted": false,
+      "n_crit_calls": 1.9,
+      "net_horizon_joules_saved": -0.08551,
+      "cpj_gain_ratio": 0.526,
+      "rejection_reason": "refused_unamortized_compile_cost"
+    },
+    {
+      "skill_id": "unverified_llm_guess",
+      "admitted": false,
+      "evicted": false,
+      "n_crit_calls": 0.252,
+      "net_horizon_joules_saved": 95.9634,
+      "cpj_gain_ratio": 2622.951,
+      "rejection_reason": "refused_impurities_unverified_outputs"
+    },
+    {
+      "skill_id": "drifted_stale_overlay",
+      "admitted": false,
+      "evicted": true,
+      "n_crit_calls": 0.804,
+      "net_horizon_joules_saved": 19.9578,
+      "cpj_gain_ratio": 473.934,
+      "rejection_reason": "evicted_kill_budget_exceeded"
+    }
+  ],
+  "telemetry": {
+    "eval_elapsed_ms": 3140.41,
+    "reported_j": 14.4352,
+    "measured_j": null,
+    "board_metered": false,
+    "difflut_crystal_path": "artifacts/crystals/difflut_intent_router.lut6"
+  }
+}

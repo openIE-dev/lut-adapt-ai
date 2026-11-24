@@ -1,0 +1,7 @@
+skill_id,admitted,evicted,n_crit_calls,net_horizon_joules_saved,cpj_gain_ratio,rejection_reason
+spi_anomaly_guard,True,False,2.282,9.2058,209.276,admitted_all_four_criteria
+lean_paranoid_dispatch,True,False,0.23,28.74336,508.475,admitted_all_four_criteria
+open_ended_essay_writer,False,False,0.134,449.9248,5984.043,refused_high_behavioral_freedom_prose
+one_off_migration_script,False,False,1.9,-0.08551,0.526,refused_unamortized_compile_cost
+unverified_llm_guess,False,False,0.252,95.9634,2622.951,refused_impurities_unverified_outputs
+drifted_stale_overlay,False,True,0.804,19.9578,473.934,evicted_kill_budget_exceeded

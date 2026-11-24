@@ -1,0 +1,15 @@
+{
+  "host_tag": "jetson-agx-thor",
+  "arch": "aarch64",
+  "os": "linux",
+  "yosys_crystal_verified": true,
+  "board_metered": true,
+  "windows": [
+    {"window": "Window1_Innate_Rung6_Hit", "iterations": 30000000, "elapsed_ms": 1963.5496, "ns_per_op": 65.451653, "cpu_cycles_per_op": null, "measured_j_vdd_cpu": 59.629169, "measured_j_vin": 163.509373, "measured_nj_per_op_vdd_cpu": 1987.638976, "reported_j": null, "reported_nj_per_op": null, "board_metered": true},
+    {"window": "Window2_Frontier_Miss_Agency_Escalate", "iterations": 15000000, "elapsed_ms": 5212.5268, "ns_per_op": 347.501788, "cpu_cycles_per_op": null, "measured_j_vdd_cpu": 152.298210, "measured_j_vin": 458.069279, "measured_nj_per_op_vdd_cpu": 10153.214027, "reported_j": null, "reported_nj_per_op": null, "board_metered": true},
+    {"window": "Window3_Walsh_FWHT_Anchor_Refine", "iterations": 600000, "elapsed_ms": 23146.1320, "ns_per_op": 38576.886707, "cpu_cycles_per_op": null, "measured_j_vdd_cpu": 555.541036, "measured_j_vin": 1756.956742, "measured_nj_per_op_vdd_cpu": 925901.727454, "reported_j": null, "reported_nj_per_op": null, "board_metered": true},
+    {"window": "Window4_PostCompile_Noisy_Wobble_Hit", "iterations": 30000000, "elapsed_ms": 3741.1443, "ns_per_op": 124.704811, "cpu_cycles_per_op": null, "measured_j_vdd_cpu": 95.974310, "measured_j_vin": 292.177216, "measured_nj_per_op_vdd_cpu": 3199.143676, "reported_j": null, "reported_nj_per_op": null, "board_metered": true},
+    {"window": "Window5_Vertical_BitSliced_Batch64", "iterations": 120000000, "elapsed_ms": 643.3859, "ns_per_op": 5.361549, "cpu_cycles_per_op": null, "measured_j_vdd_cpu": 15.027565, "measured_j_vin": 51.013364, "measured_nj_per_op_vdd_cpu": 125.229706, "reported_j": null, "reported_nj_per_op": null, "board_metered": true},
+    {"window": "Window6_Baseline_INT8_MicroMLP", "iterations": 15000000, "elapsed_ms": 7019.4639, "ns_per_op": 467.964261, "cpu_cycles_per_op": null, "measured_j_vdd_cpu": 160.202274, "measured_j_vin": 517.715438, "measured_nj_per_op_vdd_cpu": 10680.151617, "reported_j": null, "reported_nj_per_op": null, "board_metered": true}
+  ]
+}

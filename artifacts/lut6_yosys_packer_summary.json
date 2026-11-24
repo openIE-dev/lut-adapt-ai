@@ -1,0 +1,13 @@
+{
+  "yosys_version": "Yosys 0.71+ (git sha1 b4c586fd3, Release, AppleClang /usr/bin/c++ 21.0.0.21000401)",
+  "crystal_path": "artifacts/crystals/yosys_operon_seed.lut6",
+  "crystal_bytes": 4096,
+  "crc32_hex": "0xd1cc025a",
+  "proof_digest_sha256": "7843ce8905805754b21ae16a22a14780886704badecd27df36444c731115f553",
+  "exhaustive_miter_vectors_checked": 64,
+  "exhaustive_miter_failures": 0,
+  "yosys_lut_cell_count": 2,
+  "levelized_num_layers": 1,
+  "levelized_gates_per_layer": 14,
+  "max_gate_high_harmonic_energy": 28
+}

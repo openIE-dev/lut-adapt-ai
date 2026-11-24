@@ -1,0 +1,20 @@
+[package]
+name = "alif-lut6-bench"
+version = "0.1.0"
+authors = ["David Charlot <david@openie.dev>"]
+edition = "2024"
+rust-version = "1.100.0"
+description = "Zero-dependency bare-metal Alif Ensemble E3/E4 Cortex-M55 (thumbv8m.main-none-eabihf) DTCM/MRAM cycle & shunt-trigger harness for lut6-core"
+
+[dependencies]
+lut6-core = { path = "../lut6-core" }
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+unused_crate_dependencies = "warn"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"

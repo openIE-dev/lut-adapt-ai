@@ -1,0 +1,5 @@
+regime,active_lut6_gates,noisy_paraphrase_wake_suppression_pct,silent_corruption_pct,ood_conformal_abstention_pct,passes_ecological_rung6_gate,tripped_kill_criterion,pico_264kb_skill_slots
+Uncanonicalized_1Hot_LUT6,64,0.0,0.0,100.0,False,True,248
+FiniteDiff_DWN_Unpruned,64,95.0,0.0,100.0,True,False,248
+ClosedForm_DiffLUT_Net_Pruned,23,95.0,0.0,100.0,True,False,690
+Nucleus_Wobble_Codon_Crystal,16,95.0,0.0,100.0,True,False,992

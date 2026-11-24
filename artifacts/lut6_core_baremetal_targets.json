@@ -1,0 +1,66 @@
+{
+  "rust_toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09), edition = 2024",
+  "cross_checked_targets": [
+    "aarch64-apple-darwin",
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    "thumbv8m.main-none-eabihf",
+    "thumbv6m-none-eabi",
+    "thumbv7em-none-eabihf",
+    "riscv32imac-unknown-none-elf"
+  ],
+  "alif_e3_e4_cortex_m55_elf": {
+    "target": "thumbv8m.main-none-eabihf (-C target-cpu=cortex-m55)",
+    "sections_bytes": {
+      ".vector_table": 8,
+      ".ARM.exidx": 16,
+      ".text": 30496,
+      ".lut6_dtcm": 8192,
+      ".data": 0,
+      ".bss": 32,
+      ".comment": 154,
+      ".ARM.attributes": 72,
+      "Total": 38970
+    }
+  },
+  "pi_pico_rp2040_cortex_m0plus_elf": {
+    "target": "thumbv6m-none-eabi (-C target-cpu=cortex-m0plus)",
+    "sections_bytes": {
+      ".vector_table": 8,
+      ".ARM.exidx": 16,
+      ".text": 27520,
+      ".data.sram_lut6": 8192,
+      ".data": 0,
+      ".bss": 24,
+      ".comment": 154,
+      ".ARM.attributes": 65,
+      "Total": 35979
+    }
+  },
+  "live_attached_alif_ae3_dwt_telemetry": {
+    "speedup_innate_vs_int8_mlp": 35.22,
+    "wobble_overlay_us_per_decision": 2.942,
+    "vertical_bitsliced_batch32_us_per_decision": 0.0381,
+    "board_metered": false,
+    "int8_micro_mlp_us_per_decision": 59.17,
+    "cpu_hz": 400000000,
+    "innate_lut6_us_per_decision": 1.693,
+    "board": "OpenMV-AE3 (Alif Ensemble E3 AE302F80F55D5AE, Arm Cortex-M55 @ 400 MHz)",
+    "execution_mode": "RAM-only @micropython.viper native Thumb2/Armv8.1-M machine code (0 flash writes)",
+    "wobble_overlay_dwt_cycles_per_decision": 1174.19,
+    "innate_lut6_dwt_cycles_per_decision": 671.89,
+    "vertical_bitsliced_batch32_dwt_cycles_per_decision": 12.18,
+    "int8_micro_mlp_dwt_cycles_per_decision": 23663.47,
+    "speedup_bitsliced_vs_int8_mlp": 1943.49,
+    "measured_j": null
+  },
+  "thor_shunt_summary": {
+    "board_metered": true,
+    "innate_hit_measured_nj": 1987.64,
+    "wobble_hit_measured_nj": 3199.14,
+    "bitsliced_batch64_measured_nj": 125.23,
+    "int8_mlp_measured_nj": 10680.15,
+    "bitsliced_cpj_gain_vs_int8_mlp": 85.28,
+    "wobble_break_even_calls_n_crit": 133.15
+  }
+}
