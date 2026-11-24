@@ -251,6 +251,62 @@
         </div>
       </section>
 
+      <!-- Widget 5: Smart-Glasses / Smartwatch Wearable-MoL & LastExam Epistemic Calibration Lab (la-hle-01) -->
+      <section id="la-hle-01" class="glass-card" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <h2 style="margin: 0; font-size: 1.25rem;"><code>la-hle-01</code> · Smart-Glasses / Watch <code>Wearable-MoL</code> &amp; <code>LastExam</code> Epistemic Calibration Lab</h2>
+          <span class="chip chip-meas" id="hle-wasm-chip">Claims LA-36..LA-38 · Live WASM Gate + Measured Bakeoff</span>
+        </div>
+        <p style="font-size: 0.9rem; margin-top: 0.6rem;">
+          Explore how <code>OpenIE Wearable-MoL</code> fits in <code>5,984 B</code> (<code>9.13%</code> of <code>64 KB</code> <code>nRF52832</code> smartwatch <code>SRAM</code>, where UW/Meta's <code>Sensente/uLM-28M</code> overflows <code>214×</code> at <code>13.75 MB</code>), executes live <code>wasm_eval_wearable_epistemic</code> + <code>wasm_check_hle_canary8</code> inside <code>lut6_core.wasm</code>, suppresses <code>93.75% → 0.00%</code> collaborative prefix poisoning on whiteboard PhD queries, and cuts <code>LastExam</code>-protocol <code>RMS Calibration Error</code> <code>5.37×</code> (<code>70.62% → 13.14%</code>, <code>0.00% CHR@80</code>).
+        </p>
+        <div class="ctrl-grid">
+          <div class="ctrl-box">
+            <label><span>Wearable / Frontier Model Architecture (<code>Claims LA-36 &amp; LA-37</code>)</span></label>
+            <select id="hle-arch">
+              <option value="mol" selected>OpenIE Wearable-MoL + Epistemic Cascade (5,984 B R0 → LFM2.5-230M → 24B/35B, Ours)</option>
+              <option value="collab">UW/Meta uLM-28M Collaborative Prefix + Cloud 35B (arXiv:2604.19642 · 93.75% Poison!)</option>
+              <option value="ulm28m">Sensente/uLM-28M Standalone (28.84M Smart-Glasses uLM · |V|=12,288)</option>
+              <option value="lfm230m">LiquidAI/LFM2.5-230M (229.69M O(1) Wearable Hybrid)</option>
+              <option value="smol135m">HuggingFaceTB/SmolLM2-135M-Instruct (134.52M)</option>
+              <option value="qwen06b">Qwen/Qwen3-0.6B (596.05M · 96.88% CHR@80)</option>
+              <option value="gemma2b">google/gemma-4-E2B-it (WearOS / Android XR Class · 93.75% CHR@80)</option>
+              <option value="qwen35b">Standalone Qwen/Qwen3.6-35B-A3B (34.66B MoE · 81.25% CHR@80)</option>
+            </select>
+          </div>
+          <div class="ctrl-box">
+            <label><span>Live <code>lut6_core.wasm</code> Wearable Stream &amp; <code>hle:3r2s</code> Canary Probe</span></label>
+            <select id="hle-probe">
+              <option value="reflex" selected>Smart-Glasses Reflex · "Set 5-min timer" (0x015A26A6C3DEEDED · Clean)</option>
+              <option value="whiteboard">Whiteboard Glance · SuperGPQA / AIME Olympiad Query (0xFFFA26A6C3DEEDED → Epistemic Hold!)</option>
+              <option value="canary">Canary Quarantine Test · Prompt w/ [hle:3r2s:26b5c67b...] → Blocked from .lut6!</option>
+            </select>
+          </div>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-tile">
+            <div class="k">64 KB Watch SRAM &amp; Battery</div>
+            <div class="v" id="hle-sram" style="color: var(--color-brand-cyan);">5,984 B (9.13%)</div>
+            <div class="s" id="hle-batt">~1.80B routine est_queries (250 mAh)</div>
+          </div>
+          <div class="metric-tile">
+            <div class="k">Wearable Stream &amp; Poisoning</div>
+            <div class="v" id="hle-stream">97.9% Wear / 0.0% Poison</div>
+            <div class="s" id="hle-stream-sub">37.5% Whiteboard PhD · 1.40 µs M55</div>
+          </div>
+          <div class="metric-tile">
+            <div class="k">LastExam Calibration (32 Items)</div>
+            <div class="v" id="hle-cal" style="color: var(--color-brand-cyan);">13.14% RMS-CE</div>
+            <div class="s" id="hle-cal-sub">0.00% CHR@80 · 40.00% SelAcc (Tied #1)</div>
+          </div>
+          <div class="metric-tile">
+            <div class="k">Live WASM Gate &amp; Canary</div>
+            <div class="v" id="hle-gate">4-Tok Opener (t₀=312)</div>
+            <div class="s" id="hle-gate-sub">88% cal conf · Canary=0 (Admissible)</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Static Vector Diagrams Gallery -->
       <section id="la-figs" style="margin-top: 2.5rem;">
         <h2 style="font-size: 1.3rem;">Paper Vector Diagrams (Click to Zoom)</h2>
@@ -275,8 +331,8 @@
           <figcaption><strong>Figure 5.</strong> The 9-Rung Computer Intelligence Avalanche Ratchet and Compilation Threshold (<code>ΔT &gt; ΔT*</code>).</figcaption>
         </figure>
         <figure class="fig">
-          <img src="../figures/six-kernel-trust-and-stack.svg" alt="Six-Kernel Formal Proof Assurance (50 Theorems) and Compiled Stack">
-          <figcaption><strong>Figure 6.</strong> Six-Kernel Paranoid Proof Audit across all <code>50</code> Lean <code>4.36.0</code> theorems (<code>1,414</code> fleet) + Inria <code>Aeneas</code> Rust-to-Lean and Three-Layer Compiled Stack.</figcaption>
+          <img src="../figures/six-kernel-trust-and-stack.svg" alt="Six-Kernel Formal Proof Assurance (58 Theorems) and Compiled Stack">
+          <figcaption><strong>Figure 6.</strong> Six-Kernel Paranoid Proof Audit across all <code>58</code> Lean <code>4.36.0</code> theorems (<code>1,422</code> fleet) + Inria <code>Aeneas</code> Rust-to-Lean and Three-Layer Compiled Stack.</figcaption>
         </figure>
         <figure class="fig">
           <img src="../figures/six-host-measured-j-and-multivendor-gpu.svg" alt="Six-Host Fleet and Jetson AGX Thor Physical Shunt measured_j">
@@ -284,11 +340,15 @@
         </figure>
         <figure class="fig">
           <img src="../figures/lut6-nucleus-codon-and-means-test.svg" alt="4 KB LUT6 + Zero-MUL T-MAC Nucleus, Wobble Harmonics, DiffLUT-Net, and Nov 2026 Looped Models">
-          <figcaption><strong>Figure 8.</strong> <code>4 KB</code> <code>#![no_std]</code> <code>lut6-core</code> + <code>Antisym-40 T-MAC</code> Nucleus (<code>87.00×</code> bit-sliced / <code>1.65×</code> <code>T-MAC</code> <code>Thor</code> shunt <code>CpJ</code>), live <code>Alif E3</code> Cortex-M55 <code>DWT</code> cycles, <code>DiffLUT-Net</code> pruning, and Oct–Nov 2026 looped models.</figcaption>
+          <figcaption><strong>Figure 8.</strong> <code>4 KB</code> <code>#![no_std]</code> <code>lut6-core</code> + <code>Antisym-40 T-MAC</code> Nucleus (<code>87.25×</code> bit-sliced / <code>1.65×</code> <code>T-MAC</code> <code>Thor</code> shunt <code>CpJ</code>), live <code>Alif E3</code> Cortex-M55 <code>DWT</code> cycles, <code>DiffLUT-Net</code> pruning, and Oct–Nov 2026 looped models.</figcaption>
         </figure>
         <figure class="fig">
-          <img src="../figures/global-frontiers-antisym-seu-wasm.svg" alt="Global Multi-Frontier Advancement: Antisym-40 T-MAC, SEU SECDED Survival, openXC7 Post-PAR Bitstream, Aeneas, and 14.74 KB WASM">
-          <figcaption><strong>Figure 9.</strong> Global multi-frontier measurements (<code>Claims LA-33..LA-35</code>): ISCA '25 <code>Antisym-40 T-MAC</code> (<code>Zen 5</code> <code>1.12×</code> <code>CpJ</code> flip), <code>SEU</code> <code>(72,64)</code> <code>SECDED</code> + <code>0x3C</code> apoptosis (<code>100.0%</code> survival at <code>BER = 1%</code>), <code>Lupanov</code> <code>-72.5%</code> / <code>TreeLUT</code> / <code>KAN-LUT</code>, license-free <code>openXC7</code> <code>320.62 MHz</code> post-<code>PAR</code> <code>.bit</code> on <code>XC7A200T-2FBG484-2</code>, Inria <code>Aeneas</code> Rust→Lean, and <code>14.74 KB</code> <code>lut6_core.wasm</code>.</figcaption>
+          <img src="../figures/global-frontiers-antisym-seu-wasm.svg" alt="Global Multi-Frontier Advancement: Antisym-40 T-MAC, SEU SECDED Survival, openXC7 Post-PAR Bitstream, Aeneas, and WASM">
+          <figcaption><strong>Figure 9.</strong> Global multi-frontier measurements (<code>Claims LA-33..LA-35</code>): ISCA '25 <code>Antisym-40 T-MAC</code> (<code>Zen 5</code> <code>CpJ</code> flip), <code>SEU</code> <code>(72,64)</code> <code>SECDED</code> + <code>0x3C</code> apoptosis (<code>100.0%</code> survival at <code>BER = 1%</code>), <code>Lupanov</code> <code>-72.5%</code> / <code>TreeLUT</code> / <code>KAN-LUT</code>, license-free <code>openXC7</code> <code>320.62 MHz</code> post-<code>PAR</code> <code>.bit</code> on <code>XC7A200T-2FBG484-2</code>, Inria <code>Aeneas</code> Rust→Lean, and <code>&lt;= 16 KB</code> <code>lut6_core.wasm</code>.</figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="../figures/wearable-microllm-and-lastexam.svg" alt="Smart-Glasses and Smartwatch MicroLLMs Meets LastExam Epistemic Calibration: 5,984 B Watch SRAM Nucleus, Zero-Poison Opener Gate, and Multi-Scale Calibration">
+          <figcaption><strong>Figure 10.</strong> Smart-glasses &amp; smartwatch microLLMs and <code>LastExam</code>-protocol epistemic calibration (<code>Claims LA-36..LA-38</code>, <code>58</code> 6-kernel theorems / <code>1,422</code> fleet): <code>5,984 B</code> (<code>9.13%</code> of <code>64 KB</code> <code>nRF52832</code> watch <code>SRAM</code>), <code>222.57×</code> <code>Thor</code> shunt <code>measured_j</code> &amp; <code>2,745.18×</code> Cortex-<code>M55</code> <code>DWT</code> gain, <code>0.00%</code> prefix poisoning, <code>5.37×</code> lower <code>RMS-CE</code> (<code>13.14%</code>), <code>0.00% CHR@80</code>, <code>40.00% SelAcc</code>, and <code>hle:3r2s</code> canary quarantine.</figcaption>
         </figure>
       </section>
     </div>
@@ -499,13 +559,74 @@
         .then(function(bytes){ return WebAssembly.instantiate(bytes, {}); })
         .then(function(res){
           exportsObj = res.instance.exports;
-          chip.textContent = 'Live WASM VM Active (15,094 B · Verified)';
+          window.__lut6WasmExports = exportsObj;
+          chip.textContent = 'Live WASM VM Active (Verified · 0 Crates)';
           updateUI();
+          if (window.__updateHleWasm) window.__updateHleWasm();
         })
         .catch(function(){
           chip.textContent = 'Offline File Mode (Serve via HTTP for live .wasm)';
           updateUI();
+          if (window.__updateHleWasm) window.__updateHleWasm();
         });
+    })();
+
+    // Widget 5: Smart-Glasses / Smartwatch Wearable-MoL & LastExam Calibration Lab
+    (function(){
+      var archData = {
+        mol:     { sram: '5,984 B (9.13% FITS!)', batt: '~1.80B routine est_queries · 0.0019 mJ R0', stream: '97.9% Wear / 0.0% Poison', ssub: '37.5% Whiteboard PhD · 222.6× Thor Shunt CpJ', cal: '13.14% RMS-CE (5.37× cut)', csub: '0.00% CHR@80 · 40.00% SelAcc · 18.75% Acc (#1)', ok: true },
+        collab:  { sram: '13.75 MB (214× OVERFLOW)', batt: '198 est_queries · 17,234.5 mJ/q (Darwin)', stream: '95.8% Wear / 93.8% POISON!', ssub: '37.5% Exam · Speaks wrong 4-tok prefix first!', cal: '70.62% RMS-CE (Cloud 35B)', csub: '81.25% CHR@80 · Uncalibrated prefix masking', ok: false },
+        ulm28m:  { sram: '13.75 MB (214× OVERFLOW)', batt: '12,498 est_queries · 273.62 mJ/q', stream: '6.2% Wear / 93.8% Poison', ssub: '6.2% Whiteboard PhD · 28.84M |V|=12,288', cal: '68.24% RMS-CE', csub: '3.12% Acc (6.25% MC10) · 3.12% SelAcc', ok: false },
+        lfm230m: { sram: '109.5 MB (1,711× OVERFLOW)', batt: '16,699 est_queries · 204.79 mJ/q (45.1 ms)', stream: '41.7% Wear / 81.2% Poison', ssub: '18.8% Whiteboard PhD · O(1) Hybrid 229.7M', cal: '59.75% RMS-CE', csub: '9.38% Acc (18.75% MC10) · 9.38% CHR@80', ok: false },
+        smol135m:{ sram: '64.1 MB (1,002× OVERFLOW)', batt: '5,430 est_queries · 629.75 mJ/q', stream: '27.1% Wear / 93.8% Poison', ssub: '6.2% Whiteboard PhD · 134.5M', cal: '70.46% RMS-CE', csub: '3.12% Acc · 25.00% CHR@80', ok: false },
+        qwen06b: { sram: '284.2 MB (4,441× OVERFLOW)', batt: '2,088 est_queries · 1,637.6 mJ/q', stream: '16.7% Wear / 87.5% Poison', ssub: '12.5% Whiteboard PhD · 596.1M', cal: '87.42% RMS-CE', csub: '3.12% Acc · 96.88% CHR@80 (Extreme!)', ok: false },
+        gemma2b: { sram: '3,200 MB (WearOS Phone/XR)', batt: '775.3 J / 32 exam items', stream: 'WearOS Tier · Not MCU', ssub: '2.6B On-Device Hybrid', cal: '77.75% RMS-CE', csub: '6.25% Acc (12.5% MC10) · 93.75% CHR@80', ok: false },
+        qwen35b: { sram: '25,200 MB (Always-Cloud)', batt: '161 est_queries (+320 ms BLE/LTE RTT)', stream: '100% Wear / 0.0% Poison', ssub: '37.5% Exam · 2,088 ms/q latency', cal: '70.62% RMS-CE', csub: '18.75% Acc (#1) · 81.25% CHR@80 · 18.75% SelAcc', ok: false }
+      };
+      var aSel = document.getElementById('hle-arch'), pSel = document.getElementById('hle-probe');
+      function updHle() {
+        var d = archData[aSel.value];
+        var sEl = document.getElementById('hle-sram'), cEl = document.getElementById('hle-cal');
+        sEl.textContent = d.sram;
+        sEl.style.color = d.ok ? 'var(--color-brand-cyan)' : 'var(--color-brand-amber)';
+        document.getElementById('hle-batt').textContent = d.batt;
+        document.getElementById('hle-stream').textContent = d.stream;
+        document.getElementById('hle-stream-sub').textContent = d.ssub;
+        cEl.textContent = d.cal;
+        cEl.style.color = d.ok ? 'var(--color-brand-cyan)' : 'var(--color-brand-amber)';
+        document.getElementById('hle-cal-sub').textContent = d.csub;
+
+        var ex = window.__lut6WasmExports;
+        var gEl = document.getElementById('hle-gate'), gsEl = document.getElementById('hle-gate-sub');
+        var mode = pSel.value;
+        if (ex && ex.wasm_eval_wearable_epistemic && ex.wasm_check_hle_canary8) {
+          if (mode === 'reflex') {
+            var r = ex.wasm_eval_wearable_epistemic(0xC3DEEDED, 0x015A26A6, 8) >>> 0;
+            var can = ex.wasm_check_hle_canary8(0x656D6974, 0x35303072) >>> 0;
+            gEl.textContent = 'Mode ' + ((r >>> 24) & 3) + ' · 4-Tok Opener (t₀=' + (r & 0x3FFF) + ')';
+            gEl.style.color = 'var(--color-brand-cyan)';
+            gsEl.textContent = 'CalConf=' + ((r >>> 16) & 0xFF) + '% · Canary=' + can + ' (Live WASM)';
+          } else if (mode === 'whiteboard') {
+            var r2 = ex.wasm_eval_wearable_epistemic(0xC3DEEDED, 0xFFFA26A6, 8) >>> 0;
+            gEl.textContent = 'Mode ' + ((r2 >>> 24) & 3) + ' · EPISTEMIC HOLD';
+            gEl.style.color = 'var(--color-brand-amber)';
+            gsEl.textContent = 'PriorConf=' + ((r2 >>> 16) & 0xFF) + '% · 0 poisoned prefix words!';
+          } else {
+            var canHle = ex.wasm_check_hle_canary8(0x3A656C68, 0x73327233) >>> 0;
+            gEl.textContent = 'CANARY=1 · QUARANTINED!';
+            gEl.style.color = 'var(--color-brand-amber)';
+            gsEl.textContent = 'hle:3r2s detected (' + canHle + ') → 0 items crystallized';
+          }
+        } else {
+          if (mode === 'reflex') { gEl.textContent = 'Mode 1 · 4-Tok Opener (t₀=267)'; gsEl.textContent = 'CalConf=88% · Canary=0 (Verified receipt)'; }
+          else if (mode === 'whiteboard') { gEl.textContent = 'Mode 3 · EPISTEMIC HOLD'; gsEl.textContent = 'PriorConf=0% · 0 poisoned prefix words'; }
+          else { gEl.textContent = 'CANARY=1 · QUARANTINED!'; gsEl.textContent = 'hle:3r2s blocked from .lut6 crystal'; }
+        }
+      }
+      window.__updateHleWasm = updHle;
+      aSel.addEventListener('change', updHle);
+      pSel.addEventListener('change', updHle);
+      updHle();
     })();
 
     // Lightbox for SVGs

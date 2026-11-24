@@ -93,6 +93,14 @@ def main() -> None:
         ae3_win_list.append(
             ("Window9_Antisym40_ZeroMul_TMAC_Tail", ae3["antisym40_tmac_precomp_us_per_decision"], ae3["antisym40_tmac_precomp_dwt_cycles_per_decision"])
         )
+    if "wearable_56bit_epistemic_dwt_cycles_per_decision" in ae3:
+        ae3_win_list.append(
+            ("Window10_Wearable_56Bit_4Tok_Epistemic_Gate", ae3["wearable_56bit_epistemic_us_per_decision"], ae3["wearable_56bit_epistemic_dwt_cycles_per_decision"])
+        )
+    if "ulm28m_d512_slice_dwt_cycles_per_decision" in ae3:
+        ae3_win_list.append(
+            ("Window11_Baseline_uLM28M_d512_Slice", ae3["ulm28m_d512_slice_us_per_decision"], ae3["ulm28m_d512_slice_dwt_cycles_per_decision"])
+        )
     ae3_win_list.append(("Window6_Baseline_INT8_MicroMLP", ae3["int8_micro_mlp_us_per_decision"], mlp_cyc))
     for win_name, us_val, cyc_val in ae3_win_list:
         rows.append(
@@ -129,6 +137,16 @@ def main() -> None:
     unrolled4_nj = (
         round(thor_win_map["Window7_Unrolled4_Scalar_LUT6"]["measured_nj_per_op_vdd_cpu"], 2)
         if "Window7_Unrolled4_Scalar_LUT6" in thor_win_map
+        else None
+    )
+    wear_ep_nj = (
+        round(thor_win_map["Window10_Wearable_56Bit_4Tok_Epistemic_Gate"]["measured_nj_per_op_vdd_cpu"], 2)
+        if "Window10_Wearable_56Bit_4Tok_Epistemic_Gate" in thor_win_map
+        else None
+    )
+    ulm_slice_nj = (
+        round(thor_win_map["Window11_Baseline_uLM28M_d512_Slice"]["measured_nj_per_op_vdd_cpu"], 2)
+        if "Window11_Baseline_uLM28M_d512_Slice" in thor_win_map
         else None
     )
     baremetal_meta = {
@@ -173,6 +191,13 @@ def main() -> None:
             "antisym40_gain_over_full81_tmac": (
                 round(tmac_nj / antisym40_nj, 2)
                 if (tmac_nj and antisym40_nj)
+                else None
+            ),
+            "wearable_56bit_epistemic_measured_nj": wear_ep_nj,
+            "ulm28m_d512_slice_measured_nj": ulm_slice_nj,
+            "wearable_epistemic_cpj_gain_vs_ulm28m_slice": (
+                round(ulm_slice_nj / wear_ep_nj, 2)
+                if (wear_ep_nj and ulm_slice_nj)
                 else None
             ),
             "int8_mlp_measured_nj": round(thor["windows"][5]["measured_nj_per_op_vdd_cpu"], 2),

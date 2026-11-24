@@ -115,10 +115,11 @@
     const SLIDES = [
       "1 · 9-Rung Avalanche & Threshold",
       "2 · The Trinity Stack",
-      "3 · 6-Kernel Proof Assurance (50 Thms)",
+      "3 · 6-Kernel Proof Assurance (58 Thms)",
       "4 · 4 KB LUT6 + Antisym-40 T-MAC Nucleus",
       "5 · Global Frontiers: SEU, openXC7, Aeneas & WASM",
-      "6 · Keynote Script & Translation Matrix"
+      "6 · Smart-Glasses MicroLLMs & LastExam Humility",
+      "7 · Keynote Script & Translation Matrix"
     ];
     let idx = 0;
 
@@ -199,8 +200,8 @@
           <section class="panel">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
               <div>
-                <h2>Six-Kernel Paranoid Proof Assurance (Claim LA-19 · 50 Theorems · CVE-2026-72844-Hardened)</h2>
-                <p class="sub">All 50 LutAdapt theorems (and 1,414 across the 4 OpenIE Lean suites) pass six independent checkers via lake check --paranoid, paired with Inria Charon + Aeneas mechanical #![no_std] Rust MIR to Lean 4.36.0 verification.</p>
+                <h2>Six-Kernel Paranoid Proof Assurance (Claim LA-19 · 58 Theorems · CVE-2026-72844-Hardened)</h2>
+                <p class="sub">All 58 LutAdapt theorems (and 1,422 across the 4 OpenIE Lean suites) pass six independent checkers via lake check --paranoid, paired with Inria Charon + Aeneas mechanical #![no_std] Rust MIR to Lean 4.36.0 verification.</p>
               </div>
               <span class="pill">6 / 6 Independent Kernels Accept</span>
             </div>
@@ -236,6 +237,21 @@
             </div>
             <div class="fig-frame">
               <img src="global-frontiers-antisym-seu-wasm.svg" alt="Global Multi-Frontier Advancement: Antisym-40 T-MAC, SEU SECDED, openXC7 Post-PAR Bitstream, Aeneas, and WASM" />
+            </div>
+          </section>
+        `;
+      } else if (idx === 5) {
+        body.innerHTML = `
+          <section class="panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <div>
+                <h2>Smart-Glasses &amp; Watch MicroLLMs Meet LastExam Epistemic Humility (Claims LA-36..LA-38)</h2>
+                <p class="sub">5,984 B (9.13% of 64 KB nRF52832 watch SRAM), 56-bit 4-token uLM-28M openers (222.57× Thor shunt measured_j, 2,745.18× Cortex-M55 DWT), 0.00% prefix poisoning, 5.37× lower LastExam RMS-CE (13.14%), 0.00% CHR@80, and hle:3r2s canary quarantine.</p>
+              </div>
+              <span class="pill">58 Six-Kernel Theorems · 0.00% CHR@80</span>
+            </div>
+            <div class="fig-frame">
+              <img src="../../paper/figures/wearable-microllm-and-lastexam.svg" alt="Smart-Glasses and Smartwatch MicroLLMs Meets LastExam Epistemic Humility" />
             </div>
           </section>
         `;

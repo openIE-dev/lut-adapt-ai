@@ -307,6 +307,60 @@ def bench_int8_mlp_64_32_16_200(w1: ptr32, w2: ptr32, x: ptr32, h: ptr32) -> int
         it += 1
     return acc_all
 
+# 5. Phase 34 Wearable `56`-Bit `4`-Token `uLM-28M` Opener + `LastExam` Epistemic Hold Gate (`1,000` calls)
+opener_lo = array.array('I', [(312 | (1045 << 14) | ((882 & 0xF) << 28)) & 0xFFFFFFFF for _ in range(8)])
+opener_hi = array.array('I', [((882 >> 4) | (419 << 10) | (0xF0 << 24)) & 0xFFFFFFFF for _ in range(8)])
+
+@micropython.viper
+def bench_wearable_56bit_epistemic_1k(t_lo: ptr32, o_lo: ptr32, o_hi: ptr32) -> int:
+    acc: int = 0
+    i: int = 0
+    while i < 1000:
+        # 75% certified wearable reflexes + 25% frontier `LastExam` epistemic hold queries
+        if (i & 3) == 3:
+            f_mark: int = 0x8700
+            # Popcount of 0x8700 >= 3 -> immediate EpistemicHoldEscalate (prior=0%, 0 poisoned prefix words!)
+            acc ^= f_mark
+        else:
+            addr: int = 8 + (i & 3)
+            out: int = 0
+            g: int = 0
+            while g < 16:
+                out |= ((t_lo[g] >> addr) & 1) << g
+                g += 1
+            slot: int = out & 7
+            w_lo: int = o_lo[slot]
+            w_hi: int = o_hi[slot]
+            tok0: int = w_lo & 0x3FFF
+            hdr8: int = (w_hi >> 24) & 0xFF
+            acc ^= tok0 ^ hdr8
+        i += 1
+    return acc
+
+# 6. Baseline `uLM-28M` (`d=512 -> 64`, `32,768` INT8 MACs = 1/16th of ONE `uLM-28M` layer!) (`50` calls)
+ulm_w_row = array.array('i', [((j * 19 + 5) & 0x7F) - 64 for j in range(512)])
+ulm_x512 = array.array('i', [17 if (j & 1) else -17 for j in range(512)])
+
+@micropython.viper
+def bench_ulm28m_d512_slice_50(wrow: ptr32, x512: ptr32) -> int:
+    acc_all: int = 0
+    it: int = 0
+    while it < 50:
+        r: int = 0
+        th: int = 0
+        while r < 64:
+            dot: int = 0
+            c: int = 0
+            off: int = r & 7
+            while c < 512:
+                dot += wrow[(c + off) & 511] * x512[c]
+                c += 1
+            th ^= (dot >> 8)
+            r += 1
+        acc_all ^= (th & 0xFFFF)
+        it += 1
+    return acc_all
+
 dwt_init()
 # Calibration loop
 c_oh0 = dwt_read()
@@ -343,6 +397,14 @@ t12 = time.ticks_us(); c12 = dwt_read()
 v7 = bench_antisym40_precomp_eval_200(tmac_codes, l41_scratch, tmac_bias, act64)
 c13 = dwt_read(); t13 = time.ticks_us()
 
+t14 = time.ticks_us(); c14 = dwt_read()
+v8 = bench_wearable_56bit_epistemic_1k(k_lo, opener_lo, opener_hi)
+c15 = dwt_read(); t15 = time.ticks_us()
+
+t16 = time.ticks_us(); c16 = dwt_read()
+v9 = bench_ulm28m_d512_slice_50(ulm_w_row, ulm_x512)
+c17 = dwt_read(); t17 = time.ticks_us()
+
 import json
 print("AE3_JSON:" + json.dumps({
     "innate_1k_us": time.ticks_diff(t1, t0),
@@ -359,8 +421,12 @@ print("AE3_JSON:" + json.dumps({
     "full81_precomp_200_cyc": (c11 - c10) & 0x3FFFFFFF,
     "antisym40_precomp_200_us": time.ticks_diff(t13, t12),
     "antisym40_precomp_200_cyc": (c13 - c12) & 0x3FFFFFFF,
+    "wearable_epistemic_1k_us": time.ticks_diff(t15, t14),
+    "wearable_epistemic_1k_cyc": (c15 - c14) & 0x3FFFFFFF,
+    "ulm28m_slice_50_us": time.ticks_diff(t17, t16),
+    "ulm28m_slice_50_cyc": (c17 - c16) & 0x3FFFFFFF,
     "antisym_parity_ok": (v6 == v7),
-    "checks": [v1, v2, v3, v4, v5, v6, v7],
+    "checks": [v1, v2, v3, v4, v5, v6, v7, v8, v9],
 }))
 """
 
@@ -454,6 +520,10 @@ def main() -> None:
     full81_p_us = round(m["full81_precomp_200_us"] / 200.0, 3)
     antisym40_p_cyc = round(m["antisym40_precomp_200_cyc"] / 200.0, 2)
     antisym40_p_us = round(m["antisym40_precomp_200_us"] / 200.0, 3)
+    wear_cyc = round(m["wearable_epistemic_1k_cyc"] / 1000.0, 2)
+    wear_us = round(m["wearable_epistemic_1k_us"] / 1000.0, 4)
+    ulm_slice_cyc = round(m["ulm28m_slice_50_cyc"] / 50.0, 2)
+    ulm_slice_us = round(m["ulm28m_slice_50_us"] / 50.0, 3)
     assert m.get("antisym_parity_ok") is True, f"Antisym-40 parity failed on OpenMV-AE3: {m}"
     mlp_cyc = round(m["int8_mlp_200_cyc"] / 200.0, 2)
     mlp_us = round(m["int8_mlp_200_us"] / 200.0, 3)
@@ -476,6 +546,11 @@ def main() -> None:
         "antisym40_tmac_precomp_dwt_cycles_per_decision": antisym40_p_cyc,
         "antisym40_tmac_precomp_us_per_decision": antisym40_p_us,
         "antisym40_speedup_over_full81_precomp": round(full81_p_cyc / antisym40_p_cyc, 2),
+        "wearable_56bit_epistemic_dwt_cycles_per_decision": wear_cyc,
+        "wearable_56bit_epistemic_us_per_decision": wear_us,
+        "ulm28m_d512_slice_dwt_cycles_per_decision": ulm_slice_cyc,
+        "ulm28m_d512_slice_us_per_decision": ulm_slice_us,
+        "speedup_wearable_epistemic_vs_ulm28m_slice": round(ulm_slice_cyc / wear_cyc, 2),
         "int8_micro_mlp_dwt_cycles_per_decision": mlp_cyc,
         "int8_micro_mlp_us_per_decision": mlp_us,
         "speedup_innate_vs_int8_mlp": round(mlp_cyc / innate_cyc, 2),

@@ -85,6 +85,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.lupanov_k8_shared_decoder_saves_gates", "Section 4.35", "Lupanov shared-cofactor k=8 -> LUT6 gate reduction iff"),
     ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.treelut_arbitrary_tree_6preds_fits_single_lut6", "Section 4.35", "TreeLUT arbitrary 6-predicate GBDT collapses to 1 LUT6"),
     ("GlobalFrontiers", "LutAdapt.GlobalFrontiers.kan_lut6_quantized_spline_exact", "Section 4.35", "KAN-LUT quantized B-spline bit-plane zero-FLOP exactness"),
+    ("WearableLastExam", "LutAdapt.WearableLastExam.ulm_4token_56bit_plus_8bit_epistemic_fits_uint64", "Section 4.38", "uLM-28M 4x14b + 8b epistemic header lossless uint64 bijection"),
+    ("WearableLastExam", "LutAdapt.WearableLastExam.wearable_sram_64kb_partition_and_ulm_overflow", "Section 4.38", "5,984 B watch SRAM fit (<10% of 64 KB) vs >213x uLM-28M INT4 overflow"),
+    ("WearableLastExam", "LutAdapt.WearableLastExam.collaborative_prefix_poisoning_lower_bound", "Section 4.38", "Unverified uLM prefix poisoning bound vs 0-poison gated handoff"),
+    ("WearableLastExam", "LutAdapt.WearableLastExam.hle_squared_calibration_overconfidence_bound", "Section 4.39", "lastexam.ai (Phan et al.) overconfidence squared calibration error bound"),
+    ("WearableLastExam", "LutAdapt.WearableLastExam.conformal_epistemic_gate_reduces_calibration_gap", "Section 4.39", "Calibrated epistemic hold prior strictly reduces squared calibration error"),
+    ("WearableLastExam", "LutAdapt.WearableLastExam.necessary_verifier_blocks_invalid_exact_match", "Section 4.39", "Sound necessary check eliminates invalid exact-match hallucinations"),
+    ("WearableLastExam", "LutAdapt.WearableLastExam.wearable_battery_query_capacity_gain", "Section 4.38", "Smart-glasses / watch battery query capacity & cumulative joule gain"),
+    ("WearableLastExam", "LutAdapt.WearableLastExam.canary_guard_blocks_benchmark_crystallization", "Section 4.39", "hle:3r2s canary quarantine blocks benchmark contamination in SleepCrystallizer"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

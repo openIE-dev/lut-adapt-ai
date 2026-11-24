@@ -1,0 +1,8 @@
+architecture,params_m,fits_64kb_watch_sram,wearable_reflex_acc_pct,whiteboard_exam_acc_pct,overall_stream_acc_pct,prefix_poisoning_pct_on_exam,benchmark_items_crystallized,total_latency_ms,mean_latency_ms_per_query,darwin_reported_j_total,darwin_reported_mj_per_query,est_glasses_250mah_queries,est_watch_300mah_queries,measured_j,board_metered,r0_lut6_hit_rate_on_wearable_pct,wearable_only_mean_mj_per_query,est_glasses_250mah_routine_queries
+Sensente/uLM-28M (UW/Meta Smart-Glasses uLM),28.84,False,6.25,6.25,6.25,93.75,0,10248.03,160.13,17.5119,273.624,12498,14998,,False,,,
+uLM-28M Collaborative Prefix + Cloud 35B (UW/Meta arXiv:2604.19642),28.84,False,95.83,37.5,81.25,93.75,0,10248.32,160.13,1103.008,17234.5,198,238,,False,,,
+HuggingFaceTB/SmolLM2-135M-Instruct,134.52,False,27.08,6.25,21.88,93.75,0,7451.23,116.43,40.3041,629.752,5430,6516,,False,,,
+LiquidAI/LFM2.5-230M (O(1) Wearable Hybrid),229.69,False,41.67,18.75,35.94,81.25,0,2887.27,45.11,13.1068,204.794,16699,20039,,False,,,
+Qwen/Qwen3-0.6B,596.05,False,16.67,12.5,15.62,87.5,0,14761.47,230.65,104.8065,1637.601,2088,2506,,False,,,
+Always-Cloud Qwen3.6-35B-A3B (+ 320 ms Wearable RTT),34660.0,False,100.0,37.5,84.38,0.0,0,133648.9,2088.26,1356.8701,21201.096,161,193,,False,,,
+OpenIE Wearable-MoL (4 KB lut6-core -> LFM2.5-230M -> Epistemic 24B/35B),0.0057,True,97.92,37.5,82.81,0.0,0,283774.6,4433.98,1914.8614,29919.71,114,137,,False,100.0,0.0019,1800000000

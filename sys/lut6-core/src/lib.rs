@@ -13,6 +13,7 @@ pub mod generated_proof_vectors;
 pub mod ratchet_demo;
 pub mod seu_resilience;
 pub mod tmac_tail;
+pub mod wearable_epistemic;
 #[cfg(target_arch = "wasm32")]
 pub mod wasm_api;
 

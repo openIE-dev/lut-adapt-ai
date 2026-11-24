@@ -26,6 +26,7 @@ use lut6_core::ratchet_demo::{SEED_KNOWLEDGE, synthesize_wobble_patch};
 use lut6_core::tmac_tail::{
     eval_tmac_antisym_from_pad, eval_tmac_from_pad, wire_state_to_bipolar_i8,
 };
+use lut6_core::wearable_epistemic::{WearableEpistemicDecision, eval_wearable_epistemic_gate};
 use lut6_core::{AgencyAction, CompactLut6Page, Nucleus, PageLedger};
 
 // ============================================================================
@@ -571,7 +572,83 @@ fn main() {
         },
     );
 
-    let windows = [w1, w2, w3, w4, w5, w6, w7, w8, w9];
+    // Window 10: Wearable `56`-Bit `4`-Token `uLM-28M` Opener + `LastExam` Epistemic Hold Gate (`Claim LA-36/38`)
+    let w10 = measure_window(
+        "Window10_Wearable_56Bit_4Tok_Epistemic_Gate",
+        scale_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut acc = 0u64;
+            let mut ledger = PageLedger::default();
+            for step in 0..scale_iters {
+                // Mix 75% certified wearable reflexes (`0x08..0x0B`) + 25% frontier `LastExam` hold queries
+                let state = if (step & 3) == 3 {
+                    (0x8700u64 << 48) | (0x34u64 + (step & 3))
+                } else {
+                    0x08u64 + (step & 3)
+                };
+                match eval_wearable_epistemic_gate(
+                    &SEED_KNOWLEDGE,
+                    nucleus.knowledge_overlay.as_ref(),
+                    black_box(state),
+                    3,
+                    &mut ledger,
+                ) {
+                    WearableEpistemicDecision::CertifiedReflex {
+                        tokens4, conf_pct, ..
+                    } => {
+                        acc ^= (tokens4[0] as u64) ^ (tokens4[3] as u64) ^ (conf_pct as u64);
+                    }
+                    WearableEpistemicDecision::WakeLocalMicroLlm { partial_bits, .. } => {
+                        acc ^= partial_bits;
+                    }
+                    WearableEpistemicDecision::EpistemicHoldEscalate {
+                        prior_conf_pct,
+                        frontier_signature,
+                    } => {
+                        acc ^= (frontier_signature as u64) ^ (prior_conf_pct as u64);
+                    }
+                }
+            }
+            black_box(acc);
+        },
+    );
+
+    // Window 11: Baseline `uLM-28M` (`d=512`) Single-Token `INT8` Hidden Projection Slice (`512 -> 64` = `32,768` MACs,
+    // i.e., a conservative 1/16th lower bound on a single `uLM-28M` layer's ~524K MACs!)
+    let mut ulm_w = [[0i8; 512]; 64];
+    for (r, row) in ulm_w.iter_mut().enumerate() {
+        for (c, cell) in row.iter_mut().enumerate() {
+            *cell = (((r * 73 + c * 19 + 3) & 0x7F) as i8).wrapping_sub(64);
+        }
+    }
+    let ulm_iters = scale_iters / 10;
+    let w11 = measure_window(
+        "Window11_Baseline_uLM28M_d512_Slice",
+        ulm_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut acc = 0i32;
+            let mut x = [17i8; 512];
+            for step in 0..ulm_iters {
+                x[(step & 511) as usize] = ((step & 0x3F) as i8) - 32;
+                let mut tok_hash = 0i32;
+                for row in &ulm_w {
+                    let mut dot = 0i32;
+                    for c in 0..512 {
+                        dot += (row[c] as i32) * (black_box(x[c]) as i32);
+                    }
+                    tok_hash ^= dot >> 8;
+                }
+                acc ^= tok_hash;
+            }
+            black_box(acc);
+        },
+    );
+
+    let windows = [w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11];
     let mut json_rows = Vec::new();
     for w in &windows {
         println!(

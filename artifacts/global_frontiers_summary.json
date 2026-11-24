@@ -9,9 +9,9 @@
   },
   "wasm32_lut6_core_module": {
     "wasm_path": "artifacts/wasm/lut6_core.wasm",
-    "wasm_bytes": 15094,
-    "wasm_kb": 14.74,
-    "wasm_sha256": "09f0c664d486539984c92724c62cc03f700c694ea734d6344f61e66807fe3ae3",
+    "wasm_bytes": 15679,
+    "wasm_kb": 15.31,
+    "wasm_sha256": "78bcf975e32e14e6e905d1e1cd4c1af45f72e4374f049c5745da8ae6424673f9",
     "zero_external_crates": true,
     "v8_node_instantiation": {
       "crc0_hex": "0xd1cc025a",
@@ -29,7 +29,11 @@
       "fwht_parity": 4096,
       "sec_clean": 0,
       "sec_1bit": 18415872,
-      "sec_2bit": 37421568
+      "sec_2bit": 37421568,
+      "wear_hit": 22544902,
+      "wear_hle": 50397178,
+      "can_hle": 1,
+      "can_clean": 0
     }
   },
   "seu_ber_1pct_headline": {

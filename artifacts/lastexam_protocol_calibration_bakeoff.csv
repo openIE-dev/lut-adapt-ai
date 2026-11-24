@@ -1,0 +1,9 @@
+model,params_m,int4_footprint_mb,overall_acc_pct,supergpqa_mc10_acc_pct,olympiad_exact_match_acc_pct,rms_calibration_error_pct,confident_hallucination_rate_80_pct,selective_committed_acc_pct,abstention_rate_pct,elapsed_ms,darwin_reported_j,measured_j,board_metered
+Sensente/uLM-28M (UW/Meta Smart-Glasses uLM),28.84,13.75,3.12,6.25,0.0,68.24,3.12,3.12,0.0,15306.61,67.2976,,False
+HuggingFaceTB/SmolLM2-135M-Instruct,134.52,64.14,3.12,6.25,0.0,70.46,25.0,3.12,0.0,14453.36,75.2056,,False
+LiquidAI/LFM2.5-230M (O(1) Wearable Hybrid),229.69,109.53,9.38,18.75,0.0,59.75,9.38,9.38,0.0,1311.31,13.0047,,False
+Qwen/Qwen3-0.6B,596.05,284.22,3.12,6.25,0.0,87.42,96.88,3.12,0.0,37549.84,238.8976,,False
+google/gemma-4-E2B-it (WearOS / Android XR LiteRT Class),2600.0,3200.0,6.25,12.5,0.0,77.75,93.75,6.25,0.0,65351.14,775.2661,,False
+mistralai/Devstral-Small-2-24B-Instruct,24000.0,13400.0,15.62,31.25,0.0,69.35,84.38,15.62,0.0,467413.6,2430.9482,,False
+Qwen/Qwen3.6-35B-A3B (Sparse Hybrid MoE),34660.0,25200.0,18.75,37.5,0.0,70.62,81.25,18.75,0.0,129335.88,1550.7087,,False
+OpenIE MoL Epistemic Cascade (LUT6 + Verifier + 24B/35B),0.0057,0.0057,18.75,37.5,0.0,13.14,0.0,40.0,84.38,567536.13,3829.7226,,False

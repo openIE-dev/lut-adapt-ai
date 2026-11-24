@@ -8,6 +8,9 @@ use crate::seu_resilience::{SecdedOutcome, decode_secded_72, encode_secded_72};
 use crate::tmac_tail::{
     eval_tmac_antisym_from_pad, eval_tmac_from_pad, wire_state_to_bipolar_i8,
 };
+use crate::wearable_epistemic::{
+    WearableEpistemicDecision, eval_wearable_epistemic_gate, has_benchmark_canary,
+};
 use crate::{EvalOutcome, PageLedger, high_harmonic_energy};
 
 /// Returns the verified IEEE 802.3 CRC32 of embedded crystal `which` (`0 = Operon`, `1 = Skills+TMAC`),
@@ -114,5 +117,59 @@ pub extern "C" fn wasm_test_secded_bitflip(
             // Triggers `0x3C` ApoptosisRollback to immutable ROM/MRAM seed (`orig`), so `0` silent corruption!
             (2u32 << 24) | ((syndrome as u32) << 16) | (raw_corrupted << 8)
         }
+    }
+}
+
+/// Evaluates the Wearable `56`-Bit `4`-Token `uLM-28M` Opener + `LastExam` Epistemic Hold Gate in `.wasm`.
+/// Packed 32-bit return word:
+///   - `bits [25..24]`: Mode (`1` = Certified `4`-Token Wearable Reflex, `2` = Wake On-Device `uLM-28M`,
+///                            `3` = `LastExam` Epistemic Hold + Escalate [`0` poisoned prefix words!])
+///   - `bits [23..16]`: Calibrated confidence `%` (`0..100`)
+///   - `bits [15..0]`:  First `14`-bit `uLM-28M` opener token (`bits [13..0]`) or frontier signature
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_wearable_epistemic(
+    wire_lo: u32,
+    wire_hi: u32,
+    frontier_thresh: u32,
+) -> u32 {
+    let skills_page = mol_skills_tmac_crystal();
+    let state = (wire_lo as u64) | ((wire_hi as u64) << 32);
+    let mut ledger = PageLedger::default();
+    match eval_wearable_epistemic_gate(&skills_page, None, state, frontier_thresh, &mut ledger) {
+        WearableEpistemicDecision::CertifiedReflex {
+            tokens4,
+            action_id: _,
+            conf_pct,
+        } => (1u32 << 24) | ((conf_pct as u32) << 16) | ((tokens4[0] as u32) & 0x3FFF),
+        WearableEpistemicDecision::WakeLocalMicroLlm { votes, .. } => {
+            let cal_conf = (25u32 + (votes as u32) * 3).min(65);
+            (2u32 << 24) | (cal_conf << 16) | ((votes as u32) & 0xFFFF)
+        }
+        WearableEpistemicDecision::EpistemicHoldEscalate {
+            prior_conf_pct,
+            frontier_signature,
+        } => (3u32 << 24) | ((prior_conf_pct as u32) << 16) | (frontier_signature as u32),
+    }
+}
+
+/// Verifies the `#![no_std]` Benchmark Canary Quarantine (`hle:3r2s`) in `.wasm`:
+/// returns `1` if the 8-byte ASCII window `(lo32 | hi32 << 32)` matches `hle:3r2s` (blocked from `.lut6`!), `0` otherwise.
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_check_hle_canary8(ascii_lo: u32, ascii_hi: u32) -> u32 {
+    let mut buf = [0u8; 8];
+    let l = ascii_lo.to_le_bytes();
+    let h = ascii_hi.to_le_bytes();
+    buf[0] = l[0];
+    buf[1] = l[1];
+    buf[2] = l[2];
+    buf[3] = l[3];
+    buf[4] = h[0];
+    buf[5] = h[1];
+    buf[6] = h[2];
+    buf[7] = h[3];
+    if has_benchmark_canary(&buf, false) {
+        1
+    } else {
+        0
     }
 }

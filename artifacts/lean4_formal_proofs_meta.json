@@ -1,6 +1,6 @@
 {
   "lean_version": "Lean (version 4.36.0, arm64-apple-darwin24.6.0, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)",
-  "total_kernel_checked_theorems": 50,
+  "total_kernel_checked_theorems": 58,
   "module_theorem_counts": {
     "Cascade": 7,
     "BenesCopy": 7,
@@ -8,10 +8,11 @@
     "ConformalProvenance": 6,
     "NucleusCodon": 9,
     "TernaryTmac": 6,
-    "GlobalFrontiers": 8
+    "GlobalFrontiers": 8,
+    "WearableLastExam": 8
   },
-  "purely_constructive_zero_axiom_theorems": 9,
-  "choice_free_theorems": 38,
+  "purely_constructive_zero_axiom_theorems": 11,
+  "choice_free_theorems": 44,
   "ofReduceBool_native_decide_count": 0,
   "opaque_declaration_count": 0,
   "nested_inductive_count": 0,
@@ -28,14 +29,14 @@
     "leanchecker --paranoid",
     "Lean v4.36.0 (default)"
   ],
-  "con_leche_verified_declarations": 58785,
-  "con_ron_verified_declarations": 58785,
-  "lean4lean_verified_declarations": 58787,
+  "con_leche_verified_declarations": 58802,
+  "con_ron_verified_declarations": 58802,
+  "lean4lean_verified_declarations": 58804,
   "paranoid_sandbox_mode": "trusted_local_repo_no_bwrap_on_darwin",
-  "clean_lake_build_ms": 1422.2,
-  "clean_lake_build_reported_j": 1.0273,
-  "paranoid_6kernel_check_ms": 194702.39,
-  "paranoid_6kernel_check_reported_j": 182.6026,
+  "clean_lake_build_ms": 2279.87,
+  "clean_lake_build_reported_j": 4.1488,
+  "paranoid_6kernel_check_ms": 343963.29,
+  "paranoid_6kernel_check_reported_j": 50586.426,
   "source_sha256": {
     "proofs/LutAdapt/BenesCopy.lean": "be951544bddaa2ea1dc639bc735044e2b62848c7f377014650846e593ce92694",
     "proofs/LutAdapt/Cascade.lean": "f8fb9baa8142a4ea8c7ffa4d33b49e72f69e6fdea6e27dbe4d140426e19c5200",
@@ -44,7 +45,8 @@
     "proofs/LutAdapt/JointMinterm.lean": "2c0bd9eeb52e9d5ed3aea0dfe7e73379e3ee9fda8b2f78dcc64c6387be4919b1",
     "proofs/LutAdapt/NucleusCodon.lean": "386526a9974b185fbebb835ab0f275ac0da180440bbbaf6c8ed775ceafee9208",
     "proofs/LutAdapt/TernaryTmac.lean": "44517793934c641a6caffc667e8a88b5ccc362a8babcd990ee8ef0023b497d3e",
-    "proofs/LutAdapt.lean": "a75a61ba091e1347ac09d603d581d7d553bb30d447813adec26006c95e96af0b"
+    "proofs/LutAdapt/WearableLastExam.lean": "932dd0ac863627b8861563dd45051e40eed1fa5beb31778b9cae2ddf691be887",
+    "proofs/LutAdapt.lean": "71b85af46ff60191eb0badeec851289ca760ca53ea01c667287d92ee3a81c182"
   },
   "measured_j": null,
   "board_metered": false

@@ -96,13 +96,19 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
   const sec_clean = ex.wasm_test_secded_bitflip(0xA5A56996, 0x0F0F3C3C, -1, -1) >>> 0;
   const sec_1bit  = ex.wasm_test_secded_bitflip(0xA5A56996, 0x0F0F3C3C, 19, -1) >>> 0;
   const sec_2bit  = ex.wasm_test_secded_bitflip(0xA5A56996, 0x0F0F3C3C, 5, 42) >>> 0;
+  // Wearable 56-bit 4-token opener (`0x015a26a6c3deeded` certified hit) + LastExam epistemic hold + hle:3r2s canary guard
+  const wear_hit  = ex.wasm_eval_wearable_epistemic(0xc3deeded, 0x015a26a6, 8) >>> 0;
+  const wear_hle  = ex.wasm_eval_wearable_epistemic(0xc3deeded, 0xfffa26a6, 8) >>> 0;
+  const can_hle   = ex.wasm_check_hle_canary8(0x3a656c68, 0x73327233) >>> 0; // "hle:3r2s" LE
+  const can_clean = ex.wasm_check_hle_canary8(0x656d6974, 0x35303072) >>> 0; // "timer005" LE
   console.log(JSON.stringify({{
     crc0_hex: '0x' + crc0.toString(16).padStart(8, '0'),
     crc1_hex: '0x' + crc1.toString(16).padStart(8, '0'),
     op_reject, op_tool, op_halt,
     s_t1_81, s_t1_40, s_t2_81, s_t2_40, s_ood,
     fwht_wobble, fwht_1hot, fwht_parity,
-    sec_clean, sec_1bit, sec_2bit
+    sec_clean, sec_1bit, sec_2bit,
+    wear_hit, wear_hle, can_hle, can_clean
   }}));
 }})();
 """
@@ -118,6 +124,9 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
     assert (res["fwht_wobble"], res["fwht_1hot"], res["fwht_parity"]) == (0, 28, 4096)
     assert (res["sec_1bit"] >> 24) == 1 and (res["sec_1bit"] & 0xFF) == 0
     assert (res["sec_2bit"] >> 24) == 2 and (res["sec_2bit"] & 0xFF) == 0
+    assert (res["wear_hit"] >> 24) == 1 and ((res["wear_hit"] >> 16) & 0xFF) >= 80
+    assert (res["wear_hle"] >> 24) == 3 and ((res["wear_hle"] >> 16) & 0xFF) == 0
+    assert res["can_hle"] == 1 and res["can_clean"] == 0
 
     return {
         "wasm_path": "artifacts/wasm/lut6_core.wasm",
