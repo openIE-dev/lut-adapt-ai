@@ -10,6 +10,7 @@ compile_error!("lut6-core requires a little-endian target matching canonical .lu
 
 pub mod bootstrap;
 pub mod generated_proof_vectors;
+pub mod hadamard_bonsai;
 pub mod ratchet_demo;
 pub mod seu_resilience;
 pub mod tmac_tail;
@@ -346,7 +347,8 @@ impl CompactLut6Page {
 
     /// Pure `const fn` 64-wire bitboard evaluator: runs identically at compile time (`rustc`)
     /// for zero-regression proof checks and at runtime in bare-metal `SRAM`/`DTCM`.
-    #[inline(always)]
+    #[cfg_attr(not(target_arch = "wasm32"), inline(always))]
+    #[cfg_attr(target_arch = "wasm32", inline(never))]
     pub const fn eval_raw(&self, mut state: u64) -> u64 {
         let layers = self.num_layers as usize;
         let width = self.gates_per_layer as usize;
@@ -384,7 +386,8 @@ impl CompactLut6Page {
     /// Breaks loop-carried `next_state` shift/OR dependency chains across 4 parallel gate lanes
     /// per iteration for superscalar Armv9 / Zen 5 / Cortex-M55 dual-issue pipelines while
     /// maintaining bit-exact equivalence to `eval_raw`.
-    #[inline(always)]
+    #[cfg_attr(not(target_arch = "wasm32"), inline(always))]
+    #[cfg_attr(target_arch = "wasm32", inline(never))]
     pub const fn eval_raw_unrolled4(&self, mut state: u64) -> u64 {
         let layers = self.num_layers as usize;
         let width = self.gates_per_layer as usize;

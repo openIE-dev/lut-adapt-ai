@@ -10,6 +10,8 @@ jetson-agx-thor,NVIDIA Jetson AGX Thor (INA3221 VDD_CPU_SOC_MSS Physical Shunt),
 jetson-agx-thor,NVIDIA Jetson AGX Thor (INA3221 VDD_CPU_SOC_MSS Physical Shunt),Window9_Antisym40_ZeroMul_TMAC_Tail,285.558,1.64,8876.126,,1.6,True
 jetson-agx-thor,NVIDIA Jetson AGX Thor (INA3221 VDD_CPU_SOC_MSS Physical Shunt),Window10_Wearable_56Bit_4Tok_Epistemic_Gate,94.148,4.96,2803.249,,5.06,True
 jetson-agx-thor,NVIDIA Jetson AGX Thor (INA3221 VDD_CPU_SOC_MSS Physical Shunt),Window11_Baseline_uLM28M_d512_Slice,20243.763,0.02,623920.525,,0.02,True
+jetson-agx-thor,NVIDIA Jetson AGX Thor (INA3221 VDD_CPU_SOC_MSS Physical Shunt),Window12_Bonsai_FWHT1024_Antisym40_Block16,7111.479,0.07,220719.401,,0.06,True
+jetson-agx-thor,NVIDIA Jetson AGX Thor (INA3221 VDD_CPU_SOC_MSS Physical Shunt),Window13_Baseline_MLX2Bit_Unpack_Dequant_Block16,16104.713,0.03,346090.719,,0.04,True
 apple-m5-max,Apple M5 Max (Darwin RUSAGE_INFO_V6 Counter),Window1_Innate_Rung6_Hit,37.297,5.11,,70.326,4.77,False
 apple-m5-max,Apple M5 Max (Darwin RUSAGE_INFO_V6 Counter),Window2_Frontier_Miss_Agency_Escalate,182.995,1.04,,351.836,0.95,False
 apple-m5-max,Apple M5 Max (Darwin RUSAGE_INFO_V6 Counter),Window3_Walsh_FWHT_Anchor_Refine,41178.694,0.0,,43900.856,0.01,False
@@ -21,6 +23,8 @@ apple-m5-max,Apple M5 Max (Darwin RUSAGE_INFO_V6 Counter),Window8_ZeroMul_Ternar
 apple-m5-max,Apple M5 Max (Darwin RUSAGE_INFO_V6 Counter),Window9_Antisym40_ZeroMul_TMAC_Tail,303.973,0.63,,516.04,0.65,False
 apple-m5-max,Apple M5 Max (Darwin RUSAGE_INFO_V6 Counter),Window10_Wearable_56Bit_4Tok_Epistemic_Gate,55.639,3.42,,101.555,3.31,False
 apple-m5-max,Apple M5 Max (Darwin RUSAGE_INFO_V6 Counter),Window11_Baseline_uLM28M_d512_Slice,20334.78,0.01,,31810.922,0.01,False
+apple-m5-max,Apple M5 Max (Darwin RUSAGE_INFO_V6 Counter),Window12_Bonsai_FWHT1024_Antisym40_Block16,3809.375,0.05,,27539.171,0.01,False
+apple-m5-max,Apple M5 Max (Darwin RUSAGE_INFO_V6 Counter),Window13_Baseline_MLX2Bit_Unpack_Dequant_Block16,8798.215,0.02,,42738.605,0.01,False
 amd-ryzen-ai-max-395,AMD Ryzen AI Max+ 395 (Linux amd_rapl Package Counter),Window1_Innate_Rung6_Hit,100.196,3.93,,7868.213,3.96,False
 amd-ryzen-ai-max-395,AMD Ryzen AI Max+ 395 (Linux amd_rapl Package Counter),Window2_Frontier_Miss_Agency_Escalate,231.675,1.7,,19758.732,1.58,False
 amd-ryzen-ai-max-395,AMD Ryzen AI Max+ 395 (Linux amd_rapl Package Counter),Window3_Walsh_FWHT_Anchor_Refine,43157.987,0.01,,3200432.635,0.01,False
@@ -32,6 +36,8 @@ amd-ryzen-ai-max-395,AMD Ryzen AI Max+ 395 (Linux amd_rapl Package Counter),Wind
 amd-ryzen-ai-max-395,AMD Ryzen AI Max+ 395 (Linux amd_rapl Package Counter),Window9_Antisym40_ZeroMul_TMAC_Tail,369.656,1.06,,27829.936,1.12,False
 amd-ryzen-ai-max-395,AMD Ryzen AI Max+ 395 (Linux amd_rapl Package Counter),Window10_Wearable_56Bit_4Tok_Epistemic_Gate,166.24,2.37,,12783.421,2.43,False
 amd-ryzen-ai-max-395,AMD Ryzen AI Max+ 395 (Linux amd_rapl Package Counter),Window11_Baseline_uLM28M_d512_Slice,46178.648,0.01,,3314923.49,0.01,False
+amd-ryzen-ai-max-395,AMD Ryzen AI Max+ 395 (Linux amd_rapl Package Counter),Window12_Bonsai_FWHT1024_Antisym40_Block16,4917.597,0.08,,113873.444,0.27,False
+amd-ryzen-ai-max-395,AMD Ryzen AI Max+ 395 (Linux amd_rapl Package Counter),Window13_Baseline_MLX2Bit_Unpack_Dequant_Block16,8163.745,0.05,,168942.74,0.18,False
 openmv-ae3-alif-e3,"OpenMV-AE3 (Alif Ensemble E3 AE302F80F55D5AE, Arm Cortex-M55 @ 400 MHz)",Window1_Innate_Rung6_Hit (684.32 DWT cyc),1719.0,173.89,,,,False
 openmv-ae3-alif-e3,"OpenMV-AE3 (Alif Ensemble E3 AE302F80F55D5AE, Arm Cortex-M55 @ 400 MHz)",Window4_PostCompile_Noisy_Wobble_Hit (1166.93 DWT cyc),2925.0,101.97,,,,False
 openmv-ae3-alif-e3,"OpenMV-AE3 (Alif Ensemble E3 AE302F80F55D5AE, Arm Cortex-M55 @ 400 MHz)",Window5_Vertical_BitSliced_Batch32 (2.66 DWT cyc),6.94,44734.45,,,,False

@@ -1,0 +1,9 @@
+benchmark,system,solved_pct,selective_committed_acc_pct,confident_hallucination_rate_80_pct,unsound_commits_pct,mean_ms_per_task
+"ARC-AGI-2 (arcprize/ARC-AGI-2, Apache-2.0, n=24)",Unverified 1D Token Micro-LLM (uLM-28M / LFM2.5-230M),0.0,0.0,91.67,100.0,45.1
+"ARC-AGI-2 (arcprize/ARC-AGI-2, Apache-2.0, n=24)",Unverified 1-Shot Spatial Mapper (No C_train Gate),4.17,4.17,95.83,95.83,1.25
+"ARC-AGI-2 (arcprize/ARC-AGI-2, Apache-2.0, n=24)",OpenIE Inductive ARC-LUT6 + C_train Exact Verifier (Reference),12.5,100.0,0.0,0.0,65.67
+"MiniF2F-Lean4 (cat-searcher/minif2f-lean4, Core Nat/Int, n=24)",Unverified Neural Tactic Emitter (No Lean Kernel Gate),25.0,25.0,75.0,75.0,38.4
+"MiniF2F-Lean4 (cat-searcher/minif2f-lean4, Core Nat/Int, n=24)",OpenIE MoL-Lean6 Wave 1 (Portfolio + Lean 4.36.0 Soundness-Zero Gate),50.0,100.0,0.0,0.0,111.946
+"MiniF2F-Lean4 (cat-searcher/minif2f-lean4, Core Nat/Int, n=24)",OpenIE MoL-Lean6 Wave 2 (.lut6 Goal-AST Tactic Crystal + Lean 4.36.0 Gate),50.0,100.0,0.0,0.0,16.539
+"CritPt Physics (CritPt-Benchmark/CritPt, Research Main, n=16)",Standalone Frontier Model (Uncalibrated Verbalized Confidence),6.25,6.25,93.75,93.75,1840.0
+"CritPt Physics (CritPt-Benchmark/CritPt, Research Main, n=16)",OpenIE MoL Epistemic + Dimensional/Numerical Gate (Reference),6.25,100.0,0.0,0.0,1842.4

@@ -1,0 +1,5 @@
+system,active_weight_bytes,active_weight_mb,fits_64kb_watch_sram,watch_sram_pct_or_overflow,wave1_acc_pct,wave2_acc_pct,overall_acc_pct,ood_false_action_pct,rms_calibration_error_pct,wave2_lut6_bypass_pct,mean_latency_ms,reported_mj_per_decision,board_metered,measured_j
+minishlab/potion-base-8M (Static Token Embedding System-1),30236760,28.836,False,461.4x overflow,87.5,90.62,89.06,87.5,34.39,0.0,0.1553,18.7493,False,
+Mapika/decider-0.8b (1-Pass Calibrated Neural System-1),1504827608,1435.1154,False,22961.8x overflow,100.0,100.0,100.0,0.0,13.55,0.0,50.3165,1001.4543,False,
+OpenIE System-0 -> System-1 MoL (4 KB LUT6 + decider-0.8b Teacher),4096,0.0039,True,6.25%,100.0,100.0,100.0,0.0,5.21,100.0,5.5087,109.8485,False,
+"OpenIE Compiled System-0 LUT6 Crystal (Wave-2 Steady State, 4 KB)",4096,0.0039,True,6.25%,100.0,100.0,100.0,0.0,5.21,100.0,0.0053,0.3144,False,

@@ -93,6 +93,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("WearableLastExam", "LutAdapt.WearableLastExam.necessary_verifier_blocks_invalid_exact_match", "Section 4.39", "Sound necessary check eliminates invalid exact-match hallucinations"),
     ("WearableLastExam", "LutAdapt.WearableLastExam.wearable_battery_query_capacity_gain", "Section 4.38", "Smart-glasses / watch battery query capacity & cumulative joule gain"),
     ("WearableLastExam", "LutAdapt.WearableLastExam.canary_guard_blocks_benchmark_crystallization", "Section 4.39", "hle:3r2s canary quarantine blocks benchmark contamination in SleepCrystallizer"),
+    ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.bonsai_mlx36_to_entromcu28_saves_two_ninths", "Section 4.41", "Bonsai-2-27B 36 B -> 28 B (-22.22%) EntroMCU transcoding & redundant -scale elimination"),
+    ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.hadamard_1024_norm_exact_shift5", "Section 4.41", "block_size=1024=4^5 exact >> 5 Sylvester Hadamard shift vs 512 irrationality"),
+    ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.sylvester_butterfly_self_inverse_up_to_two", "Section 4.41", "Zero-multiplier 2-point Sylvester butterfly self-inverse identity"),
+    ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.bonsai_group128_antisym40_mul_cut_128x", "Section 4.41", "128x multiplication cut in group-128 FWHT-1024 + Antisym-40 T-MAC"),
+    ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.system1_decider_08b_vs_lut6_sram_gap", "Section 4.42", "4 KB LUT6 (6.25% of 64 KB watch SRAM) vs >21,897x Mapika/decider-0.8b overflow"),
+    ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.arc_4bit_color_and_cross5_fit_lut6", "Section 4.43", "ARC-AGI-2 4-bit color + 2-bit spatial & Cross-5 fit single 64-bit LUT6 planes"),
+    ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.arc_train_exact_gate_blocks_inconsistent_rules", "Section 4.43", "ARC-AGI-2 demonstration-exact gate blocks train-inconsistent rule admission"),
+    ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.formal_lean_kernel_soundness_zero_unsound_commits", "Section 4.43", "Sound Lean 4 formal kernel gate achieves unconditional 0 unsound commits"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

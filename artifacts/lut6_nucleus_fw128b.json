@@ -147,6 +147,32 @@
       "reported_j": 9944.770469,
       "reported_nj_per_op": 3314923.489667,
       "board_metered": false
+    },
+    {
+      "window": "Window12_Bonsai_FWHT1024_Antisym40_Block16",
+      "iterations": 250000,
+      "elapsed_ms": 1229.3992,
+      "ns_per_op": 4917.59696,
+      "cpu_cycles_per_op": null,
+      "measured_j_vdd_cpu": null,
+      "measured_j_vin": null,
+      "measured_nj_per_op_vdd_cpu": null,
+      "reported_j": 28.468361,
+      "reported_nj_per_op": 113873.444,
+      "board_metered": false
+    },
+    {
+      "window": "Window13_Baseline_MLX2Bit_Unpack_Dequant_Block16",
+      "iterations": 250000,
+      "elapsed_ms": 2040.9363,
+      "ns_per_op": 8163.745224,
+      "cpu_cycles_per_op": null,
+      "measured_j_vdd_cpu": null,
+      "measured_j_vin": null,
+      "measured_nj_per_op_vdd_cpu": null,
+      "reported_j": 42.235685,
+      "reported_nj_per_op": 168942.74,
+      "board_metered": false
     }
   ],
   "co_tenant_note_w10_w11": "Windows 1..9 measured uncontended at d767bc51; Windows 10..11 measured on framework-128gb-0001 under shared-host cbmc/ngspice load (259.3x reported_j ratio)."

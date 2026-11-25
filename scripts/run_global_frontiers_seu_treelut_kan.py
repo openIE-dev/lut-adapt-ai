@@ -62,6 +62,9 @@ def build_and_verify_lut6_wasm(repo_root: Path) -> dict:
         str(wasm_path),
     ]
     subprocess.run(rustc_cmd, cwd=repo_root, check=True)
+    wasm_opt = shutil.which("wasm-opt") or ("/opt/homebrew/bin/wasm-opt" if Path("/opt/homebrew/bin/wasm-opt").is_file() else None)
+    if wasm_opt:
+        subprocess.run([wasm_opt, "-Oz", "--enable-bulk-memory", "--enable-sign-ext", str(wasm_path), "-o", str(wasm_path)], check=True)
     wasm_bytes = wasm_path.read_bytes()
     wasm_sha256 = hashlib.sha256(wasm_bytes).hexdigest()
 
@@ -101,6 +104,8 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
   const wear_hle  = ex.wasm_eval_wearable_epistemic(0xc3deeded, 0xfffa26a6, 8) >>> 0;
   const can_hle   = ex.wasm_check_hle_canary8(0x3a656c68, 0x73327233) >>> 0; // "hle:3r2s" LE
   const can_clean = ex.wasm_check_hle_canary8(0x656d6974, 0x35303072) >>> 0; // "timer005" LE
+  const bonsai64  = ex.wasm_eval_bonsai_fwht64_antisym40(0xc011a061, 0x800d3908, 0xa5a55a5a, 0xc3c33c3c) >>> 0;
+  const arc_cells = ex.wasm_eval_arc_lut6_cells8(0x01234567, 0xAA, 0x55, 0x89ABCDEF, 0x01234567) >>> 0;
   console.log(JSON.stringify({{
     crc0_hex: '0x' + crc0.toString(16).padStart(8, '0'),
     crc1_hex: '0x' + crc1.toString(16).padStart(8, '0'),
@@ -108,7 +113,8 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
     s_t1_81, s_t1_40, s_t2_81, s_t2_40, s_ood,
     fwht_wobble, fwht_1hot, fwht_parity,
     sec_clean, sec_1bit, sec_2bit,
-    wear_hit, wear_hle, can_hle, can_clean
+    wear_hit, wear_hle, can_hle, can_clean,
+    bonsai64, arc_cells
   }}));
 }})();
 """

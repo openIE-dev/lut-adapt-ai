@@ -6,3 +6,4 @@ import LutAdapt.NucleusCodon
 import LutAdapt.TernaryTmac
 import LutAdapt.GlobalFrontiers
 import LutAdapt.WearableLastExam
+import LutAdapt.TernaryHadamardArc

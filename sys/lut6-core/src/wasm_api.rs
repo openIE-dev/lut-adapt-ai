@@ -4,6 +4,7 @@
 //! harmonic filtering, and `(72, 64)` `RAMB36` Hamming `SECDED` cosmic-ray fault injection.
 
 use crate::generated_proof_vectors::{mol_skills_tmac_crystal, yosys_operon_crystal};
+use crate::hadamard_bonsai::fwht64_shift3_signed;
 use crate::seu_resilience::{SecdedOutcome, decode_secded_72, encode_secded_72};
 use crate::tmac_tail::{
     eval_tmac_antisym_from_pad, eval_tmac_from_pad, wire_state_to_bipolar_i8,
@@ -12,6 +13,27 @@ use crate::wearable_epistemic::{
     WearableEpistemicDecision, eval_wearable_epistemic_gate, has_benchmark_canary,
 };
 use crate::{EvalOutcome, PageLedger, high_harmonic_energy};
+
+#[inline(never)]
+fn wasm_shared_bipolar_antisym(pad: &[u8; 672], state: u64, sign_mask: Option<u64>) -> (u64, u16) {
+    let mut feats = wire_state_to_bipolar_i8(state);
+    if let Some(signs) = sign_mask {
+        let mut rot = [0i32; 64];
+        let mut i = 0usize;
+        while i < 64 {
+            rot[i] = (feats[i] as i32) << 2;
+            i += 1;
+        }
+        fwht64_shift3_signed(&mut rot, signs);
+        i = 0;
+        while i < 64 {
+            feats[i] = rot[i].clamp(-127, 127) as i8;
+            i += 1;
+        }
+    }
+    let (pay, votes, _) = eval_tmac_antisym_from_pad(pad, &feats);
+    (pay, votes)
+}
 
 /// Returns the verified IEEE 802.3 CRC32 of embedded crystal `which` (`0 = Operon`, `1 = Skills+TMAC`),
 /// or `0` if `verify_crc32()` fails.
@@ -22,11 +44,8 @@ pub extern "C" fn wasm_crystal_crc32(which: u32) -> u32 {
     } else {
         mol_skills_tmac_crystal()
     };
-    if page.verify_crc32() {
-        page.compute_crc32()
-    } else {
-        0
-    }
+    let c = page.compute_crc32();
+    if c == page.crc32 { c } else { 0 }
 }
 
 /// Evaluates the Yosys `abc -lut 6` synthesized 64-codon Operon crystal (`0xd1cc025a`) on a
@@ -55,11 +74,12 @@ pub extern "C" fn wasm_eval_two_tier_skill(
     if let EvalOutcome::Act { output_bits, votes } = r6 {
         return (1u32 << 24) | (((votes as u32) & 0xFF) << 16) | ((output_bits as u32) & 0xFFFF);
     }
-    let feats = wire_state_to_bipolar_i8(state);
-    let (pay, votes, _) = if use_antisym40 != 0 {
-        eval_tmac_antisym_from_pad(&skills_page._pad, &feats)
+    let (pay, votes) = if use_antisym40 != 0 {
+        wasm_shared_bipolar_antisym(&skills_page._pad, state, None)
     } else {
-        eval_tmac_from_pad(&skills_page._pad, &feats)
+        let feats = wire_state_to_bipolar_i8(state);
+        let (p, v, _) = eval_tmac_from_pad(&skills_page._pad, &feats);
+        (p, v)
     };
     if votes >= skills_page.conformal_thresh {
         (2u32 << 24) | (((votes as u32) & 0xFF) << 16) | ((pay as u32) & 0xFFFF)
@@ -172,4 +192,65 @@ pub extern "C" fn wasm_check_hle_canary8(ascii_lo: u32, ascii_hi: u32) -> u32 {
     } else {
         0
     }
+}
+
+/// Evaluates `Bonsai-2-27B`-style Sylvester `FWHT-64 (>> 3)` + `ISCA` 2025 `Antisym-40 T-MAC` (`0` MULs) in `.wasm`.
+/// Packed 32-bit return word: `bits [23..16]` = conformal votes (`0..8`), `bits [15..0]` = payload + energy digest.
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_bonsai_fwht64_antisym40(
+    wire_lo: u32,
+    wire_hi: u32,
+    sign_lo: u32,
+    sign_hi: u32,
+) -> u32 {
+    let state = (wire_lo as u64) | ((wire_hi as u64) << 32);
+    let signs = (sign_lo as u64) | ((sign_hi as u64) << 32);
+    let (pay, votes) = wasm_shared_bipolar_antisym(&mol_skills_tmac_crystal()._pad, state, Some(signs));
+    (((votes as u32) & 0xFF) << 16) | ((pay as u32) & 0xFFFF)
+}
+
+/// Evaluates an inductive `ARC-AGI-2` `4`-bit color + `2`-bit spatial parity `LUT6` rule across `8` packed
+/// 4-bit cells (`cells_nibbles8`: `8` cells in `u32`) via `4` `64`-bit `LUT6` `INIT` bitplanes (`0` FLOPs!).
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_arc_lut6_cells8(
+    cells_nibbles8: u32,
+    spatial_p0_byte: u32,
+    spatial_p1_byte: u32,
+    color_map_lo: u32,
+    color_map_hi: u32,
+) -> u32 {
+    let cmap = (color_map_lo as u64) | ((color_map_hi as u64) << 32);
+    let mut masks = [0u64; 4];
+    let mut m = 0usize;
+    while m < 64 {
+        let c_in = m & 0xF;
+        let par = (m >> 4) & 0x3;
+        let mut out_c = ((cmap >> (c_in << 2)) & 0xF) as u8;
+        if ((spatial_p1_byte & 0x100) != 0) && par == 3 && c_in == 0 {
+            out_c ^= 1;
+        }
+        let mut bp = 0usize;
+        while bp < 4 {
+            if ((out_c >> bp) & 1) != 0 {
+                masks[bp] |= 1u64 << m;
+            }
+            bp += 1;
+        }
+        m += 1;
+    }
+    let mut packed_out = 0u32;
+    let mut idx = 0usize;
+    while idx < 8 {
+        let c_in = ((cells_nibbles8 >> (idx << 2)) & 0xF) as usize;
+        let p0 = ((spatial_p0_byte >> idx) & 1) as usize;
+        let p1 = ((spatial_p1_byte >> idx) & 1) as usize;
+        let addr6 = c_in | (p0 << 4) | (p1 << 5);
+        let nib = (((masks[0] >> addr6) & 1) as u32)
+            | ((((masks[1] >> addr6) & 1) as u32) << 1)
+            | ((((masks[2] >> addr6) & 1) as u32) << 2)
+            | ((((masks[3] >> addr6) & 1) as u32) << 3);
+        packed_out |= nib << (idx << 2);
+        idx += 1;
+    }
+    packed_out
 }

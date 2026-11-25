@@ -22,6 +22,9 @@ use std::time::{Duration, Instant};
 
 use lut6_core::bootstrap::SEED_AGENCY;
 use lut6_core::generated_proof_vectors::{VERIFIED_TMAC_SKILL_ANCHORS, mol_skills_tmac_crystal};
+use lut6_core::hadamard_bonsai::{
+    BONSAI_BLOCK_1024, eval_bonsai1024_block16_antisym40, pack_bonsai_block16_codes,
+};
 use lut6_core::ratchet_demo::{SEED_KNOWLEDGE, synthesize_wobble_patch};
 use lut6_core::tmac_tail::{
     eval_tmac_antisym_from_pad, eval_tmac_from_pad, wire_state_to_bipolar_i8,
@@ -648,7 +651,120 @@ fn main() {
         },
     );
 
-    let windows = [w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11];
+    // Window 12: `prism-ml/Ternary-Bonsai-2-27B` Native Hadamard-Ternary (`1024 -> 16` = `16,384` weights)
+    // via Zero-MUL Sylvester `FWHT-1024 (>> 5)` + `ISCA` 2025 `Antisym-40 T-MAC` (`8` scale muls/row vs `1,024`)
+    let mut bonsai_trits = Box::new([[0i8; BONSAI_BLOCK_1024]; 16]);
+    let mut bonsai_u32 = Box::new([[0u32; 64]; 16]); // MLX 2-bit packed `[16, 1024/16]`
+    let mut bonsai_scales_f32 = [[0.0f32; 8]; 16];
+    let mut bonsai_biases_f32 = [[0.0f32; 8]; 16];
+    let mut bonsai_scales_q8 = [[0i16; 8]; 16];
+    for r in 0..16 {
+        for g in 0..8 {
+            let q = ((r * 3 + g * 2 + 1) & 7) as i16 + 1;
+            bonsai_scales_q8[r][g] = q;
+            let sf = (q as f32) * 0.125;
+            bonsai_scales_f32[r][g] = sf;
+            bonsai_biases_f32[r][g] = -sf; // Exact MLX `biases = -scales` affine convention
+        }
+        for c in 0..BONSAI_BLOCK_1024 {
+            let t = (((r * 53 + c * 19 + 2) % 3) as i8) - 1;
+            bonsai_trits[r][c] = t;
+            let code2 = (t + 1) as u32;
+            bonsai_u32[r][c >> 4] |= code2 << ((c & 15) * 2);
+        }
+    }
+    let bonsai_codes = Box::new(pack_bonsai_block16_codes(&bonsai_trits));
+    let bonsai_signs = [0xA5A5_5A5A_C3C3_3C3Cu64; 16];
+    let mut bonsai_signs_f32 = [1.0f32; BONSAI_BLOCK_1024];
+    for w in 0..16 {
+        for b in 0..64 {
+            if ((bonsai_signs[w] >> b) & 1) != 0 {
+                bonsai_signs_f32[w * 64 + b] = -1.0;
+            }
+        }
+    }
+    let bonsai_iters = (scale_iters / 40).max(1_000);
+    let w12 = measure_window(
+        "Window12_Bonsai_FWHT1024_Antisym40_Block16",
+        bonsai_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut acc = 0i32;
+            let mut x_in = [11i8; BONSAI_BLOCK_1024];
+            for step in 0..bonsai_iters {
+                x_in[(step & 1023) as usize] = ((step & 0x1F) as i8) - 16;
+                let y = eval_bonsai1024_block16_antisym40(
+                    black_box(&x_in),
+                    black_box(&bonsai_signs),
+                    black_box(&bonsai_codes),
+                    black_box(&bonsai_scales_q8),
+                );
+                acc ^= y[0] ^ y[7] ^ y[15];
+            }
+            black_box(acc);
+        },
+    );
+
+    // Window 13: Baseline `MLX` 2-Bit Affine Unpack + Float `FWHT-1024 / sqrt(1024)` + Dequantized `16,384` MACs
+    let w13 = measure_window(
+        "Window13_Baseline_MLX2Bit_Unpack_Dequant_Block16",
+        bonsai_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut acc_bits = 0u32;
+            let mut x_in = [11i8; BONSAI_BLOCK_1024];
+            let inv_sqrt_1024 = 1.0f32 / (1024.0f32).sqrt();
+            for step in 0..bonsai_iters {
+                x_in[(step & 1023) as usize] = ((step & 0x1F) as i8) - 16;
+                let mut fx = [0.0f32; BONSAI_BLOCK_1024];
+                for i in 0..BONSAI_BLOCK_1024 {
+                    fx[i] = (black_box(x_in[i]) as f32) * bonsai_signs_f32[i];
+                }
+                let mut len = 1usize;
+                while len < BONSAI_BLOCK_1024 {
+                    let st = len << 1;
+                    let mut base = 0usize;
+                    while base < BONSAI_BLOCK_1024 {
+                        for j in 0..len {
+                            let u = fx[base + j];
+                            let v = fx[base + j + len];
+                            fx[base + j] = u + v;
+                            fx[base + j + len] = u - v;
+                        }
+                        base += st;
+                    }
+                    len = st;
+                }
+                for slot in &mut fx {
+                    *slot *= inv_sqrt_1024;
+                }
+                let mut row_hash = 0u32;
+                for r in 0..16 {
+                    let mut dot = 0.0f32;
+                    for grp in 0..8 {
+                        let sc = bonsai_scales_f32[r][grp];
+                        let bi = bonsai_biases_f32[r][grp];
+                        for w_idx in 0..8 {
+                            let packed_u32 = black_box(bonsai_u32[r][grp * 8 + w_idx]);
+                            let col_base = grp * 128 + w_idx * 16;
+                            for lane in 0..16 {
+                                let code = ((packed_u32 >> (lane * 2)) & 0x3) as f32;
+                                let w_deq = sc * code + bi;
+                                dot += w_deq * fx[col_base + lane];
+                            }
+                        }
+                    }
+                    row_hash ^= dot.to_bits();
+                }
+                acc_bits ^= row_hash;
+            }
+            black_box(acc_bits);
+        },
+    );
+
+    let windows = [w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13];
     let mut json_rows = Vec::new();
     for w in &windows {
         println!(
