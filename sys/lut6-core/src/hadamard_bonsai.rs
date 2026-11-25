@@ -12,6 +12,37 @@ pub const BONSAI_GROUP_128: usize = 128;
 pub const BONSAI_GROUPS_PER_1024: usize = BONSAI_BLOCK_1024 / 4; // 256 4-trit T-MAC groups
 pub const ENTROMCU_GROUP128_BYTES: usize = 28; // 26 B (128 trits @ 5/byte) + 2 B F16 scale = 1.750 bpw
 pub const MLX_AFFINE2_GROUP128_BYTES: usize = 36; // 32 B (U32 2-bit) + 2 B scale + 2 B redundant -scale = 2.250 bpw
+pub const BONSAI_VOCAB_SIZE: u32 = 248_320; // < 2^18 = 262,144 => 3 tokens fit in 54 bits + 10-bit header!
+
+/// Losslessly packs `3` `prism-ml/Ternary-Bonsai-2-27B` token IDs (`|V| = 248,320 < 2^18 = 262,144`)
+/// plus a `10`-bit conformal/speculation header into a single `64`-bit `LUT6` output word (`54 + 10 = 64`).
+#[inline]
+pub const fn pack_bonsai_3tok_54bit(
+    t0: u32,
+    t1: u32,
+    t2: u32,
+    conf_header10: u16,
+) -> Option<u64> {
+    if t0 >= BONSAI_VOCAB_SIZE || t1 >= BONSAI_VOCAB_SIZE || t2 >= BONSAI_VOCAB_SIZE {
+        return None;
+    }
+    let word = (t0 as u64)
+        | ((t1 as u64) << 18)
+        | ((t2 as u64) << 36)
+        | (((conf_header10 as u64) & 0x3FF) << 54);
+    Some(word)
+}
+
+/// Unpacks a `64`-bit `Bonsai-AirMoL` speculative burst word into `([t0, t1, t2], conf_header10)`.
+#[inline]
+pub const fn unpack_bonsai_3tok_54bit(word: u64) -> ([u32; 3], u16) {
+    let mask18 = (1u64 << 18) - 1;
+    let t0 = (word & mask18) as u32;
+    let t1 = ((word >> 18) & mask18) as u32;
+    let t2 = ((word >> 36) & mask18) as u32;
+    let hdr10 = ((word >> 54) & 0x3FF) as u16;
+    ([t0, t1, t2], hdr10)
+}
 
 /// Exact `64`-point Sylvester Fast Walsh–Hadamard Transform (`6` butterfly stages, `0` MULs, `0` floats)
 /// with explicit input sign mask `sign_bits` (`bit i = 1 => negate x[i]`) and exact `>> 3` (`1 / sqrt(64) = 1/8`).
@@ -277,9 +308,147 @@ pub const fn eval_arc_lut6_strip64(
     ]
 }
 
+/// Multi-layer (`2`-layer Beneš-routed) `ARC-AGI-2` spatial/relational `LUT6` cascade across `64` cells:
+///   - Layer 1 (`2` `LUT6`s): extracts `2` structural predicate bitplanes `(feat0, feat1)` from `(center_nz,
+///     up_nz, down_nz, left_nz, right_nz, diag_parity)` (`Cross-5` + parity = `6` wires),
+///   - Layer 2 (`4` `LUT6`s): combines `4`-bit cell color `c_planes[0..4]` with `(feat0, feat1)` (`6` wires)
+///     into `4` output color bitplanes (`6` `LUT6`s = `48 B` total, `0` FLOPs, radius-`2` / `5x5` reach when cascaded!).
+#[inline]
+pub const fn eval_benes_arc_lut6_2layer_strip64(
+    c_planes: &[u64; 4],
+    up_nz: u64,
+    down_nz: u64,
+    left_nz: u64,
+    right_nz: u64,
+    diag_parity: u64,
+    layer1_feat_masks: &[u64; 2],
+    layer2_color_masks: &[u64; 4],
+) -> [u64; 4] {
+    let center_nz = c_planes[0] | c_planes[1] | c_planes[2] | c_planes[3];
+    let feat0 = eval_lut6_bitsliced64(
+        layer1_feat_masks[0],
+        center_nz,
+        up_nz,
+        down_nz,
+        left_nz,
+        right_nz,
+        diag_parity,
+    );
+    let feat1 = eval_lut6_bitsliced64(
+        layer1_feat_masks[1],
+        center_nz,
+        up_nz,
+        down_nz,
+        left_nz,
+        right_nz,
+        diag_parity,
+    );
+    eval_arc_lut6_strip64(c_planes, feat0, feat1, layer2_color_masks)
+}
+
+/// Decision of an `ARC-AGI-3` Interactive Reasoning `System-0` `LUT6` reflex step (`Claim LA-44`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Arc3ReflexOutcome {
+    /// Certified zero-FLOP `GameAction` (`1..=7`) emitted when world-model transition matches & `LUT6` covers state.
+    EmitAction { action_id: u8 },
+    /// Mechanic-shift circuit breaker: actual frame signature diverged from verified transition prediction!
+    MechanicShiftBreaker { expected_sig: u8, actual_sig: u8 },
+    /// Uncertified local state: wake online `System-1` transition-verified planner.
+    WakeWorldModelPlanner,
+}
+
+/// Evaluates an `ARC-AGI-3` `6`-wire local perception/goal-delta `LUT6` policy with an instant
+/// online transition-surprise circuit breaker (`Theorem 73`: `0` stale reflex actions on level rule shifts!).
+#[inline]
+pub const fn eval_arc3_policy_lut6(
+    percept6: u8,
+    expected_sig: Option<u8>,
+    actual_sig: u8,
+    action_masks3: &[u64; 3],
+    certified_mask: u64,
+) -> Arc3ReflexOutcome {
+    if let Some(exp) = expected_sig
+        && exp != actual_sig
+    {
+        return Arc3ReflexOutcome::MechanicShiftBreaker {
+            expected_sig: exp,
+            actual_sig,
+        };
+    }
+    let idx = (percept6 & 0x3F) as u32;
+    if ((certified_mask >> idx) & 1) == 0 {
+        return Arc3ReflexOutcome::WakeWorldModelPlanner;
+    }
+    let a0 = ((action_masks3[0] >> idx) & 1) as u8;
+    let a1 = (((action_masks3[1] >> idx) & 1) as u8) << 1;
+    let a2 = (((action_masks3[2] >> idx) & 1) as u8) << 2;
+    let act = a0 | a1 | a2;
+    if act == 0 || act > 7 {
+        Arc3ReflexOutcome::WakeWorldModelPlanner
+    } else {
+        Arc3ReflexOutcome::EmitAction { action_id: act }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_bonsai_3tok_54bit_bijection_and_arc3_breaker() {
+        let w = pack_bonsai_3tok_54bit(0, 124_160, 248_319, 0x2A5).unwrap();
+        let (toks, hdr) = unpack_bonsai_3tok_54bit(w);
+        assert_eq!(toks, [0, 124_160, 248_319]);
+        assert_eq!(hdr, 0x2A5);
+        // Out-of-vocab (>= 248,320) must return None
+        assert!(pack_bonsai_3tok_54bit(248_320, 1, 2, 0).is_none());
+
+        // 2-Layer Benes-ARC-LUT6: fill background (`c == 0`) with color `2` iff enclosed by `up & down & left & right`
+        let mut enclosed_mask = 0u64;
+        let mut color_masks = [0u64; 4];
+        for m in 0..64usize {
+            let c_nz = m & 1;
+            let n4 = (m >> 1) & 0xF;
+            if c_nz == 0 && n4 == 0xF {
+                enclosed_mask |= 1u64 << m;
+            }
+            let c_in = m & 0xF;
+            let f0 = (m >> 4) & 1;
+            let c_out = if c_in == 0 && f0 == 1 { 2 } else { c_in };
+            for bp in 0..4 {
+                if ((c_out >> bp) & 1) != 0 {
+                    color_masks[bp] |= 1u64 << m;
+                }
+            }
+        }
+        let cp = [0x0u64, 0x0, 0x0, 0x0]; // all background 0
+        let out_planes = eval_benes_arc_lut6_2layer_strip64(
+            &cp,
+            0b1010,
+            0b1010,
+            0b1010,
+            0b1000, // only bit 3 has all 4 neighbors non-zero!
+            0,
+            &[enclosed_mask, 0],
+            &color_masks,
+        );
+        assert_eq!(out_planes[0], 0);
+        assert_eq!(out_planes[1], 0b1000); // color 2 (`bit 1`) at cell 3 only!
+
+        // ARC-AGI-3 transition circuit breaker
+        let masks3 = [0xFFFF_FFFF_FFFF_FFFF, 0, 0]; // action 1
+        assert_eq!(
+            eval_arc3_policy_lut6(5, Some(0x42), 0x42, &masks3, u64::MAX),
+            Arc3ReflexOutcome::EmitAction { action_id: 1 }
+        );
+        assert_eq!(
+            eval_arc3_policy_lut6(5, Some(0x42), 0x99, &masks3, u64::MAX),
+            Arc3ReflexOutcome::MechanicShiftBreaker {
+                expected_sig: 0x42,
+                actual_sig: 0x99
+            }
+        );
+    }
 
     #[test]
     fn test_fwht1024_shift5_exact_orthogonality() {

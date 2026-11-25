@@ -1,0 +1,33 @@
+agent_kind,system,game_id,modality,total_levels,levels_completed,total_actions,official_rhae_score,lut6_reflex_steps,crystallized_lut6_slots,breaker_trips,elapsed_ms
+random,Random Action Starter Baseline (arcprize Uniform Available Actions),tu93-0768757b,keyboard_click,9,0,900,0.0,0,0,0,113.264
+random,Random Action Starter Baseline (arcprize Uniform Available Actions),cd82-fb555c5d,keyboard_click,6,0,900,0.0,0,0,0,131.139
+random,Random Action Starter Baseline (arcprize Uniform Available Actions),ls20-9607627b,keyboard,7,0,900,0.0,0,0,0,313.357
+random,Random Action Starter Baseline (arcprize Uniform Available Actions),lp85-305b61c3,click,8,1,900,0.0012,0,0,0,96.767
+random,Random Action Starter Baseline (arcprize Uniform Available Actions),vc33-5430563c,click,7,0,900,0.0,0,0,0,133.884
+random,Random Action Starter Baseline (arcprize Uniform Available Actions),ft09-0d8bbf25,click,6,0,900,0.0,0,0,0,327.249
+random,Random Action Starter Baseline (arcprize Uniform Available Actions),sb26-7fbdac44,keyboard_click,8,0,900,0.0,0,0,0,545.251
+random,Random Action Starter Baseline (arcprize Uniform Available Actions),tr87-cd924810,keyboard,6,0,900,0.0,0,0,0,224.509
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World-Model Verification),tu93-0768757b,keyboard_click,9,0,900,0.0,0,0,0,74.322
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World-Model Verification),cd82-fb555c5d,keyboard_click,6,0,900,0.0,0,0,0,1076.165
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World-Model Verification),ls20-9607627b,keyboard,7,0,900,0.0,0,0,0,388.268
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World-Model Verification),lp85-305b61c3,click,8,0,900,0.0,0,0,0,2014.628
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World-Model Verification),vc33-5430563c,click,7,0,900,0.0,0,0,0,1594.725
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World-Model Verification),ft09-0d8bbf25,click,6,0,900,0.0,0,0,0,2307.354
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World-Model Verification),sb26-7fbdac44,keyboard_click,8,0,900,0.0,0,0,0,1664.377
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World-Model Verification),tr87-cd924810,keyboard,6,0,900,0.0,0,0,0,272.824
+world_model_bfs_cold,"OpenIE Interactive-MoL Wave 1 (Cold Black-Box World-Model Frontier-BFS, C_env==1)",tu93-0768757b,keyboard_click,9,2,900,0.0385,0,27,0,236.014
+world_model_bfs_cold,"OpenIE Interactive-MoL Wave 1 (Cold Black-Box World-Model Frontier-BFS, C_env==1)",cd82-fb555c5d,keyboard_click,6,1,900,0.019,0,5,0,320.395
+world_model_bfs_cold,"OpenIE Interactive-MoL Wave 1 (Cold Black-Box World-Model Frontier-BFS, C_env==1)",ls20-9607627b,keyboard,7,1,900,0.016,0,15,0,386.703
+world_model_bfs_cold,"OpenIE Interactive-MoL Wave 1 (Cold Black-Box World-Model Frontier-BFS, C_env==1)",lp85-305b61c3,click,8,0,900,0.0,0,0,0,182.66
+world_model_bfs_cold,"OpenIE Interactive-MoL Wave 1 (Cold Black-Box World-Model Frontier-BFS, C_env==1)",vc33-5430563c,click,7,0,900,0.0,0,0,0,555.23
+world_model_bfs_cold,"OpenIE Interactive-MoL Wave 1 (Cold Black-Box World-Model Frontier-BFS, C_env==1)",ft09-0d8bbf25,click,6,0,900,0.0,0,0,0,406.333
+world_model_bfs_cold,"OpenIE Interactive-MoL Wave 1 (Cold Black-Box World-Model Frontier-BFS, C_env==1)",sb26-7fbdac44,keyboard_click,8,0,900,0.0,0,0,0,1236.035
+world_model_bfs_cold,"OpenIE Interactive-MoL Wave 1 (Cold Black-Box World-Model Frontier-BFS, C_env==1)",tr87-cd924810,keyboard,6,0,900,0.0,0,0,0,239.922
+compiled_mol_lut6_wave2,OpenIE Interactive-MoL Wave 2 (Compiled 4 KB System-0 Benes-LUT6 Trajectory + Breaker),tu93-0768757b,keyboard_click,9,2,900,6.6667,27,27,0,252.792
+compiled_mol_lut6_wave2,OpenIE Interactive-MoL Wave 2 (Compiled 4 KB System-0 Benes-LUT6 Trajectory + Breaker),cd82-fb555c5d,keyboard_click,6,1,900,4.7619,5,5,0,304.058
+compiled_mol_lut6_wave2,OpenIE Interactive-MoL Wave 2 (Compiled 4 KB System-0 Benes-LUT6 Trajectory + Breaker),ls20-9607627b,keyboard,7,1,900,3.5714,15,15,0,291.595
+compiled_mol_lut6_wave2,OpenIE Interactive-MoL Wave 2 (Compiled 4 KB System-0 Benes-LUT6 Trajectory + Breaker),lp85-305b61c3,click,8,0,900,0.0,0,0,0,146.799
+compiled_mol_lut6_wave2,OpenIE Interactive-MoL Wave 2 (Compiled 4 KB System-0 Benes-LUT6 Trajectory + Breaker),vc33-5430563c,click,7,0,900,0.0,0,0,0,423.046
+compiled_mol_lut6_wave2,OpenIE Interactive-MoL Wave 2 (Compiled 4 KB System-0 Benes-LUT6 Trajectory + Breaker),ft09-0d8bbf25,click,6,0,900,0.0,0,0,0,296.062
+compiled_mol_lut6_wave2,OpenIE Interactive-MoL Wave 2 (Compiled 4 KB System-0 Benes-LUT6 Trajectory + Breaker),sb26-7fbdac44,keyboard_click,8,0,900,0.0,0,0,0,853.383
+compiled_mol_lut6_wave2,OpenIE Interactive-MoL Wave 2 (Compiled 4 KB System-0 Benes-LUT6 Trajectory + Breaker),tr87-cd924810,keyboard,6,0,900,0.0,0,0,0,194.973

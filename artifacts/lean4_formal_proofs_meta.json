@@ -1,6 +1,6 @@
 {
   "lean_version": "Lean (version 4.36.0, arm64-apple-darwin24.6.0, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)",
-  "total_kernel_checked_theorems": 66,
+  "total_kernel_checked_theorems": 74,
   "module_theorem_counts": {
     "Cascade": 7,
     "BenesCopy": 7,
@@ -10,10 +10,11 @@
     "TernaryTmac": 6,
     "GlobalFrontiers": 8,
     "WearableLastExam": 8,
-    "TernaryHadamardArc": 8
+    "TernaryHadamardArc": 8,
+    "BonsaiStreamArc3": 8
   },
-  "purely_constructive_zero_axiom_theorems": 11,
-  "choice_free_theorems": 48,
+  "purely_constructive_zero_axiom_theorems": 13,
+  "choice_free_theorems": 52,
   "ofReduceBool_native_decide_count": 0,
   "opaque_declaration_count": 0,
   "nested_inductive_count": 0,
@@ -30,16 +31,17 @@
     "leanchecker --paranoid",
     "Lean v4.36.0 (default)"
   ],
-  "con_leche_verified_declarations": 58819,
-  "con_ron_verified_declarations": 58819,
-  "lean4lean_verified_declarations": 58821,
+  "con_leche_verified_declarations": 58841,
+  "con_ron_verified_declarations": 58841,
+  "lean4lean_verified_declarations": 58843,
   "paranoid_sandbox_mode": "trusted_local_repo_no_bwrap_on_darwin",
-  "clean_lake_build_ms": 1454.21,
-  "clean_lake_build_reported_j": 0.3337,
-  "paranoid_6kernel_check_ms": 139700.35,
-  "paranoid_6kernel_check_reported_j": 32.2196,
+  "clean_lake_build_ms": 3579.88,
+  "clean_lake_build_reported_j": 15.3076,
+  "paranoid_6kernel_check_ms": 167284.9,
+  "paranoid_6kernel_check_reported_j": 874.872,
   "source_sha256": {
     "proofs/LutAdapt/BenesCopy.lean": "be951544bddaa2ea1dc639bc735044e2b62848c7f377014650846e593ce92694",
+    "proofs/LutAdapt/BonsaiStreamArc3.lean": "8c57410e101df5490a89ff24737672e2be7d0de8c5c729e04002057be14a7860",
     "proofs/LutAdapt/Cascade.lean": "f8fb9baa8142a4ea8c7ffa4d33b49e72f69e6fdea6e27dbe4d140426e19c5200",
     "proofs/LutAdapt/ConformalProvenance.lean": "10121fea7e6b26c5fa9d7751b8dc418478c8f9a193ebeca549f90e051ff47055",
     "proofs/LutAdapt/GlobalFrontiers.lean": "0c6b52f797f3abcd90c5e48800999a2b2abf6ff9cc3198a5ea41ce12fcebb21e",
@@ -48,7 +50,7 @@
     "proofs/LutAdapt/TernaryHadamardArc.lean": "80cc5af79fbbd43313084e2086169b11076db19cbc62a3b293f745a3e77fe561",
     "proofs/LutAdapt/TernaryTmac.lean": "44517793934c641a6caffc667e8a88b5ccc362a8babcd990ee8ef0023b497d3e",
     "proofs/LutAdapt/WearableLastExam.lean": "932dd0ac863627b8861563dd45051e40eed1fa5beb31778b9cae2ddf691be887",
-    "proofs/LutAdapt.lean": "48f9cef1541554077a4622dc5533ca9eb30616cc3b13d1c7e3047dcd376c8451"
+    "proofs/LutAdapt.lean": "838ea2186afb9407b5f3bc25dadd2546fa9fd0ab844064eada5fc7ff0c0d5ef1"
   },
   "measured_j": null,
   "board_metered": false

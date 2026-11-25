@@ -101,6 +101,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.arc_4bit_color_and_cross5_fit_lut6", "Section 4.43", "ARC-AGI-2 4-bit color + 2-bit spatial & Cross-5 fit single 64-bit LUT6 planes"),
     ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.arc_train_exact_gate_blocks_inconsistent_rules", "Section 4.43", "ARC-AGI-2 demonstration-exact gate blocks train-inconsistent rule admission"),
     ("TernaryHadamardArc", "LutAdapt.TernaryHadamardArc.formal_lean_kernel_soundness_zero_unsound_commits", "Section 4.43", "Sound Lean 4 formal kernel gate achieves unconditional 0 unsound commits"),
+    ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.bonsai_entromcu28_shard_saves_exact_two_ninths", "Section 4.44", "Bonsai-2-27B 196.8M-group EntroMCU-28 streaming saves exact 2/9 (1.574 GB/sweep)"),
+    ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.bonsai_vocab_248320_three_token_54bit_bijection", "Section 4.44", "Bonsai |V|=248,320 3x18b + 10b conformal lossless uint64 speculative burst bijection"),
+    ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.bonsai_airmol_speculative_streaming_byte_cut", "Section 4.44", "Bonsai-AirMoL K-token target-verified EntroMCU-28 streaming >5.14x byte cut at K=3"),
+    ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.benes_arc_lut6_multilayer_receptive_field", "Section 4.45", "Multi-layer Benes-ARC-LUT6 diameter 2L+1 in 6L LUT6s (<=144 B at L=3)"),
+    ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.benes_2layer_distance2_conjunction_separation", "Section 4.45", "Constructive 2-layer vs 1-layer ARC-AGI-2 distance-2 endpoint bridging separation"),
+    ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.arc3_rhae_quadratic_action_penalty_bound", "Section 4.46", "ARC-AGI-3 quadratic RHAE (baseline/actions)^2 >=4x dominance of compiled System-0 trajectory"),
+    ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.arc3_transition_breaker_zero_stale_mechanic_commits", "Section 4.46", "ARC-AGI-3 online transition-surprise circuit breaker guarantees 0 stale mechanic actions"),
+    ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.r2_precompressed_sidecar_sync_eliminates_stale_shadow", "Section 4.46", "Edge precompressed .br sidecar sync/prune eliminates stale R2 shadowing unconditionally"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

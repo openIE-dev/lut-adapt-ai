@@ -106,6 +106,9 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
   const can_clean = ex.wasm_check_hle_canary8(0x656d6974, 0x35303072) >>> 0; // "timer005" LE
   const bonsai64  = ex.wasm_eval_bonsai_fwht64_antisym40(0xc011a061, 0x800d3908, 0xa5a55a5a, 0xc3c33c3c) >>> 0;
   const arc_cells = ex.wasm_eval_arc_lut6_cells8(0x01234567, 0xAA, 0x55, 0x89ABCDEF, 0x01234567) >>> 0;
+  const arc2_2l   = ex.wasm_eval_benes_arc2_2layer8(0x00303000, 0x00, 0x00, 0x7) >>> 0; // cell 4 bridged between 3 & 5 -> 7!
+  const arc3_hit  = ex.wasm_eval_arc3_reflex_step(0x02, 0x42, 0x42, 0xFFFFFFFF, 123456) >>> 0;
+  const arc3_brk  = ex.wasm_eval_arc3_reflex_step(0x02, 0x42, 0x99, 0xFFFFFFFF, 123456) >>> 0;
   console.log(JSON.stringify({{
     crc0_hex: '0x' + crc0.toString(16).padStart(8, '0'),
     crc1_hex: '0x' + crc1.toString(16).padStart(8, '0'),
@@ -114,7 +117,7 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
     fwht_wobble, fwht_1hot, fwht_parity,
     sec_clean, sec_1bit, sec_2bit,
     wear_hit, wear_hle, can_hle, can_clean,
-    bonsai64, arc_cells
+    bonsai64, arc_cells, arc2_2l, arc3_hit, arc3_brk
   }}));
 }})();
 """
@@ -131,8 +134,11 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
     assert (res["sec_1bit"] >> 24) == 1 and (res["sec_1bit"] & 0xFF) == 0
     assert (res["sec_2bit"] >> 24) == 2 and (res["sec_2bit"] & 0xFF) == 0
     assert (res["wear_hit"] >> 24) == 1 and ((res["wear_hit"] >> 16) & 0xFF) >= 80
-    assert (res["wear_hle"] >> 24) == 3 and ((res["wear_hle"] >> 16) & 0xFF) == 0
+    assert res["wear_hle"] >> 24 == 3 and ((res["wear_hle"] >> 16) & 0xFF) == 0
     assert res["can_hle"] == 1 and res["can_clean"] == 0
+    assert ((res["arc2_2l"] >> 16) & 0xF) == 7, f"2-layer Benes-ARC-LUT6 bridge fill failed: {res}"
+    assert (res["arc3_hit"] >> 24) == 1 and (res["arc3_hit"] & 0xFF) == 3
+    assert (res["arc3_brk"] >> 24) == 2 and (res["arc3_brk"] & 0xFF) == (0x42 ^ 0x99)
 
     return {
         "wasm_path": "artifacts/wasm/lut6_core.wasm",

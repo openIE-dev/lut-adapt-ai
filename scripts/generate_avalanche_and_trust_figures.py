@@ -270,11 +270,22 @@ def build_avalanche_svg() -> str:
 
 
 def build_six_kernel_and_stack_svg() -> str:
+    import json
+    root = Path(__file__).resolve().parents[1]
+    lean_m = json.loads((root / "artifacts" / "lean4_formal_proofs_meta.json").read_text(encoding="utf-8"))
+    fleet_m = json.loads((root / "artifacts" / "openie_fleet_six_kernel_paranoid_audit.json").read_text(encoding="utf-8"))
+    n_thms = int(lean_m["total_kernel_checked_theorems"])
+    n_zero = int(lean_m["purely_constructive_zero_axiom_theorems"])
+    n_cf = int(lean_m["choice_free_theorems"])
+    n_fleet = int(fleet_m["total_theorems_and_lemmas"])
+    cl_decls = int(lean_m["con_leche_verified_declarations"])
+    l4l_decls = int(lean_m["lean4lean_verified_declarations"])
+
     W, H = 1200, 700
     parts: list[str] = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-labelledby="sk-t sk-d">',
         '  <title id="sk-t">Six-Kernel Paranoid Proof Audit (Claim LA-19) and Three-Layer Compiled Intelligence Stack</title>',
-        '  <desc id="sk-d">Left panel shows the 58 LutAdapt Lean 4.36.0 theorems passing six independent proof checkers via lake check --paranoid (con-leche --verified, con-ron --verified, lean4lean, nanoda, leanchecker --paranoid, and Lean 4.36.0), neutralizing CVE-2026-72844, CVE-2026-72711, and native_decide exploits, paired with Inria Charon + Aeneas #![no_std] Rust MIR extraction. Right panel shows the three-layer compiled intelligence architecture spanning physical L0 control &amp; LUT6 silicon, cognitive MoL downward compilation, and verifier-first Rust MCP runtime with tier-typed Joule receipts.</desc>',
+        f'  <desc id="sk-d">Left panel shows the {n_thms} LutAdapt Lean 4.36.0 theorems passing six independent proof checkers via lake check --paranoid (con-leche --verified, con-ron --verified, lean4lean, nanoda, leanchecker --paranoid, and Lean 4.36.0), neutralizing CVE-2026-72844, CVE-2026-72711, and native_decide exploits, paired with Inria Charon + Aeneas #![no_std] Rust MIR extraction. Right panel shows the three-layer compiled intelligence architecture spanning physical L0 control &amp; LUT6 silicon, cognitive MoL downward compilation, and verifier-first Rust MCP runtime with tier-typed Joule receipts.</desc>',
         "  <defs>",
         '    <marker id="sk-emerald" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">',
         '      <path d="M0 0 L10 5 L0 10 z" fill="#10b981"/>',
@@ -297,8 +308,8 @@ def build_six_kernel_and_stack_svg() -> str:
         f'  <text x="46" y="124" font-family="{FONT_SANS}" font-size="10.3" fill="#94a3b8">Mechanized Section 2 theorems exported from Lean 4.36.0 and re-verified from scratch</text>',
         # Source theorem box
         '  <rect x="46" y="138" width="528" height="78" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>',
-        f'  <text x="58" y="160" font-family="{FONT_MONO}" font-size="7.3" font-weight="800" fill="#38bdf8">proofs/LutAdapt/{{Cascade,BenesCopy,JointMinterm,Conformal...,NucleusCodon,TernaryTmac,GlobalFrontiers,WearableLastExam}}.lean</text>',
-        f'  <text x="62" y="181" font-family="{FONT_SANS}" font-size="10.4" fill="#e2e8f0">58 Machine-Checked Theorems (1,422 Fleet) · 11 Zero-Axiom · 44/58 Choice-Free · +Aeneas Rust-&gt;Lean</text>',
+        f'  <text x="58" y="160" font-family="{FONT_MONO}" font-size="7.1" font-weight="800" fill="#38bdf8">proofs/LutAdapt/{{Cascade,BenesCopy,JointMinterm,Conformal...,TernaryTmac,GlobalFrontiers,Wearable...,BonsaiStreamArc3}}.lean</text>',
+        f'  <text x="62" y="181" font-family="{FONT_SANS}" font-size="10.4" fill="#e2e8f0">{n_thms} Machine-Checked Theorems ({n_fleet:,} Fleet) · {n_zero} Zero-Axiom · {n_cf}/{n_thms} Choice-Free · +Aeneas Rust-&gt;Lean</text>',
         f'  <text x="62" y="200" font-family="{FONT_MONO}" font-size="9.6" fill="#6ee7b7">0 sorry · 0 custom axioms · 0 opaque · 0 Lean.ofReduceBool (native_decide)</text>',
         # Neutralized 2026 Vulnerability Banner
         '  <rect x="46" y="228" width="528" height="76" rx="10" fill="#1c1219" stroke="#f43f5e" stroke-width="1.4"/>',
@@ -309,9 +320,9 @@ def build_six_kernel_and_stack_svg() -> str:
     ]
 
     kernels = [
-        ("1 · con-leche (--verified)", "Set-Theory Consistency Proof", "Breitner minimal kernel proved", "never to accept False · 58,802 decls", "#10b981"),
-        ("2 · con-ron (--verified)", "Aeneas-Verified Rust Kernel", "Formally refined Rust port of", "con-leche · 58,802 decls checked", "#10b981"),
-        ("3 · lean4lean", "Lean-in-Lean Typechecker", "Carneiro independent kernel;", "58,804 declarations replayed", "#22d3ee"),
+        ("1 · con-leche (--verified)", "Set-Theory Consistency Proof", "Breitner minimal kernel proved", f"never to accept False · {cl_decls:,} decls", "#10b981"),
+        ("2 · con-ron (--verified)", "Aeneas-Verified Rust Kernel", "Formally refined Rust port of", f"con-leche · {cl_decls:,} decls checked", "#10b981"),
+        ("3 · lean4lean", "Lean-in-Lean Typechecker", "Carneiro independent kernel;", f"{l4l_decls:,} declarations replayed", "#22d3ee"),
         ("4 · nanoda", "Independent Rust Checker", "Standalone Rust export verifier;", "sorryAx explicitly unpermitted", "#22d3ee"),
         ("5 · leanchecker --paranoid", "Fresh-Env C++ Kernel Replay", "Replays .olean environment from", "scratch with zero tactic trust", "#38bdf8"),
         ("6 · Lean v4.36.0 (Nov 2026)", "Post-CVE Default C++ Kernel", "Includes WHNF cache & GMP fixes;", "clean lake build in ~0.89 s", "#a78bfa"),

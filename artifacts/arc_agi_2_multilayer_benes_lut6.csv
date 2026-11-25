@@ -1,0 +1,9 @@
+slice,n_tasks,system,max_benes_layers,admitted_train_exact,test_exact_solved,solved_pct,selective_committed_acc_pct,confident_hallucination_rate_80_pct,unsound_train_inconsistent_commits_pct,mean_lut6_gates,mean_footprint_bytes,mean_synth_ms_per_task
+Matched_n24,24,Unverified 1-Shot Spatial Mapper (No C_train Gate),1,24,1,4.17,4.17,95.83,95.83,4.0,32.0,0.42
+Matched_n24,24,"OpenIE 1-Layer ARC-LUT6 (Diameter 3, C_train==1 Gate)",1,3,3,12.5,100.0,0.0,0.0,5.0,40.0,0.181
+Matched_n24,24,"OpenIE 2-Layer Benes-ARC-LUT6 (Diameter 5 + Panel/Ray/Symmetry, C_train==1)",2,5,5,20.83,100.0,0.0,0.0,5.4,43.2,0.41
+Matched_n24,24,"OpenIE 3-Layer Benes-ARC-LUT6 (Diameter 7 + Gravity/Component, C_train==1)",3,5,5,20.83,100.0,0.0,0.0,5.4,43.2,0.829
+Expanded_n64,64,Unverified 1-Shot Spatial Mapper (No C_train Gate),1,64,1,1.56,1.56,98.44,98.44,4.0,32.0,0.42
+Expanded_n64,64,"OpenIE 1-Layer ARC-LUT6 (Diameter 3, C_train==1 Gate)",1,4,4,6.25,100.0,0.0,0.0,4.75,38.0,0.153
+Expanded_n64,64,"OpenIE 2-Layer Benes-ARC-LUT6 (Diameter 5 + Panel/Ray/Symmetry, C_train==1)",2,7,7,10.94,100.0,0.0,0.0,5.29,42.3,0.407
+Expanded_n64,64,"OpenIE 3-Layer Benes-ARC-LUT6 (Diameter 7 + Gravity/Component, C_train==1)",3,8,8,12.5,100.0,0.0,0.0,6.12,49.0,0.784

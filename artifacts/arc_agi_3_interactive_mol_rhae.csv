@@ -1,0 +1,5 @@
+system,environments_evaluated,total_levels,levels_completed,level_completion_pct,mean_official_rhae_score,peak_game_rhae_score,total_actions_taken,lut6_reflex_steps,lut6_reflex_step_share_pct,crystallized_lut6_slots,mechanic_shift_breaker_trips,active_policy_crystal_bytes,total_wall_ms,us_per_env_step,reported_j_total,board_metered,measured_j
+Random Action Starter Baseline (arcprize Uniform Available Actions),8,57,1,1.75,0.0,0.001,7200,0,0.0,0,0,0,2043.8,283.86,7.0407,False,
+Memoryless Reactive Micro-Policy (No World-Model Verification),8,57,0,0.0,0.0,0.0,7200,0,0.0,0,0,0,9435.23,1310.45,32.051,False,
+"OpenIE Interactive-MoL Wave 1 (Cold Black-Box World-Model Frontier-BFS, C_env==1)",8,57,4,7.02,0.009,0.038,7200,0,0.0,47,0,0,3608.98,501.25,11.294,False,
+OpenIE Interactive-MoL Wave 2 (Compiled 4 KB System-0 Benes-LUT6 Trajectory + Breaker),8,57,4,7.02,1.875,6.667,7200,47,0.65,47,0,4096,2803.47,389.37,9.5006,False,

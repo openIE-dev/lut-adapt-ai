@@ -4,7 +4,10 @@
 //! harmonic filtering, and `(72, 64)` `RAMB36` Hamming `SECDED` cosmic-ray fault injection.
 
 use crate::generated_proof_vectors::{mol_skills_tmac_crystal, yosys_operon_crystal};
-use crate::hadamard_bonsai::fwht64_shift3_signed;
+use crate::hadamard_bonsai::{
+    Arc3ReflexOutcome, eval_arc3_policy_lut6, eval_benes_arc_lut6_2layer_strip64,
+    fwht64_shift3_signed, pack_bonsai_3tok_54bit, unpack_bonsai_3tok_54bit,
+};
 use crate::seu_resilience::{SecdedOutcome, decode_secded_72, encode_secded_72};
 use crate::tmac_tail::{
     eval_tmac_antisym_from_pad, eval_tmac_from_pad, wire_state_to_bipolar_i8,
@@ -253,4 +256,145 @@ pub extern "C" fn wasm_eval_arc_lut6_cells8(
         idx += 1;
     }
     packed_out
+}
+
+/// Evaluates `2`-Layer Beneš-routed `ARC-AGI-2` cellular composition (`eval_benes_arc_lut6_2layer_strip64`)
+/// across an `8`-cell 1D strip (`cells_nibbles8`) in `.wasm`: fills zero cells bridged between matching
+/// left/right non-zero neighbors (`b_left & b_right & !center`) with `fill_color & 0xF` (`0` FLOPs!).
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_benes_arc2_2layer8(
+    cells_nibbles8: u32,
+    up_mask8: u32,
+    down_mask8: u32,
+    fill_color: u32,
+) -> u32 {
+    let mut c_planes = [0u64; 4];
+    let mut nz8 = 0u64;
+    let mut i = 0usize;
+    while i < 8 {
+        let nib = (cells_nibbles8 >> (i << 2)) & 0xF;
+        if nib != 0 {
+            nz8 |= 1u64 << i;
+        }
+        let mut bp = 0usize;
+        while bp < 4 {
+            if ((nib >> bp) & 1) != 0 {
+                c_planes[bp] |= 1u64 << i;
+            }
+            bp += 1;
+        }
+        i += 1;
+    }
+    let left_nz = nz8 << 1;
+    let right_nz = nz8 >> 1;
+    let up_nz = (up_mask8 & 0xFF) as u64;
+    let down_nz = (down_mask8 & 0xFF) as u64;
+
+    // Layer-1: `feat0` = enclosed/bridged empty cell `(center == 0) && ((left & right) || (up & down))`
+    let mut feat0_lut = 0u64;
+    let mut color_luts = [0u64; 4];
+    let fc = (fill_color & 0xF) as usize;
+    let mut m = 0usize;
+    while m < 64 {
+        let c0 = m & 1;
+        let u = (m >> 1) & 1;
+        let d = (m >> 2) & 1;
+        let l = (m >> 3) & 1;
+        let r = (m >> 4) & 1;
+        if c0 == 0 && ((l == 1 && r == 1) || (u == 1 && d == 1)) {
+            feat0_lut |= 1u64 << m;
+        }
+        let c_in = m & 0xF;
+        let f0 = (m >> 4) & 1;
+        let c_out = if c_in == 0 && f0 == 1 { fc } else { c_in };
+        let mut bp = 0usize;
+        while bp < 4 {
+            if ((c_out >> bp) & 1) != 0 {
+                color_luts[bp] |= 1u64 << m;
+            }
+            bp += 1;
+        }
+        m += 1;
+    }
+    let out_p = eval_benes_arc_lut6_2layer_strip64(
+        &c_planes,
+        up_nz,
+        down_nz,
+        left_nz,
+        right_nz,
+        0,
+        &[feat0_lut, 0],
+        &color_luts,
+    );
+    let mut out32 = 0u32;
+    i = 0;
+    while i < 8 {
+        let nib = (((out_p[0] >> i) & 1) as u32)
+            | ((((out_p[1] >> i) & 1) as u32) << 1)
+            | ((((out_p[2] >> i) & 1) as u32) << 2)
+            | ((((out_p[3] >> i) & 1) as u32) << 3);
+        out32 |= nib << (i << 2);
+        i += 1;
+    }
+    out32
+}
+
+/// Evaluates an `ARC-AGI-3` `System-0` `LUT6` reflex step + mechanic-shift circuit breaker AND verifies
+/// `54`-bit `3`-token `Bonsai-2-27B` burst packing in `.wasm`.
+/// Packed 32-bit return word:
+///   - `bits [25..24]`: `1` = Certified `LUT6` `GameAction`, `2` = Mechanic-Shift Circuit Breaker, `0` = Wake Planner
+///   - `bits [23..8]`:  Roundtripped middle `Bonsai` token low-16 check (`t1 & 0xFFFF`)
+///   - `bits [7..0]`:   `GameAction` (`1..=7`) or surprise XOR (`expected ^ actual`)
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_arc3_reflex_step(
+    percept6: u32,
+    expected_sig: i32,
+    actual_sig: u32,
+    certified_lo: u32,
+    t1_probe: u32,
+) -> u32 {
+    let burst_ok_t1 = if let Some(w) = pack_bonsai_3tok_54bit(17, t1_probe % 248_320, 248_319, 0x155) {
+        let (toks, _) = unpack_bonsai_3tok_54bit(w);
+        toks[1] & 0xFFFF
+    } else {
+        0
+    };
+    // Deterministic 4-direction navigation LUT6: bits [1..0] = goal delta `(dx, dy)` -> GameAction 1..4
+    let mut act_masks = [0u64; 3];
+    let mut m = 0usize;
+    while m < 64 {
+        let act = ((m & 0x3) + 1) as u8; // 1=UP, 2=DOWN, 3=LEFT, 4=RIGHT
+        if (act & 1) != 0 {
+            act_masks[0] |= 1u64 << m;
+        }
+        if ((act >> 1) & 1) != 0 {
+            act_masks[1] |= 1u64 << m;
+        }
+        if ((act >> 2) & 1) != 0 {
+            act_masks[2] |= 1u64 << m;
+        }
+        m += 1;
+    }
+    let exp_opt = if expected_sig >= 0 {
+        Some((expected_sig & 0xFF) as u8)
+    } else {
+        None
+    };
+    let cert_mask = (certified_lo as u64) | ((certified_lo as u64) << 32);
+    match eval_arc3_policy_lut6(
+        (percept6 & 0x3F) as u8,
+        exp_opt,
+        (actual_sig & 0xFF) as u8,
+        &act_masks,
+        cert_mask,
+    ) {
+        Arc3ReflexOutcome::EmitAction { action_id } => {
+            (1u32 << 24) | (burst_ok_t1 << 8) | (action_id as u32)
+        }
+        Arc3ReflexOutcome::MechanicShiftBreaker {
+            expected_sig: e,
+            actual_sig: a,
+        } => (2u32 << 24) | (burst_ok_t1 << 8) | ((e ^ a) as u32),
+        Arc3ReflexOutcome::WakeWorldModelPlanner => burst_ok_t1 << 8,
+    }
 }

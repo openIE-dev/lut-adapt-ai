@@ -23,7 +23,10 @@ use std::time::{Duration, Instant};
 use lut6_core::bootstrap::SEED_AGENCY;
 use lut6_core::generated_proof_vectors::{VERIFIED_TMAC_SKILL_ANCHORS, mol_skills_tmac_crystal};
 use lut6_core::hadamard_bonsai::{
-    BONSAI_BLOCK_1024, eval_bonsai1024_block16_antisym40, pack_bonsai_block16_codes,
+    Arc3ReflexOutcome, BONSAI_BLOCK_1024, ENTROMCU_GROUP128_BYTES, eval_arc3_policy_lut6,
+    eval_benes_arc_lut6_2layer_strip64, eval_bonsai1024_block16_antisym40, pack_bonsai_3tok_54bit,
+    pack_bonsai_block16_codes, transcode_mlx2bit_group128_to_entromcu28, unpack_bonsai_3tok_54bit,
+    unpack_entromcu28_group128,
 };
 use lut6_core::ratchet_demo::{SEED_KNOWLEDGE, synthesize_wobble_patch};
 use lut6_core::tmac_tail::{
@@ -764,7 +767,95 @@ fn main() {
         },
     );
 
-    let windows = [w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13];
+    // Window 14: `Bonsai-AirMoL` Streaming `EntroMCU-28` (`1.750 bpw`) Unpack + `FWHT-1024` + `Antisym-40`
+    // + `54`-Bit `3`-Token `LUT6` Speculative Burst (`4` tokens verified per streamed sweep -> per-token op cost!)
+    let mut sample_words8 = [0u32; 8];
+    sample_words8.copy_from_slice(&bonsai_u32[0][0..8]);
+    let packed_mcu28: [u8; ENTROMCU_GROUP128_BYTES] =
+        transcode_mlx2bit_group128_to_entromcu28(&sample_words8, 0x3800)
+            .expect("valid ternary group");
+    let burst_word64 =
+        pack_bonsai_3tok_54bit(14_201, 88_912, 241_007, 0x3FD).expect("valid Bonsai vocab");
+    let stream_toks = bonsai_iters * 4; // 1 sweep verifies K+1 = 4 tokens!
+    let w14 = measure_window(
+        "Window14_Bonsai_EntroMCU28_AirMoL_4TokPerSweep",
+        stream_toks,
+        &shunts,
+        &rapl,
+        || {
+            let mut acc = 0i32;
+            let mut x_in = [11i8; BONSAI_BLOCK_1024];
+            for step in 0..bonsai_iters {
+                let (trits128, sc_bits) = unpack_entromcu28_group128(black_box(&packed_mcu28));
+                let (toks3, hdr10) = unpack_bonsai_3tok_54bit(black_box(burst_word64 ^ (step & 3)));
+                x_in[(step & 1023) as usize] = trits128[(step & 127) as usize]
+                    .wrapping_add(((toks3[0] & 0xF) as i8) - 8);
+                let y = eval_bonsai1024_block16_antisym40(
+                    black_box(&x_in),
+                    black_box(&bonsai_signs),
+                    black_box(&bonsai_codes),
+                    black_box(&bonsai_scales_q8),
+                );
+                acc ^= y[0] ^ y[15] ^ (sc_bits as i32) ^ (toks3[2] as i32) ^ (hdr10 as i32);
+            }
+            black_box(acc);
+        },
+    );
+
+    // Window 15: `2-Layer Benes-ARC-LUT6` (`64`-Cell Spatial Cascade) + `ARC-AGI-3` `System-0` Reflex & Breaker
+    let arc_iters = scale_iters / 2;
+    let arc_l1 = [0xFFFE_0000_7FFE_0000u64, 0x8000_7FFF_8000_7FFFu64];
+    let arc_l2 = [
+        0xAAAA_5555_AAAA_5555u64,
+        0xCCCC_3333_CCCC_3333u64,
+        0xF0F0_0F0F_F0F0_0F0Fu64,
+        0xFF00_00FF_FF00_00FFu64,
+    ];
+    let arc3_masks = [0xAAAA_AAAA_AAAA_AAAAu64, 0xCCCC_CCCC_CCCC_CCCCu64, 0xF0F0_F0F0_F0F0_F0F0u64];
+    let w15 = measure_window(
+        "Window15_Benes_ARC2_2Layer_plus_ARC3_Reflex",
+        arc_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut acc = 0u64;
+            let mut cp = [0x0F0F_0F0F_0F0F_0F0Fu64, 0x3333_3333_3333_3333, 0x5555_5555_5555_5555, 0];
+            for step in 0..arc_iters {
+                cp[0] ^= step & 0xFF;
+                let out_p = eval_benes_arc_lut6_2layer_strip64(
+                    black_box(&cp),
+                    black_box(cp[0].rotate_left(1)),
+                    black_box(cp[0].rotate_right(1)),
+                    black_box(cp[1] << 1),
+                    black_box(cp[1] >> 1),
+                    black_box(step),
+                    black_box(&arc_l1),
+                    black_box(&arc_l2),
+                );
+                let act_sig = if (step & 63) == 63 { 0x99u8 } else { 0x42u8 };
+                let r3 = eval_arc3_policy_lut6(
+                    (step & 0x3F) as u8,
+                    Some(0x42),
+                    black_box(act_sig),
+                    black_box(&arc3_masks),
+                    u64::MAX,
+                );
+                let tag = match r3 {
+                    Arc3ReflexOutcome::EmitAction { action_id } => action_id as u64,
+                    Arc3ReflexOutcome::MechanicShiftBreaker { expected_sig, actual_sig } => {
+                        (expected_sig ^ actual_sig) as u64
+                    }
+                    Arc3ReflexOutcome::WakeWorldModelPlanner => 0,
+                };
+                acc ^= out_p[0] ^ out_p[3] ^ tag;
+            }
+            black_box(acc);
+        },
+    );
+
+    let windows = [
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15,
+    ];
     let mut json_rows = Vec::new();
     for w in &windows {
         println!(

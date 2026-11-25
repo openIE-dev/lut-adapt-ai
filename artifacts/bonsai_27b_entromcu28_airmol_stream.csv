@@ -1,0 +1,4 @@
+mode,bpw,linear_gb_per_sweep,wave2_tokens,wave2_linear_sweeps,tokens_per_sweep,streamed_linear_gb_per_token,io_byte_reduction_factor,exact_greedy_parity_pct,resident_tok_per_s_m3_ultra,reported_j_per_token_m3_ultra,lut6_draft_page_bytes,board_metered,measured_j
+"MLX 2-Bit Affine T=1 Streaming Baseline (2.250 bpw, 36 B/128w)",2.25,6.705,163,165,0.988,6.787,1.0,100.0,14.35,0.055,0,False,
+"OpenIE EntroMCU-28 T=1 Lossless Streaming (1.750 bpw, 28 B/128w)",1.75,5.215,163,165,0.988,5.279,1.286,100.0,14.35,0.055,0,False,
+OpenIE Bonsai-AirMoL (EntroMCU-28 1.750 bpw + 54-Bit 3-Tok LUT6 Burst + Hybrid Rollback),1.75,5.215,163,131,1.244,4.191,1.619,100.0,14.85,0.0459,4096,False,
