@@ -8,6 +8,7 @@
 #[cfg(not(target_endian = "little"))]
 compile_error!("lut6-core requires a little-endian target matching canonical .lut6 byte layout.");
 
+pub mod apex_harness;
 pub mod bootstrap;
 pub mod generated_proof_vectors;
 pub mod hadamard_bonsai;

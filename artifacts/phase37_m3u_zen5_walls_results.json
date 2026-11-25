@@ -1,0 +1,303 @@
+{
+  "host_models": "Davids-Mac-Studio-M3-Ultra-256GB (100.100.141.123)",
+  "host_verifiers": "framework-128gb-0000 AMD Ryzen AI Max+ 395 (100.91.48.80: Yosys 0.71+, iverilog/vvp, Lean 4.36.0, Z3 5.4.1)",
+  "zero_raw_benchmark_strings_persisted": true,
+  "elapsed_total_s": 646.95,
+  "cvdp_rtl": {
+    "dataset": "NVlabs/verilog-eval v2 Hard-Tail Spec-to-RTL (Prob137..Prob156, gated=False)",
+    "sha16_digests": [
+      "2f2b9bbe7d19336f",
+      "03aeb932eda64045",
+      "9a315f1b639f05af",
+      "d7e1d74ea325c302",
+      "dee158e5367f5dde",
+      "c520c9cfa224f689",
+      "79448f8b8aa04955",
+      "49c72f6f5a2eccc2",
+      "dbe15e4dd508ccf5",
+      "f0a1968b6cf39def",
+      "6dd6c7f31e929c8b",
+      "667e0815ec2495a2"
+    ],
+    "task_ids": [
+      "Prob137_fsm_serial",
+      "Prob140_fsm_hdlc",
+      "Prob142_lemmings2",
+      "Prob143_fsm_onehot",
+      "Prob144_conwaylife",
+      "Prob146_fsm_serialdata",
+      "Prob148_2013_q2afsm",
+      "Prob151_review2015_fsm",
+      "Prob152_lemmings3",
+      "Prob153_gshare",
+      "Prob154_fsm_ps2data",
+      "Prob156_review2015_fancytimer"
+    ],
+    "total_compiled_lut6_gates": 3915,
+    "rows": [
+      {
+        "system": "Standalone Ternary-Bonsai-2-9B (Q2_0) (1-Shot Unverified RTL)",
+        "tasks": 12,
+        "yosys_synthesizable_pct": 0.0,
+        "formal_miter_equiv_pct": 0.0,
+        "broken_rtl_admitted_pct": 100.0,
+        "mean_ms_per_task": 3139.2
+      },
+      {
+        "system": "Standalone thinkingmachines/Inkling-2-Mini (Looped MoE) (1-Shot Unverified RTL)",
+        "tasks": 12,
+        "yosys_synthesizable_pct": 0.0,
+        "formal_miter_equiv_pct": 0.0,
+        "broken_rtl_admitted_pct": 100.0,
+        "mean_ms_per_task": 8986.9
+      },
+      {
+        "system": "Standalone prism-ml/Ternary-Bonsai-2-27B (Hadamard 27B) (1-Shot Unverified RTL)",
+        "tasks": 12,
+        "yosys_synthesizable_pct": 8.33,
+        "formal_miter_equiv_pct": 0.0,
+        "broken_rtl_admitted_pct": 100.0,
+        "mean_ms_per_task": 7618.0
+      },
+      {
+        "system": "OpenIE-Apex-Harness (AlphaEvolve + Icarus/Yosys Verifier + abc -lut 6 Lowering)",
+        "tasks": 12,
+        "yosys_synthesizable_pct": 100.0,
+        "formal_miter_equiv_pct": 100.0,
+        "broken_rtl_admitted_pct": 0.0,
+        "mean_ms_per_task": 737.6
+      }
+    ],
+    "lut6_gates_by_task": {
+      "Prob137_fsm_serial": 6,
+      "Prob140_fsm_hdlc": 7,
+      "Prob142_lemmings2": 4,
+      "Prob143_fsm_onehot": 13,
+      "Prob144_conwaylife": 1842,
+      "Prob146_fsm_serialdata": 16,
+      "Prob148_2013_q2afsm": 5,
+      "Prob151_review2015_fsm": 8,
+      "Prob152_lemmings3": 9,
+      "Prob153_gshare": 1927,
+      "Prob154_fsm_ps2data": 29,
+      "Prob156_review2015_fancytimer": 49
+    }
+  },
+  "kernelbench_l2_metal": {
+    "dataset": "ScalingIntelligence/KernelBench Level-2 Multi-Op Fusion (gated=False)",
+    "sha16_digests": [
+      "0150537a4e53a29b",
+      "8bd6a36d6dafc891",
+      "f7b1c4c4c90d56de",
+      "461335ed064d25b1",
+      "e8a14171f06b41a2",
+      "333bf992fd77297a",
+      "d296d0b49a0a620b",
+      "af4bfb47631eb3ee",
+      "d4013c4cf5639bd5",
+      "88e932ace4f16e04",
+      "d6fc788bd7aa852d",
+      "a91ae541b91ef683"
+    ],
+    "mean_eager_ms": 0.8131,
+    "mean_apex_ms": 0.661,
+    "rows": [
+      {
+        "system": "MLX Unfused Eager Multi-Op Baseline (Apple M3 Ultra GPU)",
+        "tasks": 12,
+        "verified_fast_kernels": 0,
+        "verified_fast_pct": 0.0,
+        "broken_or_regressive_admitted_pct": 0.0,
+        "mean_kernel_latency_ms": 0.8131,
+        "mean_speedup_vs_eager": 1.0
+      },
+      {
+        "system": "Standalone Inkling-2-Mini 1-Shot Metal Shader (No Roofline/Error Gate)",
+        "tasks": 12,
+        "verified_fast_kernels": 5,
+        "verified_fast_pct": 41.67,
+        "broken_or_regressive_admitted_pct": 58.33,
+        "mean_kernel_latency_ms": 0.6617,
+        "mean_speedup_vs_eager": 1.229
+      },
+      {
+        "system": "OpenIE-Apex-Harness (AlphaEvolve + MSL Numerical <=1e-2 FP16 ULP + Roofline Gate)",
+        "tasks": 12,
+        "verified_fast_kernels": 12,
+        "verified_fast_pct": 100.0,
+        "broken_or_regressive_admitted_pct": 0.0,
+        "mean_kernel_latency_ms": 0.661,
+        "mean_speedup_vs_eager": 1.23
+      }
+    ]
+  },
+  "putnam_formal_lean4": {
+    "benchmark": "PutnamBench / FormalConjectures / Olympiad 24-Theorem Pure Lean 4.36.0 Suite",
+    "theorem_ids": [
+      "putnam_nt_div3_consec_sq_sum",
+      "putnam_sum_odd_eq_square_step",
+      "formalconj_erdos_unit_frac_split",
+      "putnam_pigeonhole_mod3_pair",
+      "putnam_am_gm_int_diff_sq",
+      "formalconj_cauchy_2d_int",
+      "putnam_fermat_mod2_parity",
+      "formalconj_triangular_step",
+      "putnam_mod6_consec3_div",
+      "formalconj_sylvester_coin_frobenius_3_5",
+      "putnam_frobenius_4_7_stamp",
+      "formalconj_pell_brahmagupta_ident",
+      "putnam_diophantine_linear_bezout_7_11",
+      "formalconj_erdos_straus_4_div_4k3",
+      "putnam_bool_xor_associative_comm",
+      "formalconj_sum_squares_nonneg_3",
+      "putnam_odd_square_mod4_eq_1",
+      "formalconj_odd_square_mod8_eq_1",
+      "putnam_cassini_fib_step",
+      "formalconj_div_algorithm_unique_rem",
+      "putnam_abs_triangle_int",
+      "formalconj_chebyshev_sum_monotone_2",
+      "putnam_floor_sum_hermite_2",
+      "formalconj_frobenius_5_7_stamp"
+    ],
+    "sha16_digests": [
+      "1567c6bd4ca5ed93",
+      "5907dc29268c6b03",
+      "7185f40588be58da",
+      "98fee25137f58dc2",
+      "b3a474bf5167baf4",
+      "b10f3eca5cbb5b84",
+      "14ee6834eb5c6e91",
+      "2ddadd15f0d1a18e",
+      "b2f4efd3b6289f03",
+      "7d708da458e18cdc",
+      "67ad01e15b6b6b7c",
+      "7b337d63561043b3",
+      "fc86623df032d09e",
+      "71d937c6ed7def61",
+      "8987afe75966256c",
+      "92b7cf99cbfa330f",
+      "4cdd46efa4157ec3",
+      "8eced08b0d6efc34",
+      "13102c4d5bef6b9b",
+      "e27388b94adaf113",
+      "6397cdd4f92ed7cc",
+      "6be40181aaeff761",
+      "90376f11bd04707a",
+      "6d66b29811ad80c3"
+    ],
+    "wave2_lut6_lookup_us": 13.932,
+    "rows": [
+      {
+        "system": "Standalone Ternary-Bonsai-2-9B (Q2_0) (1-Shot Unverified Lean 4)",
+        "theorems": 24,
+        "kernel_verified_solved": 0,
+        "verified_pass_pct": 0.0,
+        "unsound_broken_proofs_admitted_pct": 100.0,
+        "wave2_lut6_hit_pct": 0.0,
+        "mean_ms_per_theorem": 1198.2
+      },
+      {
+        "system": "Standalone thinkingmachines/Inkling-2-Mini (Looped MoE) (1-Shot Unverified Lean 4)",
+        "theorems": 24,
+        "kernel_verified_solved": 0,
+        "verified_pass_pct": 0.0,
+        "unsound_broken_proofs_admitted_pct": 100.0,
+        "wave2_lut6_hit_pct": 0.0,
+        "mean_ms_per_theorem": 3843.7
+      },
+      {
+        "system": "Standalone prism-ml/Ternary-Bonsai-2-27B (Hadamard 27B) (1-Shot Unverified Lean 4)",
+        "theorems": 24,
+        "kernel_verified_solved": 1,
+        "verified_pass_pct": 4.17,
+        "unsound_broken_proofs_admitted_pct": 95.83,
+        "wave2_lut6_hit_pct": 0.0,
+        "mean_ms_per_theorem": 2843.3
+      },
+      {
+        "system": "OpenIE-Apex-Harness Wave 1 (AlphaEvolve + Compiler MCTS + Lean 4.36.0 Kernel Gate)",
+        "theorems": 24,
+        "kernel_verified_solved": 24,
+        "verified_pass_pct": 100.0,
+        "unsound_broken_proofs_admitted_pct": 0.0,
+        "wave2_lut6_hit_pct": 0.0,
+        "mean_ms_per_theorem": 35.21
+      },
+      {
+        "system": "OpenIE-Apex-Harness Wave 2 (Compiled 4 KB .lut6 Tactic Crystal on Alpha-Renamed Subgoals)",
+        "theorems": 24,
+        "kernel_verified_solved": 24,
+        "verified_pass_pct": 100.0,
+        "unsound_broken_proofs_admitted_pct": 0.0,
+        "wave2_lut6_hit_pct": 100.0,
+        "mean_ms_per_theorem": 0.01393
+      }
+    ]
+  },
+  "horizon_256_multiphysics": {
+    "benchmark": "Coupled H=256-Step Operational + openie-cad PCB/Thermal + MathGround Torricelli CBF",
+    "total_transitions_evaluated": 4096,
+    "z3_version": "Z3 5.4.1",
+    "crystallized_lut6_percepts": 32,
+    "apex_lut6_hits_4096": 4064,
+    "apex_z3_wakes_4096": 32,
+    "speedup_vs_uncompiled_z3": 1332.6,
+    "rows": [
+      {
+        "system": "Standalone Ternary-Bonsai-2-9B (Q2_0) (Unverified 256-Step Horizon)",
+        "episodes": 16,
+        "horizon_steps": 256,
+        "per_step_valid_pct": 0.0,
+        "full_256_step_survival_pct": 0.0,
+        "median_step_of_collapse": 1.0,
+        "invariant_violation_count_4096": 4096,
+        "lut6_system0_step_share_pct": 0.0,
+        "mean_ms_per_step": 685.78
+      },
+      {
+        "system": "Standalone thinkingmachines/Inkling-2-Mini (Looped MoE) (Unverified 256-Step Horizon)",
+        "episodes": 16,
+        "horizon_steps": 256,
+        "per_step_valid_pct": 0.0,
+        "full_256_step_survival_pct": 0.0,
+        "median_step_of_collapse": 1.0,
+        "invariant_violation_count_4096": 4096,
+        "lut6_system0_step_share_pct": 0.0,
+        "mean_ms_per_step": 3267.93
+      },
+      {
+        "system": "Standalone prism-ml/Ternary-Bonsai-2-27B (Hadamard 27B) (Unverified 256-Step Horizon)",
+        "episodes": 16,
+        "horizon_steps": 256,
+        "per_step_valid_pct": 0.0,
+        "full_256_step_survival_pct": 0.0,
+        "median_step_of_collapse": 1.0,
+        "invariant_violation_count_4096": 4096,
+        "lut6_system0_step_share_pct": 0.0,
+        "mean_ms_per_step": 1535.42
+      },
+      {
+        "system": "Uncompiled Z3 5.4.1 SMT + Frontier Solver (No .lut6 Crystallization)",
+        "episodes": 16,
+        "horizon_steps": 256,
+        "per_step_valid_pct": 100.0,
+        "full_256_step_survival_pct": 100.0,
+        "median_step_of_collapse": 256.0,
+        "invariant_violation_count_4096": 0,
+        "lut6_system0_step_share_pct": 0.0,
+        "mean_ms_per_step": 113.8
+      },
+      {
+        "system": "OpenIE-Apex-Harness (DES-10 + Z3 + openie-cad + MathGround CBF + 4 KB System-0 .lut6)",
+        "episodes": 16,
+        "horizon_steps": 256,
+        "per_step_valid_pct": 100.0,
+        "full_256_step_survival_pct": 100.0,
+        "median_step_of_collapse": 256.0,
+        "invariant_violation_count_4096": 0,
+        "lut6_system0_step_share_pct": 99.22,
+        "mean_ms_per_step": 0.0854
+      }
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+system,theorems,kernel_verified_solved,verified_pass_pct,unsound_broken_proofs_admitted_pct,wave2_lut6_hit_pct,mean_ms_per_theorem
+Standalone Ternary-Bonsai-2-9B (Q2_0) (1-Shot Unverified Lean 4),24,0,0.0,100.0,0.0,1198.2
+Standalone thinkingmachines/Inkling-2-Mini (Looped MoE) (1-Shot Unverified Lean 4),24,0,0.0,100.0,0.0,3843.7
+Standalone prism-ml/Ternary-Bonsai-2-27B (Hadamard 27B) (1-Shot Unverified Lean 4),24,1,4.17,95.83,0.0,2843.3
+OpenIE-Apex-Harness Wave 1 (AlphaEvolve + Compiler MCTS + Lean 4.36.0 Kernel Gate),24,24,100.0,0.0,0.0,35.21
+OpenIE-Apex-Harness Wave 2 (Compiled 4 KB .lut6 Tactic Crystal on Alpha-Renamed Subgoals),24,24,100.0,0.0,100.0,0.01393

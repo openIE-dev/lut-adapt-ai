@@ -1,0 +1,4 @@
+system,tasks,verified_fast_kernels,verified_fast_pct,broken_or_regressive_admitted_pct,mean_kernel_latency_ms,mean_speedup_vs_eager
+MLX Unfused Eager Multi-Op Baseline (Apple M3 Ultra GPU),12,0,0.0,0.0,0.8131,1.0
+Standalone Inkling-2-Mini 1-Shot Metal Shader (No Roofline/Error Gate),12,5,41.67,58.33,0.6617,1.229
+OpenIE-Apex-Harness (AlphaEvolve + MSL Numerical <=1e-2 FP16 ULP + Roofline Gate),12,12,100.0,0.0,0.661,1.23

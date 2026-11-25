@@ -109,6 +109,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.arc3_rhae_quadratic_action_penalty_bound", "Section 4.46", "ARC-AGI-3 quadratic RHAE (baseline/actions)^2 >=4x dominance of compiled System-0 trajectory"),
     ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.arc3_transition_breaker_zero_stale_mechanic_commits", "Section 4.46", "ARC-AGI-3 online transition-surprise circuit breaker guarantees 0 stale mechanic actions"),
     ("BonsaiStreamArc3", "LutAdapt.BonsaiStreamArc3.r2_precompressed_sidecar_sync_eliminates_stale_shadow", "Section 4.46", "Edge precompressed .br sidecar sync/prune eliminates stale R2 shadowing unconditionally"),
+    ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.unverified_horizon_defect_amplification_vs_step_gate", "Section 4.50", "Long-horizon defect collapse vs RCE+Z3+Simplex step-gate 0-violation invariance"),
+    ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.des10_enzymatic_attested_handoff_zero_unverified_drift", "Section 4.50", "DES-10 enzymatic schema+digest handoff attestation forces 0 inter-agent drift"),
+    ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.arc3_iw1_novelty_table_finite_step_bound", "Section 4.47", "ARC-AGI-3 IW(1) <=63,488 novel playfield atoms vs 28^4=614,656 blind click branching"),
+    ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.yosys_boolean_miter_zero_iff_pointwise_rtl_eq", "Section 4.48", "NVIDIA CVDP Yosys Boolean XOR miter = false iff exact RTL equivalence"),
+    ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.kernelbench_roofline_and_err_gate_blocks_broken_or_slow_shaders", "Section 4.48", "KernelBench numerical tolerance + hardware roofline gate blocks broken/regressive shaders"),
+    ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.mathground_torricelli_cbf_forward_invariance", "Section 4.50", "MathGround Simplex Torricelli v^2<=2*aMax*dObs forward-reachable braking soundness"),
+    ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.alphaevolve_mol_pareto_ratchet_monotone", "Section 4.49", "AlphaEvolve+MoL Pareto ratchet preserves C(z)=1 validity and monotonic joules"),
+    ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.apex_system0_horizon_amortization_bound", "Section 4.50", "H=256 System-0 LUT6 horizon reflex saves >=192*(cWake-c0) vs uncompiled solver"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

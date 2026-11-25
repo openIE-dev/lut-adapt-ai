@@ -257,7 +257,7 @@ def main() -> None:
         # Box 2: 50 LutAdapt / 1,414 Fleet 6-Kernel Audit
         f'  <rect x="{dx+14}" y="{dy+164}" width="{dw-28}" height="76" rx="9" fill="#131f35" stroke="#a78bfa" stroke-opacity="0.55"/>',
         f'  <text x="{dx+26}" y="{dy+184}" fill="#ddd6fe" font-family="{FONT_MONO}" font-size="9.3" font-weight="700">2. Six-Kernel Paranoid Proof Suite Expanded to {lean["total_kernel_checked_theorems"]} Theorems ({fleet["total_theorems_and_lemmas"]:,} Fleet):</text>',
-        f'  <text x="{dx+26}" y="{dy+203}" fill="#e2e8f0" font-family="{FONT_MONO}" font-size="8.6">10 Modules (+BonsaiStreamArc3.lean) · {lean["purely_constructive_zero_axiom_theorems"]}/{lean["total_kernel_checked_theorems"]} Zero-Axiom · {lean["choice_free_theorems"]}/{lean["total_kernel_checked_theorems"]} Choice-Free · 0 sorry</text>',
+        f'  <text x="{dx+26}" y="{dy+203}" fill="#e2e8f0" font-family="{FONT_MONO}" font-size="8.6">11 Modules (+ApexHarnessWalls.lean) · {lean["purely_constructive_zero_axiom_theorems"]}/{lean["total_kernel_checked_theorems"]} Zero-Axiom · {lean["choice_free_theorems"]}/{lean["total_kernel_checked_theorems"]} Choice-Free · 0 sorry</text>',
         f'  <text x="{dx+26}" y="{dy+222}" fill="#6ee7b7" font-family="{FONT_MONO}" font-size="8.6">con-leche &amp; con-ron --verified ({lean["con_leche_verified_declarations"]:,} decls) + lean4lean + nanoda + Linux bwrap PASS</text>',
         # Box 3: 14.74 KB Browser-Native WebAssembly Engine
         f'  <rect x="{dx+14}" y="{dy+250}" width="{dw-28}" height="102" rx="9" fill="#091e1a" stroke="#10b981" stroke-opacity="0.65"/>',

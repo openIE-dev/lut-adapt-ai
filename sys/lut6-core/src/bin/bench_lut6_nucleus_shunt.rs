@@ -853,8 +853,58 @@ fn main() {
         },
     );
 
+    // Window 16: `OpenIE-Apex-Harness` `System-0` `LUT6` Horizon Gate (`DES-10` + `openie-cad` + `MathGround CBF` + `RCE`)
+    let apex_masks4 = [
+        0xAAAA_AAAA_AAAA_AAAAu64,
+        0xCCCC_CCCC_CCCC_CCCCu64,
+        0xF0F0_F0F0_F0F0_F0F0u64,
+        0xFF00_FF00_FF00_FF00u64,
+    ];
+    let w16 = measure_window(
+        "Window16_Apex_System0_Enzymatic_Horizon_Gate",
+        arc_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut acc = 0u64;
+            for step in 0..arc_iters {
+                let env = lut6_core::apex_harness::ApexStepEnvelope {
+                    percept6: ((step & 0x3E) | 1) as u8,
+                    handoff_tag16: 0x42A1,
+                    expected_tag16: if (step & 127) == 127 { 0x42A0 } else { 0x42A1 },
+                    z0_milliohm: 49_500 + ((step & 7) as u32) * 100,
+                    tj_deci_c: 640 + ((step & 15) as u16) * 5,
+                    v_mm_s: 1100 + ((step & 7) as u32) * 20,
+                    a_max_mm_s2: 3000,
+                    d_obs_mm: if (step & 255) == 254 { 150 } else { 320 },
+                    cash_cents: 15_000,
+                    stock_units: 24,
+                };
+                let out = lut6_core::apex_harness::eval_apex_enzymatic_step_lut6(
+                    black_box(&env),
+                    black_box(&apex_masks4),
+                    u64::MAX,
+                );
+                let tag = match out {
+                    lut6_core::apex_harness::ApexGateOutcome::CertifiedSystem0 { action_code } => {
+                        action_code as u64
+                    }
+                    lut6_core::apex_harness::ApexGateOutcome::EnzymaticAttestationTrap {
+                        xor_tag,
+                    } => xor_tag as u64,
+                    lut6_core::apex_harness::ApexGateOutcome::SimplexBarrierShield {
+                        violation_mask,
+                    } => violation_mask as u64,
+                    lut6_core::apex_harness::ApexGateOutcome::WakeApexSolver => 0,
+                };
+                acc ^= tag.wrapping_mul(0x9E37_79B9);
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {

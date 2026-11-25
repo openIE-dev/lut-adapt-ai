@@ -1,0 +1,6 @@
+system,episodes,horizon_steps,per_step_valid_pct,full_256_step_survival_pct,median_step_of_collapse,invariant_violation_count_4096,lut6_system0_step_share_pct,mean_ms_per_step
+Standalone Ternary-Bonsai-2-9B (Q2_0) (Unverified 256-Step Horizon),16,256,0.0,0.0,1.0,4096,0.0,685.78
+Standalone thinkingmachines/Inkling-2-Mini (Looped MoE) (Unverified 256-Step Horizon),16,256,0.0,0.0,1.0,4096,0.0,3267.93
+Standalone prism-ml/Ternary-Bonsai-2-27B (Hadamard 27B) (Unverified 256-Step Horizon),16,256,0.0,0.0,1.0,4096,0.0,1535.42
+Uncompiled Z3 5.4.1 SMT + Frontier Solver (No .lut6 Crystallization),16,256,100.0,100.0,256.0,0,0.0,113.8
+OpenIE-Apex-Harness (DES-10 + Z3 + openie-cad + MathGround CBF + 4 KB System-0 .lut6),16,256,100.0,100.0,256.0,0,99.22,0.0854

@@ -3,6 +3,7 @@
 //! `mol_skills_tmac_tail.lut6`), Antisymmetric `40`-entry `T-MAC`, Walsh–Hadamard `FWHT`
 //! harmonic filtering, and `(72, 64)` `RAMB36` Hamming `SECDED` cosmic-ray fault injection.
 
+use crate::apex_harness::{ApexGateOutcome, ApexStepEnvelope, eval_apex_enzymatic_step_lut6};
 use crate::generated_proof_vectors::{mol_skills_tmac_crystal, yosys_operon_crystal};
 use crate::hadamard_bonsai::{
     Arc3ReflexOutcome, eval_arc3_policy_lut6, eval_benes_arc_lut6_2layer_strip64,
@@ -396,5 +397,52 @@ pub extern "C" fn wasm_eval_arc3_reflex_step(
             actual_sig: a,
         } => (2u32 << 24) | (burst_ok_t1 << 8) | ((e ^ a) as u32),
         Arc3ReflexOutcome::WakeWorldModelPlanner => burst_ok_t1 << 8,
+    }
+}
+
+/// Evaluates the `OpenIE-Apex-Harness` `#![no_std]` `System-0` `LUT6` horizon gate (`DES-10` attestation +
+/// `openie-cad` PCB impedance/thermal + `MathGround` Torricelli `CBF` + `RCE` reserve check) in `.wasm`.
+/// Packed 32-bit return word:
+///   - `bits [25..24]`: `1` = Certified `System-0` Action, `2` = `DES-10` Attestation Trap,
+///                      `3` = `Simplex` Physics/CBF/DRC Barrier Shield, `0` = Wake `AlphaEvolve+Z3` Solver
+///   - `bits [15..0]`:  Action code (`1..=15`), XOR attestation tag, or violation bitmask
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_apex_horizon_gate(
+    percept6_and_tags: u32,
+    z0_mohm_and_tj: u32,
+    v_mm_s: u32,
+    d_obs_mm: u32,
+    cash_and_stock_ok: i32,
+) -> u32 {
+    let percept6 = (percept6_and_tags & 0x3F) as u8;
+    let handoff_tag16 = ((percept6_and_tags >> 8) & 0xFF) as u16;
+    let expected_tag16 = ((percept6_and_tags >> 16) & 0xFF) as u16;
+    let z0_milliohm = (z0_mohm_and_tj & 0xFFFF) * 2; // e.g., 25_000 -> 50_000 mΩ (50 Ω)
+    let tj_deci_c = ((z0_mohm_and_tj >> 16) & 0xFFFF) as u16;
+    let env = ApexStepEnvelope {
+        percept6,
+        handoff_tag16,
+        expected_tag16,
+        z0_milliohm,
+        tj_deci_c,
+        v_mm_s,
+        a_max_mm_s2: 3_000,
+        d_obs_mm,
+        cash_cents: cash_and_stock_ok,
+        stock_units: cash_and_stock_ok,
+    };
+    let masks4 = [
+        0xAAAA_AAAA_AAAA_AAAAu64,
+        0xCCCC_CCCC_CCCC_CCCCu64,
+        0xF0F0_F0F0_F0F0_F0F0u64,
+        0xFF00_FF00_FF00_FF00u64,
+    ];
+    match eval_apex_enzymatic_step_lut6(&env, &masks4, u64::MAX) {
+        ApexGateOutcome::CertifiedSystem0 { action_code } => (1u32 << 24) | (action_code as u32),
+        ApexGateOutcome::EnzymaticAttestationTrap { xor_tag } => (2u32 << 24) | (xor_tag as u32),
+        ApexGateOutcome::SimplexBarrierShield { violation_mask } => {
+            (3u32 << 24) | (violation_mask as u32)
+        }
+        ApexGateOutcome::WakeApexSolver => 0,
     }
 }

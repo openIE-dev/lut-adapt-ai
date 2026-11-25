@@ -21,3 +21,4 @@ artifacts/*_sim/
 
 # OS / editor
 .DS_Store
+environment_files/

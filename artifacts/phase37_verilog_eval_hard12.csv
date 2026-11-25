@@ -1,0 +1,5 @@
+system,tasks,yosys_synthesizable_pct,formal_miter_equiv_pct,broken_rtl_admitted_pct,mean_ms_per_task
+Standalone Ternary-Bonsai-2-9B (Q2_0) (1-Shot Unverified RTL),12,0.0,0.0,100.0,3139.2
+Standalone thinkingmachines/Inkling-2-Mini (Looped MoE) (1-Shot Unverified RTL),12,0.0,0.0,100.0,8986.9
+Standalone prism-ml/Ternary-Bonsai-2-27B (Hadamard 27B) (1-Shot Unverified RTL),12,8.33,0.0,100.0,7618.0
+OpenIE-Apex-Harness (AlphaEvolve + Icarus/Yosys Verifier + abc -lut 6 Lowering),12,100.0,100.0,0.0,737.6

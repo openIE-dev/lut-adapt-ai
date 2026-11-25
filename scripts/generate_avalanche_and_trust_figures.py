@@ -308,7 +308,7 @@ def build_six_kernel_and_stack_svg() -> str:
         f'  <text x="46" y="124" font-family="{FONT_SANS}" font-size="10.3" fill="#94a3b8">Mechanized Section 2 theorems exported from Lean 4.36.0 and re-verified from scratch</text>',
         # Source theorem box
         '  <rect x="46" y="138" width="528" height="78" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>',
-        f'  <text x="58" y="160" font-family="{FONT_MONO}" font-size="7.1" font-weight="800" fill="#38bdf8">proofs/LutAdapt/{{Cascade,BenesCopy,JointMinterm,Conformal...,TernaryTmac,GlobalFrontiers,Wearable...,BonsaiStreamArc3}}.lean</text>',
+        f'  <text x="58" y="160" font-family="{FONT_MONO}" font-size="6.9" font-weight="800" fill="#38bdf8">proofs/LutAdapt/{{Cascade,BenesCopy,JointMinterm,Conformal...,GlobalFrontiers,Wearable...,BonsaiStreamArc3,ApexHarnessWalls}}.lean</text>',
         f'  <text x="62" y="181" font-family="{FONT_SANS}" font-size="10.4" fill="#e2e8f0">{n_thms} Machine-Checked Theorems ({n_fleet:,} Fleet) · {n_zero} Zero-Axiom · {n_cf}/{n_thms} Choice-Free · +Aeneas Rust-&gt;Lean</text>',
         f'  <text x="62" y="200" font-family="{FONT_MONO}" font-size="9.6" fill="#6ee7b7">0 sorry · 0 custom axioms · 0 opaque · 0 Lean.ofReduceBool (native_decide)</text>',
         # Neutralized 2026 Vulnerability Banner

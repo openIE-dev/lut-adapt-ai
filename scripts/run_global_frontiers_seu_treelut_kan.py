@@ -109,6 +109,9 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
   const arc2_2l   = ex.wasm_eval_benes_arc2_2layer8(0x00303000, 0x00, 0x00, 0x7) >>> 0; // cell 4 bridged between 3 & 5 -> 7!
   const arc3_hit  = ex.wasm_eval_arc3_reflex_step(0x02, 0x42, 0x42, 0xFFFFFFFF, 123456) >>> 0;
   const arc3_brk  = ex.wasm_eval_arc3_reflex_step(0x02, 0x42, 0x99, 0xFFFFFFFF, 123456) >>> 0;
+  const apex_hit  = ex.wasm_eval_apex_horizon_gate(0x00A1A105, (640 << 16) | 25000, 1200, 320, 1500) >>> 0;
+  const apex_trap = ex.wasm_eval_apex_horizon_gate(0x00A0A105, (640 << 16) | 25000, 1200, 320, 1500) >>> 0;
+  const apex_cbf  = ex.wasm_eval_apex_horizon_gate(0x00A1A105, (890 << 16) | 25000, 2200, 200, 1500) >>> 0;
   console.log(JSON.stringify({{
     crc0_hex: '0x' + crc0.toString(16).padStart(8, '0'),
     crc1_hex: '0x' + crc1.toString(16).padStart(8, '0'),
@@ -117,7 +120,8 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
     fwht_wobble, fwht_1hot, fwht_parity,
     sec_clean, sec_1bit, sec_2bit,
     wear_hit, wear_hle, can_hle, can_clean,
-    bonsai64, arc_cells, arc2_2l, arc3_hit, arc3_brk
+    bonsai64, arc_cells, arc2_2l, arc3_hit, arc3_brk,
+    apex_hit, apex_trap, apex_cbf
   }}));
 }})();
 """
@@ -139,6 +143,9 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
     assert ((res["arc2_2l"] >> 16) & 0xF) == 7, f"2-layer Benes-ARC-LUT6 bridge fill failed: {res}"
     assert (res["arc3_hit"] >> 24) == 1 and (res["arc3_hit"] & 0xFF) == 3
     assert (res["arc3_brk"] >> 24) == 2 and (res["arc3_brk"] & 0xFF) == (0x42 ^ 0x99)
+    assert (res["apex_hit"] >> 24) == 1 and (res["apex_hit"] & 0xFF) == 5
+    assert (res["apex_trap"] >> 24) == 2 and (res["apex_trap"] & 0xFF) == 1
+    assert (res["apex_cbf"] >> 24) == 3 and (res["apex_cbf"] & 0xFF) == ((1 << 2) | (1 << 3))
 
     return {
         "wasm_path": "artifacts/wasm/lut6_core.wasm",
