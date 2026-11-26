@@ -1285,8 +1285,88 @@ fn main() {
         },
     );
 
+    // Window 22: 12-Bank `C-BFWS` (`48 KB` = `75%` watch SRAM) + `Terminal-Cybench` `LUT6` Guard + `SciCode` Conservation `LUT6` Shield + `JouleBit6` (`Claims LA-64..LA-67`)
+    let mut cbfws12_banks = [[0u64; 3]; 12];
+    let mut cbfws12_certs = [u64::MAX; 12];
+    for b in 0..12 {
+        let code = ((b % 7) + 1) as u8;
+        cbfws12_banks[b][0] = if (code & 1) != 0 { u64::MAX } else { 0 };
+        cbfws12_banks[b][1] = if (code & 2) != 0 { u64::MAX } else { 0 };
+        cbfws12_banks[b][2] = if (code & 4) != 0 { u64::MAX } else { 0 };
+        if b < 11 {
+            cbfws12_certs[b] = 0x1Fu64 << (b * 5);
+        }
+    }
+    let w22 = measure_window(
+        "Window22_CBFWS12Bank_CybenchGuard_SciCode_JouleBit6",
+        jb_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            let mut ep = 0u8;
+            for step in 0..jb_iters {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                let (r_cbfws, g2, sc2) = lut6_core::cbfws_term_math::eval_window22_cbfws12_cybench_scicode(
+                    (step & 0x3F) as u8,
+                    if (step & 127) == 63 { 3 } else { 0 },
+                    ep,
+                    ((step * 7 + 48) & 0x3F) as u8,
+                    ((step * 3 + 48) & 0x3F) as u8,
+                    black_box(&cbfws12_banks),
+                    black_box(&cbfws12_certs),
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                if let lut6_core::cbfws_term_math::Cbfws12BankOutcome::CertifiedAction {
+                    action_id,
+                    bank_id,
+                    next_epoch,
+                    ..
+                } = r_cbfws
+                {
+                    ep = next_epoch % 12;
+                    acc ^= ((action_id ^ bank_id ^ g2 ^ sc2) as i32) ^ out[0] ^ out[63];
+                }
+            }
+            black_box(acc);
+        },
+    );
+    let mut pkt64 = [0u8; 64];
+    for (idx, b) in pkt64.iter_mut().enumerate() {
+        *b = ((idx * 29 + 13) & 0xFF) as u8;
+    }
+    let mac_key16 = *b"OpenIECybenchKey";
+    let w22b = measure_window(
+        "Window22b_TLVParser_Euler64_LittleBit2",
+        jb_iters / 4,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..(jb_iters / 4) {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                pkt64[0] = (step & 0xFF) as u8;
+                let tag = lut6_core::cbfws_term_math::eval_window22b_parser_integrator_littlebit2_baseline(
+                    black_box(&pkt64),
+                    black_box(&mac_key16),
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                acc ^= (tag as i32) ^ out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {

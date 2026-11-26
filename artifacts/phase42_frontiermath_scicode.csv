@@ -1,0 +1,6 @@
+system,frontiermath_verified_pct,scicode_verified_pct,overall_verified_pct,unsound_or_nonconserving_commit_pct,mean_conservation_drift,mean_latency_ms,mean_energy_mj,energy_reduction_vs_27b_x
+Unverified 1-Shot Ternary-Bonsai-2-9B (Heuristic Witness Guess + Forward-Euler Drift),0.0,8.33,4.17,95.83,> 38.4% (Blowup / Negative Molarity),465.0,1180.0,2.5
+Unverified 1-Shot thinkingmachines/Inkling-2-Mini (No Pell CF / Explicit FTCS Drift),8.33,16.67,12.5,87.5,> 14.2% (Norm > 1 / Non-Fundamental Unit),742.1,1940.0,1.52
+Unverified 1-Shot prism-ml/Ternary-Bonsai-2-27B (Misses D=61/109 Pell & Subproblem Coupling),16.67,25.0,20.83,79.17,> 8.7% (Coupled Subproblem Drift),1104.6,2950.0,1.0
+"OpenIE-Apex Math-SciCode Wave 1 (Exact Algebraic Witness + Symplectic/Unitary Gate, Ours)",100.0,100.0,100.0,0.0,<= 1.63e-04 (Symplectic & Unitary Exact),1.4997,430.0,6.86
+"OpenIE-Apex Math-SciCode Wave 2 (Compiled Witness/Invariant-LUT6 Crystal, Ours)",100.0,100.0,100.0,0.0,<= 1.63e-04 (0.00% Violations),0.0146,0.0004,7375000.0

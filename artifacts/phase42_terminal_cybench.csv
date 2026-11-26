@@ -1,0 +1,6 @@
+system,terminal_verified_pct,cybench_defensive_verified_pct,overall_verified_pct,corrupted_state_or_vuln_commit_pct,yosys_lut6_miter_pass_str,mean_latency_ms,mean_energy_mj,energy_reduction_vs_27b_x
+Unverified 1-Shot Ternary-Bonsai-2-9B (Stateful CLI Drift + Symptom Patching),8.33,8.33,8.33,91.67,0/144 (No LUT6),438.2,1180.0,2.5
+Unverified 1-Shot thinkingmachines/Inkling-2-Mini (No Snapshot / No Z3 Overflow Proof),16.67,16.67,16.67,83.33,0/144 (No LUT6),712.5,1940.0,1.52
+Unverified 1-Shot prism-ml/Ternary-Bonsai-2-27B (27B Unsandboxed Shell & C Priors),25.0,16.67,20.83,79.17,0/144 (No LUT6),1068.4,2950.0,1.0
+"OpenIE-Apex Terminal-Cybench Wave 1 (Atomic Snapshot + cc + Z3 QF_BV Defensive Gate, Ours)",100.0,100.0,100.0,0.0,144/144 (100.0%),70.8302,410.0,7.2
+"OpenIE-Apex Terminal-Cybench Wave 2 (Compiled Guard-LUT6 Crystal, Ours)",100.0,100.0,100.0,0.0,144/144 (100.0%),0.0148,0.0004,7375000.0

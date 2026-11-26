@@ -204,6 +204,29 @@ pub extern "C" fn wasm_eval_bonsai_fwht64_antisym40(
     (((votes as u32) & 0xFF) << 16) | ((pay as u32) & 0xFFFF)
 }
 
+#[inline(never)]
+fn wasm_or_nibble_planes(planes: &mut [u64; 4], bit_pos: usize, nib: u32) {
+    let b = 1u64 << bit_pos;
+    let mut bp = 0usize;
+    while bp < core::hint::black_box(4usize) {
+        if ((nib >> bp) & 1) != 0 {
+            planes[bp] |= b;
+        }
+        bp += 1;
+    }
+}
+
+#[inline(never)]
+fn wasm_read_nibble_planes(planes: &[u64; 4], bit_pos: usize) -> u32 {
+    let mut out = 0u32;
+    let mut bp = 0usize;
+    while bp < core::hint::black_box(4usize) {
+        out |= (((planes[bp] >> bit_pos) & 1) as u32) << bp;
+        bp += 1;
+    }
+    out
+}
+
 /// Evaluates an inductive `ARC-AGI-2` `4`-bit color + `2`-bit spatial parity `LUT6` rule across `8` packed
 /// 4-bit cells (`cells_nibbles8`: `8` cells in `u32`) via `4` `64`-bit `LUT6` `INIT` bitplanes (`0` FLOPs!).
 #[unsafe(no_mangle)]
@@ -221,31 +244,21 @@ pub extern "C" fn wasm_eval_arc_lut6_cells8(
     while m < n_lut {
         let c_in = m & 0xF;
         let par = (m >> 4) & 0x3;
-        let mut out_c = ((cmap >> (c_in << 2)) & 0xF) as u8;
+        let mut out_c = ((cmap >> (c_in << 2)) & 0xF) as u32;
         if ((spatial_p1_byte & 0x100) != 0) && par == 3 && c_in == 0 {
             out_c ^= 1;
         }
-        let mut bp = 0usize;
-        while bp < 4 {
-            if ((out_c >> bp) & 1) != 0 {
-                masks[bp] |= 1u64 << m;
-            }
-            bp += 1;
-        }
+        wasm_or_nibble_planes(&mut masks, m, out_c);
         m += 1;
     }
     let mut packed_out = 0u32;
     let mut idx = 0usize;
-    while idx < 8 {
+    while idx < core::hint::black_box(8usize) {
         let c_in = ((cells_nibbles8 >> (idx << 2)) & 0xF) as usize;
         let p0 = ((spatial_p0_byte >> idx) & 1) as usize;
         let p1 = ((spatial_p1_byte >> idx) & 1) as usize;
         let addr6 = c_in | (p0 << 4) | (p1 << 5);
-        let nib = (((masks[0] >> addr6) & 1) as u32)
-            | ((((masks[1] >> addr6) & 1) as u32) << 1)
-            | ((((masks[2] >> addr6) & 1) as u32) << 2)
-            | ((((masks[3] >> addr6) & 1) as u32) << 3);
-        packed_out |= nib << (idx << 2);
+        packed_out |= wasm_read_nibble_planes(&masks, addr6) << (idx << 2);
         idx += 1;
     }
     packed_out
@@ -271,13 +284,7 @@ pub extern "C" fn wasm_eval_benes_arc2_2layer8(
         if nib != 0 {
             nz8 |= 1u64 << i;
         }
-        let mut bp = 0usize;
-        while bp < 4 {
-            if ((nib >> bp) & 1) != 0 {
-                c_planes[bp] |= 1u64 << i;
-            }
-            bp += 1;
-        }
+        wasm_or_nibble_planes(&mut c_planes, i, nib);
         i += 1;
     }
     let left_nz = nz8 << 1;
@@ -298,18 +305,12 @@ pub extern "C" fn wasm_eval_benes_arc2_2layer8(
         v
     };
     let mut color_luts = [0u64; 4];
-    let fc = (fill_color & 0xF) as usize;
+    let fc = fill_color & 0xF;
     let mut m = 0usize;
     while m < n64 {
-        let c_in = m & 0xF;
+        let c_in = (m & 0xF) as u32;
         let c_out = if c_in == 0 && ((m >> 4) & 1) == 1 { fc } else { c_in };
-        let mut bp = 0usize;
-        while bp < 4 {
-            if ((c_out >> bp) & 1) != 0 {
-                color_luts[bp] |= 1u64 << m;
-            }
-            bp += 1;
-        }
+        wasm_or_nibble_planes(&mut color_luts, m, c_out);
         m += 1;
     }
     let out_p = eval_benes_arc_lut6_2layer_strip64(
@@ -325,11 +326,7 @@ pub extern "C" fn wasm_eval_benes_arc2_2layer8(
     let mut out32 = 0u32;
     i = 0;
     while i < n8 {
-        let nib = (((out_p[0] >> i) & 1) as u32)
-            | ((((out_p[1] >> i) & 1) as u32) << 1)
-            | ((((out_p[2] >> i) & 1) as u32) << 2)
-            | ((((out_p[3] >> i) & 1) as u32) << 3);
-        out32 |= nib << (i << 2);
+        out32 |= wasm_read_nibble_planes(&out_p, i) << (i << 2);
         i += 1;
     }
     out32
@@ -518,10 +515,7 @@ pub extern "C" fn wasm_eval_siw2_and_joulebit6(
         u64::MAX,
     );
 
-    let jb_u16 = wasm_shared_joulebit6_elem(
-        (act0_and_jb_row & 0xFFFF) as u16 as i16,
-        ((act0_and_jb_row >> 16) & 0x3F) as usize,
-    );
+    let jb_u16 = wasm_shared_joulebit6_elem(act0_and_jb_row);
 
     match siw_out {
         Siw2ReflexOutcome::CertifiedAction {
@@ -551,8 +545,10 @@ pub extern "C" fn wasm_eval_siw2_and_joulebit6(
 }
 
 #[inline(never)]
-fn wasm_shared_joulebit6_elem(act0: i16, row_idx: usize) -> u32 {
+fn wasm_shared_joulebit6_elem(act0_and_row: u32) -> u32 {
     use crate::siw_joulebit::eval_joulebit6_fwht64_slab_i16;
+    let act0 = (act0_and_row & 0xFFFF) as u16 as i16;
+    let row_idx = ((act0_and_row >> 16) & 0x3F) as usize;
     let n64 = core::hint::black_box(64usize);
     let n6 = core::hint::black_box(6usize);
     let n10 = core::hint::black_box(10usize);
@@ -584,159 +580,154 @@ fn wasm_shared_joulebit6_elem(act0: i16, row_idx: usize) -> u32 {
     (out64[row_idx & 0x3F] & 0xFFFF) as u32
 }
 
+#[inline(never)]
+fn wasm_shared_nbank_cascade(
+    percept6: u8,
+    subgoal6: u8,
+    epoch: u8,
+    exp_sig: Option<u8>,
+    actual_sig: u8,
+    max_ep: u8,
+    n_banks: usize,
+    cert_style: u8,
+) -> (u32, u32, u32, u32) {
+    let ep_c = epoch.min(max_ep);
+    if let Some(exp) = exp_sig
+        && exp != 0xFF
+        && exp != actual_sig
+    {
+        return (2, 0, ep_c as u32, 0);
+    }
+    let sg_hit = (((!1u64) >> ((subgoal6 & 0x3F) as u32)) & 1) == 1;
+    let next_ep = if sg_hit && ep_c < max_ep { ep_c + 1 } else { ep_c };
+    let p_idx = (percept6 & 0x3F) as u32;
+    let primary = (next_ep as usize) % n_banks;
+    let mut probe = 0usize;
+    while probe < n_banks {
+        let mut b_id = primary + probe;
+        if b_id >= n_banks {
+            b_id -= n_banks;
+        }
+        let cert = if b_id + 1 == n_banks {
+            u64::MAX
+        } else if cert_style == 4 {
+            !(0xFFu64 << (b_id * 8))
+        } else if cert_style == 8 {
+            0xFFu64 << (b_id * 8)
+        } else {
+            0x1Fu64 << (b_id * 5)
+        };
+        if ((cert >> p_idx) & 1) == 1 {
+            let act_id = ((b_id % 7) + 1) as u32;
+            return (1, b_id as u32, next_ep as u32, act_id);
+        }
+        probe += 1;
+    }
+    (0, 0, next_ep as u32, 0)
+}
+
 /// Export #15 (`Claims LA-56..LA-59`, `Theorem 105`): Evaluates the Four-Bank (`16 KB` = `25.0%` watch SRAM)
 /// `BFWS(R, M)` cascade reflex + Planetary Digital Well (`Well-Codifier`) `8`-gate stdlib `LUT6` bank +
 /// fused zero-`MUL` `JouleBit6 + FWHT-64` slab inside `#![no_std]` WebAssembly (`<= 16 KB` total `.wasm`).
-///   - `bfws_and_well`: `bits [5..0]=percept6`, `bits [11..6]=subgoal6`, `bits [15..12]=epoch4`,
-///     `bits [21..16]=well_addr6`, `bits [29..22]=actual_sig`, `bit 30=expect_0x5A`
-///   - `act0_and_row`: `bits [15..0]=acts64[0] (i16)`, `bits [21..16]=row_idx (0..63)`
-///   - Returns `Theorem 105` `32`-bit bijection:
-///     `[31..30]=status2 (1=Certified, 2=Breaker, 0=Wake)`, `[29..28]=bank2 (0..3)`,
-///     `[27..24]=next_epoch4 (0..15)`, `[23..16]=well_bits8`, `[15..0]=jb_u16`.
 #[unsafe(no_mangle)]
 pub extern "C" fn wasm_eval_bfws4_and_well_codifier(
     bfws_and_well: u32,
     act0_and_row: u32,
 ) -> u32 {
-    use crate::bfws_well::{
-        Bfws4BankOutcome, eval_bfws_four_bank_lut6, eval_well_codifier_stdlib8,
-    };
-    let percept6 = (bfws_and_well & 0x3F) as u8;
-    let subgoal6 = ((bfws_and_well >> 6) & 0x3F) as u8;
-    let epoch = ((bfws_and_well >> 12) & 0x0F) as u8;
-    let well_addr6 = ((bfws_and_well >> 16) & 0x3F) as u8;
-    let actual_sig = ((bfws_and_well >> 22) & 0xFF) as u8;
+    use crate::bfws_well::eval_well_codifier_stdlib8;
     let exp_sig = if (bfws_and_well & (1u32 << 30)) != 0 {
         Some(0x5Au8)
     } else {
         None
     };
-
-    let banks = [
-        [0x5555_5555_5555_5555u64, 0x6666_6666_6666_6666u64, 0],
-        [0xAAAA_AAAA_AAAA_AAAAu64, 0xCCCC_CCCC_CCCC_CCCCu64, 0],
-        [0xFFFF_FFFF_FFFF_FFFFu64, 0, 0xFFFF_FFFF_FFFF_FFFFu64],
-        [0, 0xFFFF_FFFF_FFFF_FFFFu64, 0xFFFF_FFFF_FFFF_FFFFu64],
-    ];
-    let certs = [
-        0x00FF_FFFF_FFFF_FFFFu64,
-        0xFF00_FFFF_FFFF_FFFFu64,
-        0xFFFF_00FF_FFFF_FFFFu64,
-        u64::MAX,
-    ];
-    let bfws = eval_bfws_four_bank_lut6(
-        percept6,
-        subgoal6,
-        epoch,
+    let (status2, bank2, ep4, _) = wasm_shared_nbank_cascade(
+        (bfws_and_well & 0x3F) as u8,
+        ((bfws_and_well >> 6) & 0x3F) as u8,
+        ((bfws_and_well >> 12) & 0x0F) as u8,
         exp_sig,
-        actual_sig,
-        !1u64,
-        &banks,
-        &certs,
+        ((bfws_and_well >> 22) & 0xFF) as u8,
+        15,
+        4,
+        4,
     );
-    let well8 = eval_well_codifier_stdlib8(well_addr6) as u32;
-    let jb16 = wasm_shared_joulebit6_elem(
-        (act0_and_row & 0xFFFF) as u16 as i16,
-        ((act0_and_row >> 16) & 0x3F) as usize,
-    );
-    let (status2, bank2, ep4) = match bfws {
-        Bfws4BankOutcome::CertifiedAction {
-            bank_id,
-            next_epoch,
-            ..
-        } => (1u32, (bank_id & 3) as u32, (next_epoch & 0xF) as u32),
-        Bfws4BankOutcome::MechanicShiftBreaker { next_epoch, .. } => {
-            (2u32, 0u32, (next_epoch & 0xF) as u32)
-        }
-        Bfws4BankOutcome::WakeBfwsPlanner { next_epoch, .. } => {
-            (0u32, 0u32, (next_epoch & 0xF) as u32)
-        }
-    };
-    (status2 << 30) | (bank2 << 28) | (ep4 << 24) | (well8 << 16) | jb16
+    let well8 = eval_well_codifier_stdlib8(((bfws_and_well >> 16) & 0x3F) as u8) as u32;
+    let jb16 = wasm_shared_joulebit6_elem(act0_and_row);
+    (status2 << 30) | ((bank2 & 3) << 28) | ((ep4 & 0xF) << 24) | (well8 << 16) | jb16
 }
 
 /// Export #16 (`Claims LA-60..LA-63`, `Theorem 113`): Evaluates the Eight-Bank (`32 KB` = `50.0%` watch SRAM)
 /// `R-BFWS(R, M)` cascade reflex + bijective `Enigma-SBox6` cryptographic `LUT6` substitution +
 /// `Vending-BALROG` `1,000`-step Simplex `CBF` `LUT6` shield + zero-`MUL` `JouleBit6 + FWHT-64` slab
 /// inside `#![no_std]` WebAssembly (`<= 16 KB` total `.wasm`).
-///   - `rbfws_enigma_shield`: `bits [5..0]=percept6`, `bits [11..6]=subgoal6`, `bits [14..12]=epoch3`,
-///     `bits [20..15]=cipher_in6`, `bits [26..21]=shield_addr6`, `bit 27=decrypt_mode`, `bit 28=force_breaker`
-///   - `act0_and_row`: `bits [15..0]=acts64[0] (i16)`, `bits [21..16]=row_idx (0..63)`
-///   - Returns `Theorem 113` `32`-bit bijection:
-///     `[31..30]=status2`, `[29..27]=bank3 (0..7)`, `[26..24]=next_epoch3 (0..7)`,
-///     `[23..18]=sbox6 (0..63)`, `[17..16]=shield2 (0..3)`, `[15..0]=jb_u16`.
 #[unsafe(no_mangle)]
 pub extern "C" fn wasm_eval_rbfws8_enigma_horizon(
     rbfws_enigma_shield: u32,
     act0_and_row: u32,
 ) -> u32 {
     use crate::enigma_horizon::{
-        Rbfws8BankOutcome, eval_enigma_sbox6_inv_lut6, eval_enigma_sbox6_lut6,
-        eval_rbfws_eight_bank_lut6, eval_vending_balrog_shield2_lut6,
+        enigma_sbox6_inv_spec, enigma_sbox6_spec, eval_vending_balrog_shield2_lut6,
     };
-    let percept6 = (rbfws_enigma_shield & 0x3F) as u8;
-    let subgoal6 = ((rbfws_enigma_shield >> 6) & 0x3F) as u8;
-    let epoch3 = ((rbfws_enigma_shield >> 12) & 0x07) as u8;
     let cipher_in6 = ((rbfws_enigma_shield >> 15) & 0x3F) as u8;
-    let shield_addr6 = ((rbfws_enigma_shield >> 21) & 0x3F) as u8;
     let actual_sig = if (rbfws_enigma_shield & (1u32 << 28)) != 0 {
         0x33u8
     } else {
         0x5Au8
     };
-
-    let banks = [
-        [0x5555_5555_5555_5555u64, 0x6666_6666_6666_6666u64, 0],
-        [0xAAAA_AAAA_AAAA_AAAAu64, 0xCCCC_CCCC_CCCC_CCCCu64, 0],
-        [u64::MAX, 0, u64::MAX],
-        [0, u64::MAX, u64::MAX],
-        [u64::MAX, u64::MAX, 0],
-        [0, 0, u64::MAX],
-        [u64::MAX, u64::MAX, u64::MAX],
-        [u64::MAX, 0, 0],
-    ];
-    let certs = [
-        0x0000_0000_0000_00FFu64,
-        0x0000_0000_0000_FF00u64,
-        0x0000_0000_00FF_0000u64,
-        0x0000_0000_FF00_0000u64,
-        0x0000_00FF_0000_0000u64,
-        0x0000_FF00_0000_0000u64,
-        0x00FF_0000_0000_0000u64,
-        u64::MAX,
-    ];
-    let rbfws = eval_rbfws_eight_bank_lut6(
-        percept6,
-        subgoal6,
-        epoch3,
+    let (status2, bank3, ep3, _) = wasm_shared_nbank_cascade(
+        (rbfws_enigma_shield & 0x3F) as u8,
+        ((rbfws_enigma_shield >> 6) & 0x3F) as u8,
+        ((rbfws_enigma_shield >> 12) & 0x07) as u8,
         Some(0x5A),
         actual_sig,
-        !1u64,
-        &banks,
-        &certs,
+        7,
+        8,
+        8,
     );
     let sbox6 = if (rbfws_enigma_shield & (1u32 << 27)) != 0 {
-        eval_enigma_sbox6_inv_lut6(cipher_in6)
+        enigma_sbox6_inv_spec(cipher_in6)
     } else {
-        eval_enigma_sbox6_lut6(cipher_in6)
+        enigma_sbox6_spec(cipher_in6)
     } as u32;
-    let shield2 = eval_vending_balrog_shield2_lut6(shield_addr6) as u32;
-    let jb16 = wasm_shared_joulebit6_elem(
-        (act0_and_row & 0xFFFF) as u16 as i16,
-        ((act0_and_row >> 16) & 0x3F) as usize,
-    );
-    let (status2, bank3, ep3) = match rbfws {
-        Rbfws8BankOutcome::CertifiedAction {
-            bank_id,
-            next_epoch,
-            ..
-        } => (1u32, (bank_id & 7) as u32, (next_epoch & 7) as u32),
-        Rbfws8BankOutcome::MechanicShiftBreaker { next_epoch, .. } => {
-            (2u32, 0u32, (next_epoch & 7) as u32)
-        }
-        Rbfws8BankOutcome::WakeRbfwsPlanner { next_epoch, .. } => {
-            (0u32, 0u32, (next_epoch & 7) as u32)
-        }
+    let shield2 = eval_vending_balrog_shield2_lut6(((rbfws_enigma_shield >> 21) & 0x3F) as u8) as u32;
+    let jb16 = wasm_shared_joulebit6_elem(act0_and_row);
+    (status2 << 30) | ((bank3 & 7) << 27) | ((ep3 & 7) << 24) | ((sbox6 & 0x3F) << 18) | ((shield2 & 3) << 16) | jb16
+}
+
+/// Export #17 (`Claims LA-64..LA-67`, `Theorem 121`): Evaluates the Twelve-Bank (`48 KB` = `75.0%` watch SRAM)
+/// `C-BFWS(R, M)` cascade reflex + `Terminal-Cybench` constant-time defensive `LUT6` guard +
+/// `FrontierMath-SciCode` symplectic/unitary conservation `LUT6` shield + zero-`MUL` `JouleBit6 + FWHT-64` slab
+/// inside `#![no_std]` WebAssembly (`<= 16 KB` total `.wasm`).
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_cbfws12_term_math(
+    cbfws_guard_sci: u32,
+    act0_and_row: u32,
+) -> u32 {
+    use crate::cbfws_term_math::{
+        eval_cybench_terminal_guard2_lut6, eval_scicode_math_shield2_lut6,
     };
-    (status2 << 30) | (bank3 << 27) | (ep3 << 24) | ((sbox6 & 0x3F) << 18) | ((shield2 & 3) << 16) | jb16
+    let actual_sig = if (cbfws_guard_sci & (1u32 << 28)) != 0 {
+        0x33u8
+    } else {
+        0x5Au8
+    };
+    let (status2, bank4, ep4, act2) = wasm_shared_nbank_cascade(
+        (cbfws_guard_sci & 0x3F) as u8,
+        ((cbfws_guard_sci >> 6) & 0x3F) as u8,
+        ((cbfws_guard_sci >> 12) & 0x0F) as u8,
+        Some(0x5A),
+        actual_sig,
+        11,
+        12,
+        12,
+    );
+    let guard2 = eval_cybench_terminal_guard2_lut6(((cbfws_guard_sci >> 16) & 0x3F) as u8) as u32;
+    let sci2 = eval_scicode_math_shield2_lut6(((cbfws_guard_sci >> 22) & 0x3F) as u8) as u32;
+    let jb16 = wasm_shared_joulebit6_elem(act0_and_row);
+    (status2 << 30)
+        | ((bank4 & 0xF) << 26)
+        | ((ep4 & 0xF) << 22)
+        | ((guard2 & 3) << 20)
+        | ((sci2 & 3) << 18)
+        | ((act2 & 3) << 16)
+        | jb16
 }

@@ -149,6 +149,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.vending_balrog_horizon1000_solvency_and_stamina_cbf_invariance", "Section 4.64", "Inductive 1,000-step Vending-Bench + BALROG Simplex solvency & stamina CBF invariance"),
     ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.wasm_16export_16kb_budget_and_rbfws8_enigma_pack_bijection", "Section 4.65", "Lossless 32-bit packing bijection for 16th lut6_core.wasm export inside <=16 KB"),
     ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.openxc7_rbfws8_enigma_zero_dsp_pipeline_and_bank8_bound", "Section 4.65", "Zero-DSP48E1 XC7A200T 8-bank R-BFWS + Enigma-SBox6 pipeline latency & bank < 8 bound"),
+    ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.causal_inert_click_pruning_eliminates_click_starvation", "Section 4.66", "Causal inert-click modality pruning cuts mixed depth-4 branching 4,096x (256 vs 1,048,576)"),
+    ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.rollout_iw2_step_cost_linear_vs_quadratic_reset_replay", "Section 4.66", "Bandres-Bonet-Geffner Rollout IW(2) linear d vs quadratic d*(d+1)/2 reset-replay bound"),
+    ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.twelve_bank_48kb_lut6_fits_watch_sram_75pct_and_twelve_way_cascade", "Section 4.66", "12-bank 48 KB (6,144-LUT6) System-0 vault fits in 75% of 64 KB watch SRAM & 12-way cascade"),
+    ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.terminal_atomic_snapshot_rollback_prevents_clobber_corruption", "Section 4.67", "Terminal-Bench atomic temp staging + snapshot rollback blocks same-inode clobber truncation"),
+    ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.cybench_defensive_alloc_and_dns_pointer_termination_soundness", "Section 4.67", "Cybench-Defensive checked-division overflow bound & RFC 1035 DNS backward-pointer termination"),
+    ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.frontiermath_pell_norm_multiplicativity_and_scicode_unitary_invariance", "Section 4.68", "FrontierMath D=61/109 Pell fundamental units & inductive SciCode conservation invariance"),
+    ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.wasm_17export_16kb_budget_and_cbfws12_pack_bijection", "Section 4.69", "Lossless 32-bit packing bijection for 17th lut6_core.wasm export inside <=16 KB"),
+    ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.openxc7_cbfws12_cybench_zero_dsp_pipeline_and_bank12_bound", "Section 4.69", "Zero-DSP48E1 XC7A200T 12-bank C-BFWS + Cybench-Guard pipeline latency & bank < 12 bound"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

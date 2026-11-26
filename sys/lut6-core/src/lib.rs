@@ -11,6 +11,7 @@ compile_error!("lut6-core requires a little-endian target matching canonical .lu
 pub mod apex_harness;
 pub mod bfws_well;
 pub mod bootstrap;
+pub mod cbfws_term_math;
 pub mod enigma_horizon;
 pub mod generated_proof_vectors;
 pub mod hadamard_bonsai;

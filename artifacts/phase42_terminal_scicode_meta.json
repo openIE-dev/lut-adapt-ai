@@ -1,0 +1,38 @@
+{
+  "phase": 42,
+  "claims": [
+    "LA-65",
+    "LA-66"
+  ],
+  "terminal_cybench": {
+    "claim_id": "LA-65",
+    "manifest_sha256": "ca4d6ef7fb341ab220b6973db1191215d612656eb96e98b945e424df016d34d2",
+    "total_tasks": 24,
+    "terminal_bench_tasks": 12,
+    "cybench_defensive_tasks": 12,
+    "offensive_exploits_executed": 0,
+    "raw_prompts_persisted": 0,
+    "yosys_miter_verified_bitplanes": 144,
+    "yosys_miter_total_bitplanes": 144,
+    "board_metered": false,
+    "measured_j": null,
+    "wall_ms": 2278.13,
+    "reported_j": 0.2902
+  },
+  "frontiermath_scicode": {
+    "claim_id": "LA-66",
+    "manifest_sha256": "59480da35520118a7775124e4b8c7fdf0bc0a28df81364e0f16c5c569e09d155",
+    "total_tasks": 24,
+    "frontiermath_constructive_tasks": 12,
+    "scicode_pipeline_tasks": 12,
+    "pell_d109_fundamental_x1": "158070671986249",
+    "max_scicode_conservation_drift": 0.00016319489846328153,
+    "raw_prompts_persisted": 0,
+    "board_metered": false,
+    "measured_j": null,
+    "wall_ms": 36.4,
+    "reported_j": 0.2668
+  },
+  "board_metered": false,
+  "measured_j": null
+}
