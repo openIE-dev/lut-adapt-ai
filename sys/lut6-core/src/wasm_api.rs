@@ -481,9 +481,7 @@ pub extern "C" fn wasm_eval_siw2_and_joulebit6(
     percept_landmark_epoch: u32,
     act0_and_jb_row: u32,
 ) -> u32 {
-    use crate::siw_joulebit::{
-        Siw2ReflexOutcome, eval_joulebit6_fwht64_slab_i16, eval_siw2_landmark_lut6,
-    };
+    use crate::siw_joulebit::{Siw2ReflexOutcome, eval_siw2_landmark_lut6};
     let percept6 = (percept_landmark_epoch & 0x3F) as u8;
     let landmark6 = ((percept_landmark_epoch >> 8) & 0x3F) as u8;
     let epoch = ((percept_landmark_epoch >> 16) & 0x0F) as u8;
@@ -520,8 +518,41 @@ pub extern "C" fn wasm_eval_siw2_and_joulebit6(
         u64::MAX,
     );
 
-    let act0 = (act0_and_jb_row & 0xFFFF) as u16 as i16;
-    let row_idx = ((act0_and_jb_row >> 16) & 0x3F) as usize;
+    let jb_u16 = wasm_shared_joulebit6_elem(
+        (act0_and_jb_row & 0xFFFF) as u16 as i16,
+        ((act0_and_jb_row >> 16) & 0x3F) as usize,
+    );
+
+    match siw_out {
+        Siw2ReflexOutcome::CertifiedAction {
+            action_id,
+            bank_id,
+            landmark_reset,
+            next_epoch,
+        } => {
+            (1u32 << 28)
+                | ((landmark_reset as u32) << 27)
+                | (((bank_id & 1) as u32) << 26)
+                | (((next_epoch & 0xF) as u32) << 20)
+                | (((action_id & 0xF) as u32) << 16)
+                | jb_u16
+        }
+        Siw2ReflexOutcome::MechanicShiftBreaker { xor_sig, next_epoch } => {
+            (2u32 << 28)
+                | (((next_epoch & 0xF) as u32) << 20)
+                | (((xor_sig & 0xF) as u32) << 16)
+                | jb_u16
+        }
+        Siw2ReflexOutcome::WakeSiw2Planner {
+            landmark_reset,
+            next_epoch,
+        } => ((landmark_reset as u32) << 27) | (((next_epoch & 0xF) as u32) << 20) | jb_u16,
+    }
+}
+
+#[inline(never)]
+fn wasm_shared_joulebit6_elem(act0: i16, row_idx: usize) -> u32 {
+    use crate::siw_joulebit::eval_joulebit6_fwht64_slab_i16;
     let n64 = core::hint::black_box(64usize);
     let n6 = core::hint::black_box(6usize);
     let n10 = core::hint::black_box(10usize);
@@ -550,31 +581,76 @@ pub extern "C" fn wasm_eval_siw2_and_joulebit6(
     }
     let mut out64 = [0i32; 64];
     eval_joulebit6_fwht64_slab_i16(&acts64, &v_codes, &u_codes, &mut out64);
-    let jb_u16 = (out64[row_idx] & 0xFFFF) as u32;
+    (out64[row_idx & 0x3F] & 0xFFFF) as u32
+}
 
-    match siw_out {
-        Siw2ReflexOutcome::CertifiedAction {
-            action_id,
+/// Export #15 (`Claims LA-56..LA-59`, `Theorem 105`): Evaluates the Four-Bank (`16 KB` = `25.0%` watch SRAM)
+/// `BFWS(R, M)` cascade reflex + Planetary Digital Well (`Well-Codifier`) `8`-gate stdlib `LUT6` bank +
+/// fused zero-`MUL` `JouleBit6 + FWHT-64` slab inside `#![no_std]` WebAssembly (`<= 16 KB` total `.wasm`).
+///   - `bfws_and_well`: `bits [5..0]=percept6`, `bits [11..6]=subgoal6`, `bits [15..12]=epoch4`,
+///     `bits [21..16]=well_addr6`, `bits [29..22]=actual_sig`, `bit 30=expect_0x5A`
+///   - `act0_and_row`: `bits [15..0]=acts64[0] (i16)`, `bits [21..16]=row_idx (0..63)`
+///   - Returns `Theorem 105` `32`-bit bijection:
+///     `[31..30]=status2 (1=Certified, 2=Breaker, 0=Wake)`, `[29..28]=bank2 (0..3)`,
+///     `[27..24]=next_epoch4 (0..15)`, `[23..16]=well_bits8`, `[15..0]=jb_u16`.
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_bfws4_and_well_codifier(
+    bfws_and_well: u32,
+    act0_and_row: u32,
+) -> u32 {
+    use crate::bfws_well::{
+        Bfws4BankOutcome, eval_bfws_four_bank_lut6, eval_well_codifier_stdlib8,
+    };
+    let percept6 = (bfws_and_well & 0x3F) as u8;
+    let subgoal6 = ((bfws_and_well >> 6) & 0x3F) as u8;
+    let epoch = ((bfws_and_well >> 12) & 0x0F) as u8;
+    let well_addr6 = ((bfws_and_well >> 16) & 0x3F) as u8;
+    let actual_sig = ((bfws_and_well >> 22) & 0xFF) as u8;
+    let exp_sig = if (bfws_and_well & (1u32 << 30)) != 0 {
+        Some(0x5Au8)
+    } else {
+        None
+    };
+
+    let banks = [
+        [0x5555_5555_5555_5555u64, 0x6666_6666_6666_6666u64, 0],
+        [0xAAAA_AAAA_AAAA_AAAAu64, 0xCCCC_CCCC_CCCC_CCCCu64, 0],
+        [0xFFFF_FFFF_FFFF_FFFFu64, 0, 0xFFFF_FFFF_FFFF_FFFFu64],
+        [0, 0xFFFF_FFFF_FFFF_FFFFu64, 0xFFFF_FFFF_FFFF_FFFFu64],
+    ];
+    let certs = [
+        0x00FF_FFFF_FFFF_FFFFu64,
+        0xFF00_FFFF_FFFF_FFFFu64,
+        0xFFFF_00FF_FFFF_FFFFu64,
+        u64::MAX,
+    ];
+    let bfws = eval_bfws_four_bank_lut6(
+        percept6,
+        subgoal6,
+        epoch,
+        exp_sig,
+        actual_sig,
+        !1u64,
+        &banks,
+        &certs,
+    );
+    let well8 = eval_well_codifier_stdlib8(well_addr6) as u32;
+    let jb16 = wasm_shared_joulebit6_elem(
+        (act0_and_row & 0xFFFF) as u16 as i16,
+        ((act0_and_row >> 16) & 0x3F) as usize,
+    );
+    let (status2, bank2, ep4) = match bfws {
+        Bfws4BankOutcome::CertifiedAction {
             bank_id,
-            landmark_reset,
             next_epoch,
-        } => {
-            (1u32 << 28)
-                | ((landmark_reset as u32) << 27)
-                | (((bank_id & 1) as u32) << 26)
-                | (((next_epoch & 0xF) as u32) << 20)
-                | (((action_id & 0xF) as u32) << 16)
-                | jb_u16
+            ..
+        } => (1u32, (bank_id & 3) as u32, (next_epoch & 0xF) as u32),
+        Bfws4BankOutcome::MechanicShiftBreaker { next_epoch, .. } => {
+            (2u32, 0u32, (next_epoch & 0xF) as u32)
         }
-        Siw2ReflexOutcome::MechanicShiftBreaker { xor_sig, next_epoch } => {
-            (2u32 << 28)
-                | (((next_epoch & 0xF) as u32) << 20)
-                | (((xor_sig & 0xF) as u32) << 16)
-                | jb_u16
+        Bfws4BankOutcome::WakeBfwsPlanner { next_epoch, .. } => {
+            (0u32, 0u32, (next_epoch & 0xF) as u32)
         }
-        Siw2ReflexOutcome::WakeSiw2Planner {
-            landmark_reset,
-            next_epoch,
-        } => ((landmark_reset as u32) << 27) | (((next_epoch & 0xF) as u32) << 20) | jb_u16,
-    }
+    };
+    (status2 << 30) | (bank2 << 28) | (ep4 << 24) | (well8 << 16) | jb16
 }

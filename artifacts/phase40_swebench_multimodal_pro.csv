@@ -1,0 +1,7 @@
+system_id,system,tasks_evaluated,unit_test_only_pass_pct,multimodal_verified_pct,broken_visual_or_code_commit_pct,lut6_router_hit_pct,mean_energy_mj_per_task,wall_elapsed_ms,board_metered,measured_j
+bonsai_9b_unverified,"prism-ml/Ternary-Bonsai-2-9B (1-Shot Text-Only, Unverified)",24,100.0,4.17,95.83,0.0,410.0,3859.84,False,
+inkling_mini_unverified,"thinkingmachines/Inkling-2-Mini (1-Shot Text-Only, Unverified)",24,100.0,16.67,83.33,0.0,680.0,3882.86,False,
+bonsai_27b_unverified,"prism-ml/Ternary-Bonsai-2-27B (1-Shot Text-Only, Unverified)",24,100.0,50.0,50.0,0.0,2950.0,3764.07,False,
+visual_symbolic_null,"Visual-Symbolic Deterministic Null (SVG/Layout/DRC Solver, 0 LLM FLOPs)",24,100.0,66.67,0.0,0.0,0.0018,5876.78,False,
+openie_apex_mm_wave1,OpenIE-Apex Multimodal-Pro Wave 1 (Null -> MoL + C_vis∧C_test + Crystallizer),12,100.0,100.0,0.0,0.0,983.3351,4022.05,False,
+openie_apex_mm_wave2,OpenIE-Apex Multimodal-Pro Wave 2 (4 KB AST-Patch-LUT6 + C_vis∧C_test),12,100.0,100.0,0.0,100.0,0.0004,3441.03,False,

@@ -1109,8 +1109,92 @@ fn main() {
         },
     );
 
+    // Window 20: 4-Bank `BFWS` (`16 KB`) + `Well-Codifier` Stdlib8 `LUT6` + `JouleBit6 + FWHT-64` (`Claims LA-56..LA-58`)
+    let bfws4_banks = [
+        [0x5555_5555_5555_5555u64, 0x6666_6666_6666_6666, 0],
+        [0xAAAA_AAAA_AAAA_AAAAu64, 0xCCCC_CCCC_CCCC_CCCC, 0],
+        [u64::MAX, 0, u64::MAX],
+        [0, u64::MAX, u64::MAX],
+    ];
+    let bfws4_certs = [
+        0x00FF_FFFF_FFFF_FFFFu64,
+        0xFF00_FFFF_FFFF_FFFFu64,
+        0xFFFF_00FF_FFFF_FFFFu64,
+        u64::MAX,
+    ];
+    let w20 = measure_window(
+        "Window20_BFWS4Bank_WellCodifier_JouleBit6",
+        jb_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            let mut ep = 0u8;
+            for step in 0..jb_iters {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                let (r_bfws, well_b) = lut6_core::bfws_well::eval_window20_bfws4_well_joulebit6(
+                    (step & 0x3F) as u8,
+                    if (step & 127) == 63 { 3 } else { 0 },
+                    ep,
+                    ((step * 7) & 0x3F) as u8,
+                    black_box(&bfws4_banks),
+                    black_box(&bfws4_certs),
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                if let lut6_core::bfws_well::Bfws4BankOutcome::CertifiedAction {
+                    action_id,
+                    bank_id,
+                    next_epoch,
+                    ..
+                } = r_bfws
+                {
+                    ep = next_epoch & 15;
+                    acc ^= ((action_id ^ bank_id ^ well_b) as i32) ^ out[0] ^ out[63];
+                }
+            }
+            black_box(acc);
+        },
+    );
+    let mut json_buf64 = [b' '; 64];
+    let tmpl = b"{\"jsonrpc\":\"2.0\",\"method\":\"well.cidr_wcag\",\"params\":{\"arg\":19}} ";
+    json_buf64.copy_from_slice(tmpl);
+    let mut router_w8 = [[0i8; 64]; 8];
+    for r in 0..8 {
+        for c in 0..64 {
+            router_w8[r][c] = (((r * 17 + c * 13) % 31) as i8) - 15;
+        }
+    }
+    let w20b = measure_window(
+        "Window20b_Rung5_JSON_INT8Router_LittleBit2",
+        jb_iters / 4,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..(jb_iters / 4) {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                json_buf64[59] = b'0' + ((step & 7) as u8);
+                let tag = lut6_core::bfws_well::eval_rung5_json_int8_littlebit2_baseline(
+                    black_box(&json_buf64),
+                    black_box(&router_w8),
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                acc ^= (tag as i32) ^ out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {

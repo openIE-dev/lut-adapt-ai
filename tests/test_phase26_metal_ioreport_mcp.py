@@ -40,10 +40,13 @@ from clai.service.openai_mcp_agent import MoLAgentHTTPServer, MoLLocalCodingAgen
 def test_apple_silicon_dual_channel_reported_j_receipt() -> None:
     """Verifies strict 3-tier energy separation (`est_j`, `reported_j`, `measured_j is None`)."""
     dev = select_torch_device()
+    if dev.type == "mps":
+        _ = torch.ones((64, 64), device=dev) @ torch.ones((64, 64), device=dev)
+        torch.mps.synchronize()
     with meter_joules("rung3", device=dev) as rec:
-        a = torch.randn((1536, 1536), device=dev)
-        b = torch.randn((1536, 1536), device=dev)
-        for _ in range(12):
+        a = torch.randn((2048, 2048), device=dev)
+        b = torch.randn((2048, 2048), device=dev)
+        for _ in range(48):
             a = a @ b * 0.01
 
     assert rec.measured_j is None, "Unmetered host must strictly report `measured_j = None`!"

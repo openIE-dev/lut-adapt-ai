@@ -11,3 +11,4 @@ import LutAdapt.BonsaiStreamArc3
 import LutAdapt.ApexHarnessWalls
 import LutAdapt.DeterministicNullWaios
 import LutAdapt.SerializedIwJouleBit27B
+import LutAdapt.BfwsWellMultimodal

@@ -1,0 +1,13 @@
+well_id,stdlib_module,capability,pinned_calls,lut6_init_hex,lut6_gates,exact_parity_pct,rung5_llm_json_mj,rung6_python_ipc_mj,rung7_well_lut6_mj,energy_cut_vs_rung5_x,energy_cut_vs_rung6_x,board_metered,measured_j
+W01,ipaddress,IPv4 RFC1918/Loopback Private Route Gate,32,0x000000000000000f,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W02,http.HTTPStatus,Transient HTTP Retry/Breaker Classifier,32,0x0000000000001f00,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W03,colorsys/wcag,WCAG 2.2 AA Contrast >= 4.5:1 Luminance Gate,32,0xfffffffffffc0000,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W04,stat,POSIX Sandbox Safe File-Mode Gate,32,0x0000003300000033,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W05,urllib.parse,HTTPS/WSS TLS & Safe-Port Sanitizer,32,0xaaaaaaaa00000000,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W06,semver,Caret ^Major.Minor Compatibility Gate,32,0xff00000000000000,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W07,datetime,UTC Weekday Maintenance-Window Gate,32,0x3c00003c3c3c3c3c,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W08,errno,POSIX Transient Syscall Retry Classifier,32,0x0e0e0e0e0e0e0e0e,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W09,math/q4_2,Fixed-Point Q4.2 Saturation Overflow Flag,32,0xffffffffff000000,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W10,zlib/frame,6-Bit Frame Non-Zero Even-Parity Sync,32,0x9669699669969668,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W11,json.scanner,JSON-RPC Structural Punctuation Classifier,32,0x000000000000003f,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,
+W12,bisect/slo,Tail-Latency p99 <= 16 ms SLO Tier Gate,32,0x000000000000ffff,1,100.0,2950.0,0.85,0.0004,7375000.0,2125.0,False,

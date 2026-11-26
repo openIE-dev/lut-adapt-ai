@@ -133,6 +133,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.target_verified_joulebit27b_preserves_100pct_greedy_parity", "Section 4.56", "Target-verified JouleBit-27B preserves 100.00% exact greedy token parity (0 QAT)"),
     ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.sharded_joulebit_pread_reduces_cold_io_bandwidth", "Section 4.56", "Sharded JouleBit-27B os.pread cuts cold streaming bytes/tok >2.72x vs MLX 2-bit"),
     ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.openxc7_siw_joulebit_zero_dsp_pipeline_bound", "Section 4.57", "4-stage zero-DSP48E1 XC7A200T SIW(2)+JouleBit-LUT6 pipeline latency & epoch bound"),
+    ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.bfws_dual_subspace_prevents_click_starvation", "Section 4.58", "Dual-subspace BFWS prevents click starvation on short pure-keyboard trajectories"),
+    ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.bfws_non_destructive_epoch_preserves_visited_progress", "Section 4.58", "100th Theorem: Non-destructive BFWS epoch stratification preserves visited novelty"),
+    ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.four_bank_16kb_lut6_fits_watch_sram_25pct_and_zero_collision_cascade", "Section 4.58", "4-bank 16 KB (2,048-LUT6) System-0 vault fits in 25% of 64 KB watch SRAM & 4-way cascade"),
+    ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.multimodal_visual_and_test_conjunction_blocks_partial_regressions", "Section 4.59", "SWE-bench Multimodal+Pro conjunctive C_visual && C_test gate blocks visual regressions"),
+    ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.well_codifier_cidr_and_wcag_lut6_exact_equivalence", "Section 4.60", "Planetary Digital Well (Well-Codifier) stdlib-to-LUT6 exact 64-minterm equivalence"),
+    ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.well_codifier_rung5_json_to_rung7_lut6_amortization", "Section 4.60", "Rung-5 JSON tool-call to Rung-7 Well-Codifier .lut6 amortization (>7.37Mx steady-state)"),
+    ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.wasm_15export_16kb_budget_and_bfws4_pack_bijection", "Section 4.61", "Lossless 32-bit packing bijection for 15th lut6_core.wasm export inside <=16 KB"),
+    ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.openxc7_bfws4_well_zero_dsp_latency_and_bank_bound", "Section 4.61", "Zero-DSP48E1 XC7A200T 4-bank BFWS + Well-Codifier pipeline latency & bank < 4 bound"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);
