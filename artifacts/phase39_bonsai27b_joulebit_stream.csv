@@ -1,0 +1,7 @@
+system,target_bpw,draft_bpw,cold_wave1_tokens,cold_wave1_sweeps,cold_wave1_tok_per_sweep,cold_wave1_gb_per_tok,warm_wave2_tokens,warm_wave2_sweeps,warm_wave2_tok_per_sweep,warm_wave2_gb_per_tok,combined_tok_per_sweep,combined_streamed_gb_per_tok,exact_greedy_parity_pct,m3u_resident_tok_per_s,m3u_reported_j_per_correct_tok,lut6_vault_bytes,board_metered,measured_j,io_reduction_vs_mlx2bit_x
+"MLX 2-Bit Affine T=1 Baseline (2.250 bpw, No Drafter)",2.25,0.0,170,172,0.988,6.784,163,165,0.988,6.787,0.988,6.786,100.0,30.25,0.0592,0,False,,1.0
+"OpenIE EntroMCU-28 T=1 Lossless Streaming (1.750 bpw, No Drafter)",1.75,0.0,170,172,0.988,5.276,163,165,0.988,5.279,0.988,5.278,100.0,30.25,0.0592,0,False,,1.286
+Phase 36 Cross-Prompt Token-LUT6 Only + EntroMCU-28 (Cold Miss Fallback),1.75,0.0,170,170,1.0,5.215,163,139,1.173,4.447,1.078,4.839,100.0,29.4,0.0559,4096,False,,1.402
+LittleBit-2 No-Hadamard 0.223 bpw Ungated Draft + EntroMCU-28 Target,1.75,0.2962,170,315,0.54,9.663,163,223,0.731,7.135,0.619,8.426,100.0,16.69,0.0995,4096,False,,0.805
+"OpenIE Two-Rung Token-LUT6 (8 KB) + JouleBit-LUT6 (0.223 bpw, Conformal) + EntroMCU-28 (Ours)",1.75,0.2962,170,162,1.049,4.97,163,123,1.325,3.935,1.168,4.463,100.0,26.61,0.0534,8192,False,,1.521
+"OpenIE Two-Rung Token-LUT6 (8 KB) + JouleBit-LUT6 (0.445 bpw, Conformal) + EntroMCU-28 (Ours)",1.75,0.5924,170,162,1.049,4.97,163,123,1.325,3.935,1.168,4.463,100.0,25.86,0.0563,8192,False,,1.521

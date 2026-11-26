@@ -1,0 +1,145 @@
+agent_kind,system,game_id,modality,in_matched8,total_levels,levels_completed,total_actions,official_rhae_score,lut6_reflex_steps,crystallized_lut6_slots,breaker_trips,elapsed_ms
+random,Random Action Baseline (Uniform Available Actions),tu93-0768757b,keyboard,True,9,0,1100,0.0,0,0,0,85.284
+random,Random Action Baseline (Uniform Available Actions),cd82-fb555c5d,keyboard_click,True,6,0,1100,0.0,0,0,0,106.038
+random,Random Action Baseline (Uniform Available Actions),ls20-9607627b,keyboard,True,7,0,1100,0.0,0,0,0,268.627
+random,Random Action Baseline (Uniform Available Actions),lp85-305b61c3,click_only,True,8,1,1100,0.0012,0,0,0,114.297
+random,Random Action Baseline (Uniform Available Actions),vc33-5430563c,click_only,True,7,0,1100,0.0,0,0,0,121.31
+random,Random Action Baseline (Uniform Available Actions),ft09-0d8bbf25,click_only,True,6,0,1100,0.0,0,0,0,274.929
+random,Random Action Baseline (Uniform Available Actions),sb26-7fbdac44,keyboard_click,True,8,0,1100,0.0,0,0,0,587.67
+random,Random Action Baseline (Uniform Available Actions),tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,344.199
+random,Random Action Baseline (Uniform Available Actions),cn04-2fe56bfb,keyboard_click,False,6,0,1100,0.0,0,0,0,131.358
+random,Random Action Baseline (Uniform Available Actions),ka59-38d34dbb,keyboard_click,False,7,0,1100,0.0,0,0,0,146.353
+random,Random Action Baseline (Uniform Available Actions),su15-1944f8ab,click_action7,False,9,0,1100,0.0,0,0,0,138.504
+random,Random Action Baseline (Uniform Available Actions),sk48-d8078629,keyboard_click,False,8,0,1100,0.0,0,0,0,148.98
+random,Random Action Baseline (Uniform Available Actions),m0r0-492f87ba,keyboard_click,False,6,0,1100,0.0,0,0,0,110.082
+random,Random Action Baseline (Uniform Available Actions),r11l-495a7899,click_only,False,6,1,1100,0.0022,0,0,0,171.541
+random,Random Action Baseline (Uniform Available Actions),sc25-635fd71a,keyboard_click,False,6,0,1100,0.0,0,0,0,351.876
+random,Random Action Baseline (Uniform Available Actions),s5i5-18d95033,click_only,False,8,0,1100,0.0,0,0,0,51.882
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),tu93-0768757b,keyboard,True,9,0,1100,0.0,0,0,0,71.562
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),cd82-fb555c5d,keyboard_click,True,6,0,1100,0.0,0,0,0,850.431
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),ls20-9607627b,keyboard,True,7,0,1100,0.0,0,0,0,265.603
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),lp85-305b61c3,click_only,True,8,0,1100,0.0,0,0,0,1414.495
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),vc33-5430563c,click_only,True,7,0,1100,0.0,0,0,0,1095.512
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),ft09-0d8bbf25,click_only,True,6,0,1100,0.0,0,0,0,1791.132
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),sb26-7fbdac44,keyboard_click,True,8,0,1100,0.0,0,0,0,1235.479
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,173.815
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),cn04-2fe56bfb,keyboard_click,False,6,0,1100,0.0,0,0,0,622.811
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),ka59-38d34dbb,keyboard_click,False,7,0,1100,0.0,0,0,0,990.266
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),su15-1944f8ab,click_action7,False,9,0,1100,0.0,0,0,0,1049.709
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),sk48-d8078629,keyboard_click,False,8,0,1100,0.0,0,0,0,1220.238
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),m0r0-492f87ba,keyboard_click,False,6,0,1100,0.0,0,0,0,1441.479
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),r11l-495a7899,click_only,False,6,0,1100,0.0,0,0,0,867.532
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),sc25-635fd71a,keyboard_click,False,6,0,1100,0.0,0,0,0,888.599
+reactive_memoryless,Memoryless Reactive Micro-Policy (No World Model),s5i5-18d95033,click_only,False,8,0,1100,0.0,0,0,0,638.799
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",tu93-0768757b,keyboard,True,9,2,1100,0.0385,0,27,0,153.8
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",cd82-fb555c5d,keyboard_click,True,6,1,1100,0.019,0,5,0,189.569
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",ls20-9607627b,keyboard,True,7,1,1100,0.016,0,15,0,237.92
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",lp85-305b61c3,click_only,True,8,0,1100,0.0,0,0,0,114.955
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",vc33-5430563c,click_only,True,7,0,1100,0.0,0,0,0,309.205
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",ft09-0d8bbf25,click_only,True,6,0,1100,0.0,0,0,0,253.444
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",sb26-7fbdac44,keyboard_click,True,8,0,1100,0.0,0,0,0,809.261
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,164.241
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",cn04-2fe56bfb,keyboard_click,False,6,0,1100,0.0,0,0,0,379.535
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",ka59-38d34dbb,keyboard_click,False,7,0,1100,0.0,0,0,0,315.74
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",su15-1944f8ab,click_action7,False,9,0,1100,0.0,0,0,0,169.435
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",sk48-d8078629,keyboard_click,False,8,0,1100,0.0,0,0,0,589.059
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",m0r0-492f87ba,keyboard_click,False,6,0,1100,0.0,0,0,0,1029.033
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",r11l-495a7899,click_only,False,6,1,1100,0.0024,0,53,0,664.649
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",sc25-635fd71a,keyboard_click,False,6,0,1100,0.0,0,0,0,645.793
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",s5i5-18d95033,click_only,False,8,0,1100,0.0,0,0,0,95.232
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",tu93-0768757b,keyboard,True,9,2,1100,0.036,0,27,0,214.193
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",cd82-fb555c5d,keyboard_click,True,6,0,1100,0.0,0,0,0,283.715
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",ls20-9607627b,keyboard,True,7,1,1100,0.0048,0,13,0,325.79
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",lp85-305b61c3,click_only,True,8,1,1100,1.1012,0,5,0,226.586
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",vc33-5430563c,click_only,True,7,0,1100,0.0,0,0,0,496.578
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",ft09-0d8bbf25,click_only,True,6,0,1100,0.0,0,0,0,277.486
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",sb26-7fbdac44,keyboard_click,True,8,0,1100,0.0,0,0,0,908.225
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,256.835
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",cn04-2fe56bfb,keyboard_click,False,6,0,1100,0.0,0,0,0,479.722
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",ka59-38d34dbb,keyboard_click,False,7,0,1100,0.0,0,0,0,484.855
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",su15-1944f8ab,click_action7,False,9,1,1100,0.0195,0,16,0,443.041
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",sk48-d8078629,keyboard_click,False,8,0,1100,0.0,0,0,0,807.229
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",m0r0-492f87ba,keyboard_click,False,6,0,1100,0.0,0,0,0,1342.624
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",r11l-495a7899,click_only,False,6,1,1100,0.1343,0,9,0,1218.432
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",sc25-635fd71a,keyboard_click,False,6,0,1100,0.0,0,0,0,782.134
+apex_iw1_cold,"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",s5i5-18d95033,click_only,False,8,0,1100,0.0,0,0,0,300.121
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,tu93-0768757b,keyboard,True,9,2,1100,6.6667,27,27,0,255.065
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,cd82-fb555c5d,keyboard_click,True,6,0,1100,0.0,0,0,0,288.818
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,ls20-9607627b,keyboard,True,7,1,1100,3.5714,13,13,0,306.435
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,lp85-305b61c3,click_only,True,8,1,1100,2.7778,5,5,0,232.607
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,vc33-5430563c,click_only,True,7,0,1100,0.0,0,0,0,497.087
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,ft09-0d8bbf25,click_only,True,6,0,1100,0.0,0,0,0,280.326
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,sb26-7fbdac44,keyboard_click,True,8,0,1100,0.0,0,0,0,930.122
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,261.546
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,cn04-2fe56bfb,keyboard_click,False,6,0,1100,0.0,0,0,0,484.761
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,ka59-38d34dbb,keyboard_click,False,7,0,1100,0.0,0,0,0,500.606
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,su15-1944f8ab,click_action7,False,9,1,1100,2.2222,16,16,0,462.47
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,sk48-d8078629,keyboard_click,False,8,0,1100,0.0,0,0,0,801.516
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,m0r0-492f87ba,keyboard_click,False,6,0,1100,0.0,0,0,0,1375.411
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,r11l-495a7899,click_only,False,6,1,1100,4.7619,9,9,0,1255.255
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,sc25-635fd71a,keyboard_click,False,6,0,1100,0.0,0,0,0,781.045
+apex_iw1_lut6_wave2,Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,s5i5-18d95033,click_only,False,8,0,1100,0.0,0,0,0,298.848
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),tu93-0768757b,keyboard,True,9,2,1100,0.0345,0,27,0,317.995
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),cd82-fb555c5d,keyboard_click,True,6,0,1100,0.0,0,0,0,344.79
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),ls20-9607627b,keyboard,True,7,1,1100,0.0023,0,13,0,617.273
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),lp85-305b61c3,click_only,True,8,1,1100,1.1012,0,5,0,1117.531
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),vc33-5430563c,click_only,True,7,2,1100,3.0826,0,16,0,625.578
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),ft09-0d8bbf25,click_only,True,6,0,1100,0.0,0,0,0,289.062
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),sb26-7fbdac44,keyboard_click,True,8,0,1100,0.0,0,0,0,849.945
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,1027.45
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),cn04-2fe56bfb,keyboard_click,False,6,0,1100,0.0,0,0,0,199.467
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),ka59-38d34dbb,keyboard_click,False,7,0,1100,0.0,0,0,0,487.011
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),su15-1944f8ab,click_action7,False,9,0,1100,0.0,0,0,0,240.026
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),sk48-d8078629,keyboard_click,False,8,0,1100,0.0,0,0,0,978.753
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),m0r0-492f87ba,keyboard_click,False,6,0,1100,0.0,0,0,0,364.774
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),r11l-495a7899,click_only,False,6,1,1100,0.0063,0,54,0,1807.584
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),sc25-635fd71a,keyboard_click,False,6,0,1100,0.0,0,0,0,1330.123
+apex_iw2_cold,Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),s5i5-18d95033,click_only,False,8,0,1100,0.0,0,0,0,315.234
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,tu93-0768757b,keyboard,True,9,3,1100,6.9374,27,42,0,341.512
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,cd82-fb555c5d,keyboard_click,True,6,0,1100,0.0,0,0,0,351.702
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,ls20-9607627b,keyboard,True,7,1,1100,3.5714,13,13,0,386.363
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,lp85-305b61c3,click_only,True,8,1,1100,2.7778,5,5,0,960.741
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,vc33-5430563c,click_only,True,7,2,1100,10.7143,16,16,0,582.238
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,ft09-0d8bbf25,click_only,True,6,0,1100,0.0,0,0,0,279.105
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,sb26-7fbdac44,keyboard_click,True,8,0,1100,0.0,0,0,0,867.287
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,1051.358
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,cn04-2fe56bfb,keyboard_click,False,6,0,1100,0.0,0,0,0,199.27
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,ka59-38d34dbb,keyboard_click,False,7,0,1100,0.0,0,0,0,490.339
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,su15-1944f8ab,click_action7,False,9,0,1100,0.0,0,0,0,248.793
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,sk48-d8078629,keyboard_click,False,8,0,1100,0.0,0,0,0,1168.854
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,m0r0-492f87ba,keyboard_click,False,6,0,1100,0.0,0,0,0,465.53
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,r11l-495a7899,click_only,False,6,1,1100,0.0704,1,100,1,5145.01
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,sc25-635fd71a,keyboard_click,False,6,0,1100,0.0,0,0,0,1342.035
+apex_iw2_lut6_wave2,Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,s5i5-18d95033,click_only,False,8,0,1100,0.0,0,0,0,317.588
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),tu93-0768757b,keyboard,True,9,2,1100,0.0345,0,28,0,327.344
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),cd82-fb555c5d,keyboard_click,True,6,0,1100,0.0,0,0,0,323.237
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),ls20-9607627b,keyboard,True,7,1,1100,0.0051,0,13,0,457.305
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),lp85-305b61c3,click_only,True,8,1,1100,1.1012,0,5,0,206.797
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),vc33-5430563c,click_only,True,7,2,1100,2.9227,0,16,0,811.005
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),ft09-0d8bbf25,click_only,True,6,0,1100,0.0,0,0,0,343.518
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),sb26-7fbdac44,keyboard_click,True,8,0,1100,0.0,0,0,0,817.493
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,1234.865
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),cn04-2fe56bfb,keyboard_click,False,6,0,1100,0.0,0,0,0,420.904
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),ka59-38d34dbb,keyboard_click,False,7,0,1100,0.0,0,0,0,628.097
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),su15-1944f8ab,click_action7,False,9,0,1100,0.0,0,0,0,479.866
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),sk48-d8078629,keyboard_click,False,8,0,1100,0.0,0,0,0,1085.664
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),m0r0-492f87ba,keyboard_click,False,6,1,1100,0.0691,0,17,0,700.364
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),r11l-495a7899,click_only,False,6,1,1100,0.0122,0,7,0,2658.973
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),sc25-635fd71a,keyboard_click,False,6,0,1100,0.0,0,0,0,1738.315
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),s5i5-18d95033,click_only,False,8,1,1100,0.05,0,13,0,388.929
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),tu93-0768757b,keyboard,True,9,2,1100,6.6667,28,28,0,338.381
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),cd82-fb555c5d,keyboard_click,True,6,0,1100,0.0,0,0,0,325.387
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),ls20-9607627b,keyboard,True,7,1,1100,3.5714,13,13,0,394.304
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),lp85-305b61c3,click_only,True,8,1,1100,2.7778,5,5,0,212.805
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),vc33-5430563c,click_only,True,7,2,1100,10.7143,16,16,0,756.986
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),ft09-0d8bbf25,click_only,True,6,0,1100,0.0,0,0,0,311.746
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),sb26-7fbdac44,keyboard_click,True,8,0,1100,0.0,0,0,0,777.383
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,1134.013
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),cn04-2fe56bfb,keyboard_click,False,6,0,1100,0.0,0,0,0,390.298
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),ka59-38d34dbb,keyboard_click,False,7,0,1100,0.0,0,0,0,457.086
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),su15-1944f8ab,click_action7,False,9,0,1100,0.0,0,0,0,341.807
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),sk48-d8078629,keyboard_click,False,8,0,1100,0.0,0,0,0,961.116
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),m0r0-492f87ba,keyboard_click,False,6,1,1100,4.7619,17,17,0,720.568
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),r11l-495a7899,click_only,False,6,1,1100,4.7619,7,7,0,4729.856
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),sc25-635fd71a,keyboard_click,False,6,0,1100,0.0,0,0,0,1967.859
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),s5i5-18d95033,click_only,False,8,1,1100,2.7778,13,13,0,520.799

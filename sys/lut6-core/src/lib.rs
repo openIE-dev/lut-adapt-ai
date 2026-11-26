@@ -14,6 +14,7 @@ pub mod generated_proof_vectors;
 pub mod hadamard_bonsai;
 pub mod ratchet_demo;
 pub mod seu_resilience;
+pub mod siw_joulebit;
 pub mod tmac_tail;
 pub mod waios_mosaic;
 pub mod wearable_epistemic;
@@ -153,7 +154,8 @@ const fn crc32_update_u64(mut crc: u32, v: u64) -> u32 {
 
 /// Evaluates a single `LUT6` (`init_mask: u64`) across **64 parallel batch inputs** simultaneously
 /// using vertical bit-sliced Shannon cofactor muxing (`0` branches, `0` table gather stalls).
-#[inline(always)]
+#[cfg_attr(target_arch = "wasm32", inline(never))]
+#[cfg_attr(not(target_arch = "wasm32"), inline(always))]
 pub const fn eval_lut6_bitsliced64(
     mask: u64,
     x0: u64,

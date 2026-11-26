@@ -1,0 +1,10 @@
+system,environments_16,games_with_solved_levels,total_levels_16,levels_completed_16,level_completion_16_pct,matched8_levels_completed,click_modal_levels_completed,mean_official_rhae_16,peak_game_rhae_16,total_actions_taken,lut6_reflex_steps,lut6_reflex_share_pct,crystallized_lut6_slots,mechanic_shift_breaker_trips,active_policy_crystal_bytes,watch_sram_64kb_share_pct,total_wall_ms,reported_j_total,board_metered,measured_j
+Random Action Baseline (Uniform Available Actions),16,2,113,2,1.77,1/57,2,0.0002,0.0022,17600,0,0.0,0,0,0,0.0,3447.11,16.8545,False,
+Memoryless Reactive Micro-Policy (No World Model),16,0,113,0,0.0,0/57,0,0.0,0.0,17600,0,0.0,0,0,0,0.0,14667.43,104.0678,False,
+"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",16,4,113,5,4.42,4/57,2,0.0047,0.0385,17600,0,0.0,100,0,0,0.0,6171.5,44.4577,False,
+"Phase 37 OpenIE-Apex IW(1) Wave 1 (Width-1 Pixel Novelty, y=0..57)",16,5,113,6,5.31,4/57,3,0.081,1.1012,17600,0,0.0,70,0,0,0.0,8898.1,65.0445,False,
+Phase 37 OpenIE-Apex IW(1) -> 4 KB System-0 LUT6 Wave 2,16,5,113,6,5.31,4/57,3,1.25,6.6667,17600,70,0.4,70,0,4096,6.25,9063.37,66.2076,False,
+Phase 38 OpenIE-Apex IW(2) + Benes-LUT6 Wave 1 (Monolithic Width-2),16,5,113,7,6.19,6/57,4,0.2642,3.0826,17600,0,0.0,115,0,0,0.0,10965.73,78.1823,False,
+Phase 38 OpenIE-Apex IW(2) -> 4 KB System-0 LUT6 Wave 2,16,5,113,8,7.08,7/57,4,1.5045,10.7143,17600,62,0.35,176,1,4096,6.25,14253.81,99.0995,False,
+Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1 (Ours),16,7,113,9,7.96,6/57,6,0.2622,2.9227,17600,0,0.0,99,0,0,0.0,12679.56,90.6826,False,
+Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2 (Ours),16,7,113,9,7.96,6/57,6,2.252,10.7143,17600,99,0.56,99,0,8192,12.5,14395.49,102.2256,False,

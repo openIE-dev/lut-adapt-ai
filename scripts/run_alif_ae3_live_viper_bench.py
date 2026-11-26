@@ -590,6 +590,143 @@ def bench_w18b_littlebit2_mac_20(acts: ptr32, v_idx: ptr8, u_idx: ptr8, scr: ptr
         it += 1
     return acc & 0x3FFFFFFF
 
+# 10. Phase 39 Window 19: `SIW(2)` Landmark `LUT6` + Fused Zero-MUL `FWHT-64 + 6-Col JouleBit-LUT6` vs `LittleBit-2` (`64 x 60`)
+jb6_acts = array.array('i', [((i * 11 + 5) % 47) - 23 for i in range(64)])
+jb6_v = bytearray([((r * 19 + g * 23 + 7) & 0x3F) for r in range(6) for g in range(10)])
+jb6_u = bytearray([((rw * 31 + 13) & 0x3F) for rw in range(64)])
+jb6_scr = array.array('i', [0] * (64 + 6 + 64 + 64))
+lb6_scr = array.array('i', [0] * (64 + 6 * 60 + 64))
+
+@micropython.viper
+def bench_w19_siw2_joulebit6_fwht64_100(acts: ptr32, v_idx: ptr8, u_idx: ptr8, scr: ptr32) -> int:
+    acc: int = 0
+    ep: int = 0
+    it: int = 0
+    while it < 100:
+        # Copy 64 activations & run zero-MUL FWHT-64 (>> 3)
+        c: int = 0
+        while c < 64:
+            scr[c] = acts[c]
+            c += 1
+        ln: int = 1
+        while ln < 64:
+            step: int = ln << 1
+            i: int = 0
+            while i < 64:
+                j: int = 0
+                while j < ln:
+                    u0: int = scr[i + j]
+                    v0: int = scr[i + j + ln]
+                    scr[i + j] = u0 + v0
+                    scr[i + j + ln] = u0 - v0
+                    j += 1
+                i += step
+            ln = step
+        k: int = 0
+        while k < 64:
+            scr[k] = scr[k] >> 3
+            k += 1
+        # Zero latent accumulator scr[64..69]
+        r0: int = 0
+        while r0 < 6:
+            scr[64 + r0] = 0
+            r0 += 1
+        # 10 slabs of 6 columns via 64-entry LUT6 (0 multiplications!)
+        g: int = 0
+        while g < 10:
+            b: int = g * 6
+            z0: int = scr[b]; z1: int = scr[b + 1]; z2: int = scr[b + 2]
+            z3: int = scr[b + 3]; z4: int = scr[b + 4]; z5: int = scr[b + 5]
+            m: int = 0
+            while m < 64:
+                s: int = (-z0 if (m & 1) else z0) + (-z1 if (m & 2) else z1) + (-z2 if (m & 4) else z2)
+                s += (-z3 if (m & 8) else z3) + (-z4 if (m & 16) else z4) + (-z5 if (m & 32) else z5)
+                scr[70 + m] = s
+                m += 1
+            rk: int = 0
+            while rk < 6:
+                scr[64 + rk] += scr[70 + (v_idx[rk * 10 + g] & 0x3F)]
+                rk += 1
+            g += 1
+        # Output 64-entry LUT6 + 64-row gather (0 multiplications!)
+        h0: int = scr[64]; h1: int = scr[65]; h2: int = scr[66]
+        h3: int = scr[67]; h4: int = scr[68]; h5: int = scr[69]
+        cd: int = 0
+        while cd < 64:
+            ut: int = (-h0 if (cd & 1) else h0) + (-h1 if (cd & 2) else h1) + (-h2 if (cd & 4) else h2)
+            ut += (-h3 if (cd & 8) else h3) + (-h4 if (cd & 16) else h4) + (-h5 if (cd & 32) else h5)
+            scr[70 + cd] = ut >> 3
+            cd += 1
+        rw: int = 0
+        while rw < 64:
+            scr[134 + rw] = scr[70 + (u_idx[rw] & 0x3F)]
+            rw += 1
+        # SIW(2) two-bank landmark gate
+        if (it & 31) == 15 and ep < 8:
+            ep += 1
+        act_id: int = 5 if ep > 0 else 2
+        acc ^= (scr[134] ^ scr[197] ^ act_id) & 0x3FFFFFFF
+        it += 1
+    return acc & 0x3FFFFFFF
+
+@micropython.viper
+def bench_w19b_littlebit2_fwht64_mac_20(acts: ptr32, v_idx: ptr8, u_idx: ptr8, scr: ptr32) -> int:
+    acc: int = 0
+    it: int = 0
+    while it < 20:
+        c: int = 0
+        while c < 64:
+            scr[c] = acts[c]
+            c += 1
+        ln: int = 1
+        while ln < 64:
+            step: int = ln << 1
+            i: int = 0
+            while i < 64:
+                j: int = 0
+                while j < ln:
+                    u0: int = scr[i + j]
+                    v0: int = scr[i + j + ln]
+                    scr[i + j] = u0 + v0
+                    scr[i + j + ln] = u0 - v0
+                    j += 1
+                i += step
+            ln = step
+        k: int = 0
+        while k < 64:
+            scr[k] = scr[k] >> 3
+            k += 1
+        rk: int = 0
+        while rk < 6:
+            g: int = 0
+            while g < 10:
+                mc: int = v_idx[rk * 10 + g] & 0x3F
+                bit: int = 0
+                while bit < 6:
+                    scr[64 + rk * 60 + g * 6 + bit] = -1 if ((mc >> bit) & 1) else 1
+                    bit += 1
+                g += 1
+            rk += 1
+        rw: int = 0
+        while rw < 64:
+            um: int = u_idx[rw] & 0x3F
+            ar: int = 0
+            col: int = 0
+            while col < 60:
+                wrc: int = 0
+                r2: int = 0
+                while r2 < 6:
+                    us: int = -1 if ((um >> r2) & 1) else 1
+                    wrc += us * scr[64 + r2 * 60 + col]
+                    r2 += 1
+                ar += wrc * scr[col]
+                col += 1
+            scr[424 + rw] = ar >> 3
+            rw += 1
+        acc ^= (scr[424] ^ scr[487]) & 0x3FFFFFFF
+        it += 1
+    return acc & 0x3FFFFFFF
+
 dwt_init()
 # Calibration loop
 c_oh0 = dwt_read()
@@ -654,6 +791,14 @@ t26 = time.ticks_us(); c26 = dwt_read()
 v14 = bench_w18b_littlebit2_mac_20(jb_acts, jb_v, jb_u, lb_scr)
 c27 = dwt_read(); t27 = time.ticks_us()
 
+t28 = time.ticks_us(); c28 = dwt_read()
+v15 = bench_w19_siw2_joulebit6_fwht64_100(jb6_acts, jb6_v, jb6_u, jb6_scr)
+c29 = dwt_read(); t29 = time.ticks_us()
+
+t30 = time.ticks_us(); c30 = dwt_read()
+v16 = bench_w19b_littlebit2_fwht64_mac_20(jb6_acts, jb6_v, jb6_u, lb6_scr)
+c31 = dwt_read(); t31 = time.ticks_us()
+
 import json, binascii
 waios_eq = True
 for _ri in range(256):
@@ -664,6 +809,11 @@ jb_eq = True
 for _rj in range(64):
     if jb_scr[70 + _rj] != lb_scr[576 + _rj]:
         jb_eq = False
+        break
+jb6_eq = True
+for _rk in range(64):
+    if jb6_scr[134 + _rk] != lb6_scr[424 + _rk]:
+        jb6_eq = False
         break
 
 print("AE3_JSON:" + json.dumps({
@@ -695,12 +845,17 @@ print("AE3_JSON:" + json.dumps({
     "w18_joulebit_100_cyc": (c25 - c24) & 0x3FFFFFFF,
     "w18b_littlebit2_20_us": time.ticks_diff(t27, t26),
     "w18b_littlebit2_20_cyc": (c27 - c26) & 0x3FFFFFFF,
+    "w19_siw2_joulebit6_100_us": time.ticks_diff(t29, t28),
+    "w19_siw2_joulebit6_100_cyc": (c29 - c28) & 0x3FFFFFFF,
+    "w19b_littlebit2_fwht64_20_us": time.ticks_diff(t31, t30),
+    "w19b_littlebit2_fwht64_20_cyc": (c31 - c30) & 0x3FFFFFFF,
     "antisym_parity_ok": (v6 == v7),
     "waios_256_row_parity_ok": waios_eq,
     "waios_first4": [waios_out_a[0], waios_out_a[1], waios_out_a[2], waios_out_a[3]],
     "waios_out_le_hex": binascii.hexlify(waios_out_a).decode(),
     "joulebit_64_row_parity_ok": jb_eq,
-    "checks": [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14],
+    "joulebit6_fwht64_parity_ok": jb6_eq,
+    "checks": [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16],
 }))
 """
 
@@ -861,6 +1016,11 @@ def main() -> None:
     w18_jb_us = round(m["w18_joulebit_100_us"] / 100.0, 3)
     w18b_lb_cyc = round(m["w18b_littlebit2_20_cyc"] / 20.0, 2)
     w18b_lb_us = round(m["w18b_littlebit2_20_us"] / 20.0, 3)
+    w19_jb6_cyc = round(m["w19_siw2_joulebit6_100_cyc"] / 100.0, 2)
+    w19_jb6_us = round(m["w19_siw2_joulebit6_100_us"] / 100.0, 3)
+    w19b_lb6_cyc = round(m["w19b_littlebit2_fwht64_20_cyc"] / 20.0, 2)
+    w19b_lb6_us = round(m["w19b_littlebit2_fwht64_20_us"] / 20.0, 3)
+    assert m.get("joulebit6_fwht64_parity_ok") is True, f"JouleBit6-FWHT64 parity failed on OpenMV-AE3: {m}"
     assert m.get("antisym_parity_ok") is True, f"Antisym-40 parity failed on OpenMV-AE3: {m}"
     mlp_cyc = round(m["int8_mlp_200_cyc"] / 200.0, 2)
     mlp_us = round(m["int8_mlp_200_us"] / 200.0, 3)
@@ -904,6 +1064,11 @@ def main() -> None:
         "w18b_littlebit2_0p10bpw_unpack_mac_dwt_cycles": w18b_lb_cyc,
         "w18b_littlebit2_0p10bpw_unpack_mac_us": w18b_lb_us,
         "w18_joulebit_lut6_speedup_vs_littlebit2": round(w18b_lb_cyc / w18_jb_cyc, 2),
+        "w19_siw2_joulebit6_fwht64_dwt_cycles": w19_jb6_cyc,
+        "w19_siw2_joulebit6_fwht64_us": w19_jb6_us,
+        "w19b_littlebit2_6col_fwht64_dwt_cycles": w19b_lb6_cyc,
+        "w19b_littlebit2_6col_fwht64_us": w19b_lb6_us,
+        "w19_siw2_joulebit6_speedup_vs_littlebit2": round(w19b_lb6_cyc / w19_jb6_cyc, 2),
         "speedup_innate_vs_int8_mlp": round(mlp_cyc / innate_cyc, 2),
         "speedup_tmac_tail_vs_int8_mlp": round(mlp_cyc / tmac_cyc, 2),
         "speedup_antisym40_precomp_vs_int8_mlp": round(mlp_cyc / antisym40_p_cyc, 2),

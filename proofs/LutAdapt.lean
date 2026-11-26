@@ -10,3 +10,4 @@ import LutAdapt.TernaryHadamardArc
 import LutAdapt.BonsaiStreamArc3
 import LutAdapt.ApexHarnessWalls
 import LutAdapt.DeterministicNullWaios
+import LutAdapt.SerializedIwJouleBit27B

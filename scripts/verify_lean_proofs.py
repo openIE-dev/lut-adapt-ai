@@ -125,6 +125,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.joulebit_jpct_cascade_strictly_beats_unassisted_sweep", "Section 4.53", "JouleBit-LUT6 Joules-Per-Correct-Token (JpCT) cascade strictly beats unassisted sweep"),
     ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.deterministic_null_dominates_neural_on_decidable_specs", "Section 4.54", "Formal Deterministic Null Hypothesis dominates standalone neural on decidable specs"),
     ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.scholar_codifier_wave2_collapses_to_deterministic_null", "Section 4.54", "Scholar-Codifier rung projection collapses repeated neural calls to H0 energy"),
+    ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.siw2_landmark_serialization_resets_exponential_horizon", "Section 4.55", "SIW(2) subgoal landmark reset collapses b^(M*L) search to M*N_iw2 (>8.38Mx)"),
+    ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.siw2_interleaved_fairness_preserves_shallow_completeness", "Section 4.55", "Interleaved shallow FIFO fairness preserves mixed-modality toggle completeness"),
+    ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.two_bank_8kb_lut6_fits_watch_sram_12p5pct", "Section 4.55", "Two-bank 8 KB (1,024-LUT6) System-0 landmark vault fits in 12.50% of 64 KB watch SRAM"),
+    ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.joulebit_fwht_6col_slab_zero_binary_mac_equivalence", "Section 4.56", "Fused FWHT + 6-col JouleBit-LUT6 slab exact zero-binary-MAC equivalence"),
+    ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.two_rung_token_plus_joulebit_draft_dominates_cold_and_warm", "Section 4.56", "Two-rung Token-LUT6 + JouleBit-LUT6 drafter dominates cold Wave-1 and warm Wave-2"),
+    ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.target_verified_joulebit27b_preserves_100pct_greedy_parity", "Section 4.56", "Target-verified JouleBit-27B preserves 100.00% exact greedy token parity (0 QAT)"),
+    ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.sharded_joulebit_pread_reduces_cold_io_bandwidth", "Section 4.56", "Sharded JouleBit-27B os.pread cuts cold streaming bytes/tok >2.72x vs MLX 2-bit"),
+    ("SerializedIwJouleBit27B", "LutAdapt.SerializedIwJouleBit27B.openxc7_siw_joulebit_zero_dsp_pipeline_bound", "Section 4.57", "4-stage zero-DSP48E1 XC7A200T SIW(2)+JouleBit-LUT6 pipeline latency & epoch bound"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

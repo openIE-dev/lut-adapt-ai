@@ -1,6 +1,6 @@
 {
   "lean_version": "Lean (version 4.36.0, arm64-apple-darwin24.6.0, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)",
-  "total_kernel_checked_theorems": 90,
+  "total_kernel_checked_theorems": 98,
   "module_theorem_counts": {
     "Cascade": 7,
     "BenesCopy": 7,
@@ -13,10 +13,11 @@
     "TernaryHadamardArc": 8,
     "BonsaiStreamArc3": 8,
     "ApexHarnessWalls": 8,
-    "DeterministicNullWaios": 8
+    "DeterministicNullWaios": 8,
+    "SerializedIwJouleBit27B": 8
   },
-  "purely_constructive_zero_axiom_theorems": 15,
-  "choice_free_theorems": 60,
+  "purely_constructive_zero_axiom_theorems": 18,
+  "choice_free_theorems": 67,
   "ofReduceBool_native_decide_count": 0,
   "opaque_declaration_count": 0,
   "nested_inductive_count": 0,
@@ -33,14 +34,14 @@
     "leanchecker --paranoid",
     "Lean v4.36.0 (default)"
   ],
-  "con_leche_verified_declarations": 58905,
-  "con_ron_verified_declarations": 58905,
-  "lean4lean_verified_declarations": 58907,
+  "con_leche_verified_declarations": 58928,
+  "con_ron_verified_declarations": 58928,
+  "lean4lean_verified_declarations": 58930,
   "paranoid_sandbox_mode": "trusted_local_repo_no_bwrap_on_darwin",
-  "clean_lake_build_ms": 2738.79,
-  "clean_lake_build_reported_j": 2.8424,
-  "paranoid_6kernel_check_ms": 152560.03,
-  "paranoid_6kernel_check_reported_j": 161.4934,
+  "clean_lake_build_ms": 5026.99,
+  "clean_lake_build_reported_j": 0.6711,
+  "paranoid_6kernel_check_ms": 145489.84,
+  "paranoid_6kernel_check_reported_j": 20.9598,
   "source_sha256": {
     "proofs/LutAdapt/ApexHarnessWalls.lean": "8b08043bd6579a20b824455a102cd37a98d172c0dba16d6d0a01a9c4ca0d0476",
     "proofs/LutAdapt/BenesCopy.lean": "be951544bddaa2ea1dc639bc735044e2b62848c7f377014650846e593ce92694",
@@ -51,10 +52,11 @@
     "proofs/LutAdapt/GlobalFrontiers.lean": "0c6b52f797f3abcd90c5e48800999a2b2abf6ff9cc3198a5ea41ce12fcebb21e",
     "proofs/LutAdapt/JointMinterm.lean": "2c0bd9eeb52e9d5ed3aea0dfe7e73379e3ee9fda8b2f78dcc64c6387be4919b1",
     "proofs/LutAdapt/NucleusCodon.lean": "386526a9974b185fbebb835ab0f275ac0da180440bbbaf6c8ed775ceafee9208",
+    "proofs/LutAdapt/SerializedIwJouleBit27B.lean": "62fcc8654346b0e07d186996f454eb4c9c833fee40ac506df399d7b593e6e262",
     "proofs/LutAdapt/TernaryHadamardArc.lean": "80cc5af79fbbd43313084e2086169b11076db19cbc62a3b293f745a3e77fe561",
     "proofs/LutAdapt/TernaryTmac.lean": "44517793934c641a6caffc667e8a88b5ccc362a8babcd990ee8ef0023b497d3e",
     "proofs/LutAdapt/WearableLastExam.lean": "932dd0ac863627b8861563dd45051e40eed1fa5beb31778b9cae2ddf691be887",
-    "proofs/LutAdapt.lean": "4f79df7c919c4a8b0f8ab7d33bd701f78ff1c82967d754f697c00e8b05159abd"
+    "proofs/LutAdapt.lean": "e1466a4146bce03b36c3f3ac7e0985888dfddd24c52a828a33285a58bf06d98d"
   },
   "measured_j": null,
   "board_metered": false

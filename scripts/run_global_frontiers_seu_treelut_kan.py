@@ -115,6 +115,9 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
   const waios_ok  = ex.wasm_verify_waios_antisym40_digest32(0, 0) >>> 0;
   const waios_flt = ex.wasm_verify_waios_antisym40_digest32(1, 0) >>> 0;
   const waios_gpu = ex.wasm_verify_waios_antisym40_digest32(0, (32 << 8) | 0) >>> 0;
+  const siw_b0    = ex.wasm_eval_siw2_and_joulebit6((1 << 28) | (0x42 << 20) | (0 << 16) | (0 << 8) | 0x02, 10) >>> 0;
+  const siw_lm    = ex.wasm_eval_siw2_and_joulebit6((1 << 28) | (0x42 << 20) | (0 << 16) | (1 << 8) | 0x01, 10) >>> 0;
+  const siw_brk   = ex.wasm_eval_siw2_and_joulebit6((1 << 28) | (0x99 << 20) | (1 << 16) | (0 << 8) | 0x01, 10) >>> 0;
   console.log(JSON.stringify({{
     crc0_hex: '0x' + crc0.toString(16).padStart(8, '0'),
     crc1_hex: '0x' + crc1.toString(16).padStart(8, '0'),
@@ -127,7 +130,8 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
     apex_hit, apex_trap, apex_cbf,
     waios_ok_hex: '0x' + waios_ok.toString(16).padStart(8, '0'),
     waios_flt_hex: '0x' + waios_flt.toString(16).padStart(8, '0'),
-    waios_gpu
+    waios_gpu,
+    siw_b0, siw_lm, siw_brk
   }}));
 }})();
 """
@@ -155,6 +159,9 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
     assert res["waios_ok_hex"] == "0xa541323b", f"Unexpected waiOS WASM reference prefix: {res}"
     assert res["waios_flt_hex"] == "0x4ac7c4fb", f"Unexpected waiOS WASM fault prefix: {res}"
     assert (res["waios_gpu"] >> 24) == 1 and ((res["waios_gpu"] >> 16) & 0xFF) == 3
+    assert (res["siw_b0"] >> 28) == 1 and ((res["siw_b0"] >> 26) & 1) == 0
+    assert (res["siw_lm"] >> 28) == 1 and ((res["siw_lm"] >> 27) & 1) == 1 and ((res["siw_lm"] >> 26) & 1) == 1
+    assert (res["siw_brk"] >> 28) == 2
 
     return {
         "wasm_path": "artifacts/wasm/lut6_core.wasm",

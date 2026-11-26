@@ -1020,8 +1020,97 @@ fn main() {
         },
     );
 
+    // Window 19: `SIW(2)` Two-Bank Landmark `LUT6` + Fused Zero-MUL `FWHT-64 + 6-Col JouleBit-LUT6` (`Claims LA-53..LA-54`)
+    let mut jb6_acts = [0i16; 64];
+    for (idx, s) in jb6_acts.iter_mut().enumerate() {
+        *s = ((idx as i16 * 11 + 5) % 47) - 23;
+    }
+    let mut jb6_v = [[0u8; 10]; 6];
+    for r in 0..6 {
+        for g in 0..10 {
+            jb6_v[r][g] = ((r * 19 + g * 23 + 7) & 0x3F) as u8;
+        }
+    }
+    let mut jb6_u = [0u8; 64];
+    for (rw, s) in jb6_u.iter_mut().enumerate() {
+        *s = ((rw * 31 + 13) & 0x3F) as u8;
+    }
+    // Verify exact algebraic parity (`Theorem 94`) between zero-MUL `FWHT64 + JouleBit-LUT6` and `LittleBit-2` unpack+MAC!
+    {
+        let mut out_jb = [0i32; 64];
+        let mut out_lb = [0i32; 64];
+        lut6_core::siw_joulebit::eval_joulebit6_fwht64_slab_i16(&jb6_acts, &jb6_v, &jb6_u, &mut out_jb);
+        lut6_core::siw_joulebit::eval_littlebit2_6col_unpack_mac_64(&jb6_acts, &jb6_v, &jb6_u, &mut out_lb);
+        assert_eq!(out_jb, out_lb, "Theorem 94 parity mismatch between JouleBit6-FWHT64 and LittleBit2!");
+    }
+    let siw_b0 = [0x5555_5555_5555_5555u64, 0x6666_6666_6666_6666, 0];
+    let siw_b1 = [0xAAAA_AAAA_AAAA_AAAAu64, 0xCCCC_CCCC_CCCC_CCCC, u64::MAX];
+    let w19 = measure_window(
+        "Window19_SIW2_Landmark_Plus_JouleBit6_FWHT64",
+        jb_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            let mut ep = 0u8;
+            for step in 0..jb_iters {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                lut6_core::siw_joulebit::eval_joulebit6_fwht64_slab_i16(
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                let r_siw = lut6_core::siw_joulebit::eval_siw2_landmark_lut6(
+                    (step & 0x3F) as u8,
+                    if (step & 127) == 63 { 1 } else { 0 },
+                    ep,
+                    Some(0x42),
+                    0x42,
+                    !1u64,
+                    black_box(&siw_b0),
+                    black_box(&siw_b1),
+                    u64::MAX,
+                    u64::MAX,
+                );
+                if let lut6_core::siw_joulebit::Siw2ReflexOutcome::CertifiedAction {
+                    action_id,
+                    next_epoch,
+                    ..
+                } = r_siw
+                {
+                    ep = next_epoch & 7;
+                    acc ^= (action_id as i32) ^ out[0] ^ out[63];
+                }
+            }
+            black_box(acc);
+        },
+    );
+    let w19b = measure_window(
+        "Window19b_LittleBit2_6Col_FWHT64_Unpack_MAC",
+        jb_iters / 4,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..(jb_iters / 4) {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                lut6_core::siw_joulebit::eval_littlebit2_6col_unpack_mac_64(
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                acc ^= out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {

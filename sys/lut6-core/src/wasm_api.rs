@@ -39,15 +39,20 @@ fn wasm_shared_bipolar_antisym(pad: &[u8; 672], state: u64, sign_mask: Option<u6
     (pay, votes)
 }
 
+#[inline(never)]
+fn wasm_get_crystal(which: u32) -> &'static crate::CompactLut6Page {
+    if which == 0 {
+        yosys_operon_crystal()
+    } else {
+        mol_skills_tmac_crystal()
+    }
+}
+
 /// Returns the verified IEEE 802.3 CRC32 of embedded crystal `which` (`0 = Operon`, `1 = Skills+TMAC`),
 /// or `0` if `verify_crc32()` fails.
 #[unsafe(no_mangle)]
 pub extern "C" fn wasm_crystal_crc32(which: u32) -> u32 {
-    let page = if which == 0 {
-        yosys_operon_crystal()
-    } else {
-        mol_skills_tmac_crystal()
-    };
+    let page = wasm_get_crystal(which);
     let c = page.compute_crc32();
     if c == page.crc32 { c } else { 0 }
 }
@@ -57,7 +62,7 @@ pub extern "C" fn wasm_crystal_crc32(which: u32) -> u32 {
 #[unsafe(no_mangle)]
 pub extern "C" fn wasm_eval_operon_seed(input_lo: u32, input_hi: u32) -> u32 {
     let state = (input_lo as u64) | ((input_hi as u64) << 32);
-    yosys_operon_crystal().eval_raw_unrolled4(state) as u32
+    wasm_get_crystal(0).eval_raw_unrolled4(state) as u32
 }
 
 /// Evaluates the Two-Tier `LUT6 + 672 B EntroMCU/T-MAC` crystal (`0x3b12a681`) in `.wasm`.
@@ -71,7 +76,7 @@ pub extern "C" fn wasm_eval_two_tier_skill(
     input_hi: u32,
     use_antisym40: u32,
 ) -> u32 {
-    let skills_page = mol_skills_tmac_crystal();
+    let skills_page = wasm_get_crystal(1);
     let state = (input_lo as u64) | ((input_hi as u64) << 32);
     let mut ledger = PageLedger::default();
     let Ok(r6) = skills_page.evaluate(state, None, &mut ledger);
@@ -156,7 +161,7 @@ pub extern "C" fn wasm_eval_wearable_epistemic(
     wire_hi: u32,
     frontier_thresh: u32,
 ) -> u32 {
-    let skills_page = mol_skills_tmac_crystal();
+    let skills_page = wasm_get_crystal(1);
     let state = (wire_lo as u64) | ((wire_hi as u64) << 32);
     let mut ledger = PageLedger::default();
     match eval_wearable_epistemic_gate(&skills_page, None, state, frontier_thresh, &mut ledger) {
@@ -195,7 +200,7 @@ pub extern "C" fn wasm_eval_bonsai_fwht64_antisym40(
 ) -> u32 {
     let state = (wire_lo as u64) | ((wire_hi as u64) << 32);
     let signs = (sign_lo as u64) | ((sign_hi as u64) << 32);
-    let (pay, votes) = wasm_shared_bipolar_antisym(&mol_skills_tmac_crystal()._pad, state, Some(signs));
+    let (pay, votes) = wasm_shared_bipolar_antisym(&wasm_get_crystal(1)._pad, state, Some(signs));
     (((votes as u32) & 0xFF) << 16) | ((pay as u32) & 0xFFFF)
 }
 
@@ -211,8 +216,9 @@ pub extern "C" fn wasm_eval_arc_lut6_cells8(
 ) -> u32 {
     let cmap = (color_map_lo as u64) | ((color_map_hi as u64) << 32);
     let mut masks = [0u64; 4];
+    let n_lut = core::hint::black_box(64usize);
     let mut m = 0usize;
-    while m < 64 {
+    while m < n_lut {
         let c_in = m & 0xF;
         let par = (m >> 4) & 0x3;
         let mut out_c = ((cmap >> (c_in << 2)) & 0xF) as u8;
@@ -257,8 +263,10 @@ pub extern "C" fn wasm_eval_benes_arc2_2layer8(
 ) -> u32 {
     let mut c_planes = [0u64; 4];
     let mut nz8 = 0u64;
+    let n8 = core::hint::black_box(8usize);
+    let n64 = core::hint::black_box(64usize);
     let mut i = 0usize;
-    while i < 8 {
+    while i < n8 {
         let nib = (cells_nibbles8 >> (i << 2)) & 0xF;
         if nib != 0 {
             nz8 |= 1u64 << i;
@@ -292,7 +300,7 @@ pub extern "C" fn wasm_eval_benes_arc2_2layer8(
     let mut color_luts = [0u64; 4];
     let fc = (fill_color & 0xF) as usize;
     let mut m = 0usize;
-    while m < 64 {
+    while m < n64 {
         let c_in = m & 0xF;
         let c_out = if c_in == 0 && ((m >> 4) & 1) == 1 { fc } else { c_in };
         let mut bp = 0usize;
@@ -316,7 +324,7 @@ pub extern "C" fn wasm_eval_benes_arc2_2layer8(
     );
     let mut out32 = 0u32;
     i = 0;
-    while i < 8 {
+    while i < n8 {
         let nib = (((out_p[0] >> i) & 1) as u32)
             | ((((out_p[1] >> i) & 1) as u32) << 1)
             | ((((out_p[2] >> i) & 1) as u32) << 2)
@@ -453,5 +461,120 @@ pub extern "C" fn wasm_verify_waios_antisym40_digest32(
         prefix_be
     } else {
         (1u32 << 24) | ((sub as u32) << 16) | (prefix_be & 0xFFFF)
+    }
+}
+
+/// Evaluates the Phase 39 (`Claims LA-53..LA-55`) two-bank `SIW(2)` landmark `LUT6` reflex
+/// AND fused zero-multiplier `FWHT-64 + 6-Column JouleBit-LUT6` sub-bit draft slab inside `.wasm`.
+///   - `percept_landmark_epoch`: `bits [5..0]=percept6`, `bits [13..8]=landmark6`, `bits [19..16]=epoch`,
+///     `bits [27..20]=actual_sig`, `bit 28=expect_0x42`
+///   - `act0_and_jb_row`: `bits [15..0]=acts64[0] (i16)`, `bits [21..16]=row_idx (0..63)`
+///   - Returns packed `u32`:
+///     - `bits [31..28]`: `1` = Certified `System-0` Action, `2` = Mechanic-Shift Breaker, `0` = Wake `SIW(2)`
+///     - `bit  27`:       `1` if `landmark_reset` fired (`seen` novelty tables cleared!)
+///     - `bit  26`:       `bank_id` (`0` = Bank 0, `1` = Bank 1 post-landmark)
+///     - `bits [23..20]`: `next_epoch` (`0..=8`)
+///     - `bits [19..16]`: `action_id` or `xor_sig & 0xF`
+///     - `bits [15..0]`:  exact `JouleBit-LUT6` `FWHT-64` output `out64[row_idx] as u16` (`0` binary MACs!)
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_siw2_and_joulebit6(
+    percept_landmark_epoch: u32,
+    act0_and_jb_row: u32,
+) -> u32 {
+    use crate::siw_joulebit::{
+        Siw2ReflexOutcome, eval_joulebit6_fwht64_slab_i16, eval_siw2_landmark_lut6,
+    };
+    let percept6 = (percept_landmark_epoch & 0x3F) as u8;
+    let landmark6 = ((percept_landmark_epoch >> 8) & 0x3F) as u8;
+    let epoch = ((percept_landmark_epoch >> 16) & 0x0F) as u8;
+    let actual_sig = ((percept_landmark_epoch >> 20) & 0xFF) as u8;
+    let exp_sig = if (percept_landmark_epoch & (1u32 << 28)) != 0 {
+        Some(0x42u8)
+    } else {
+        None
+    };
+
+    // Bank 0: pre-landmark navigation (`actions 1..4`), Bank 1: post-landmark interaction (`actions 5..7`)
+    let bank0 = [
+        0x5555_5555_5555_5555u64,
+        0x6666_6666_6666_6666u64,
+        0x0000_0000_0000_0000u64,
+    ];
+    let bank1 = [
+        0xAAAA_AAAA_AAAA_AAAAu64,
+        0xCCCC_CCCC_CCCC_CCCCu64,
+        0xFFFF_FFFF_FFFF_FFFFu64,
+    ];
+    // Any non-zero landmark bit (`landmark6 != 0`) triggers monotonic subgoal reset (`epoch < 8`)
+    let lm_mask = !1u64;
+    let siw_out = eval_siw2_landmark_lut6(
+        percept6,
+        landmark6,
+        epoch,
+        exp_sig,
+        actual_sig,
+        lm_mask,
+        &bank0,
+        &bank1,
+        u64::MAX,
+        u64::MAX,
+    );
+
+    let act0 = (act0_and_jb_row & 0xFFFF) as u16 as i16;
+    let row_idx = ((act0_and_jb_row >> 16) & 0x3F) as usize;
+    let n64 = core::hint::black_box(64usize);
+    let n6 = core::hint::black_box(6usize);
+    let n10 = core::hint::black_box(10usize);
+    let mut acts64 = [0i16; 64];
+    acts64[0] = act0;
+    let mut idx = 1usize;
+    while idx < n64 {
+        acts64[idx] = (((idx * 11 + 5) & 31) as i16) - 15;
+        idx += 1;
+    }
+    let mut v_codes = [[0u8; 10]; 6];
+    let mut r = 0usize;
+    while r < n6 {
+        let mut g = 0usize;
+        while g < n10 {
+            v_codes[r][g] = ((r * 19 + g * 23 + 7) & 0x3F) as u8;
+            g += 1;
+        }
+        r += 1;
+    }
+    let mut u_codes = [0u8; 64];
+    let mut rw = 0usize;
+    while rw < n64 {
+        u_codes[rw] = ((rw * 31 + 13) & 0x3F) as u8;
+        rw += 1;
+    }
+    let mut out64 = [0i32; 64];
+    eval_joulebit6_fwht64_slab_i16(&acts64, &v_codes, &u_codes, &mut out64);
+    let jb_u16 = (out64[row_idx] & 0xFFFF) as u32;
+
+    match siw_out {
+        Siw2ReflexOutcome::CertifiedAction {
+            action_id,
+            bank_id,
+            landmark_reset,
+            next_epoch,
+        } => {
+            (1u32 << 28)
+                | ((landmark_reset as u32) << 27)
+                | (((bank_id & 1) as u32) << 26)
+                | (((next_epoch & 0xF) as u32) << 20)
+                | (((action_id & 0xF) as u32) << 16)
+                | jb_u16
+        }
+        Siw2ReflexOutcome::MechanicShiftBreaker { xor_sig, next_epoch } => {
+            (2u32 << 28)
+                | (((next_epoch & 0xF) as u32) << 20)
+                | (((xor_sig & 0xF) as u32) << 16)
+                | jb_u16
+        }
+        Siw2ReflexOutcome::WakeSiw2Planner {
+            landmark_reset,
+            next_epoch,
+        } => ((landmark_reset as u32) << 27) | (((next_epoch & 0xF) as u32) << 20) | jb_u16,
     }
 }
