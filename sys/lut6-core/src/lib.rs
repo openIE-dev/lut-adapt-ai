@@ -15,6 +15,7 @@ pub mod hadamard_bonsai;
 pub mod ratchet_demo;
 pub mod seu_resilience;
 pub mod tmac_tail;
+pub mod waios_mosaic;
 pub mod wearable_epistemic;
 #[cfg(target_arch = "wasm32")]
 pub mod wasm_api;

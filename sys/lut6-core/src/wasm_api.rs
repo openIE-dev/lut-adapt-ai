@@ -180,22 +180,8 @@ pub extern "C" fn wasm_eval_wearable_epistemic(
 /// returns `1` if the 8-byte ASCII window `(lo32 | hi32 << 32)` matches `hle:3r2s` (blocked from `.lut6`!), `0` otherwise.
 #[unsafe(no_mangle)]
 pub extern "C" fn wasm_check_hle_canary8(ascii_lo: u32, ascii_hi: u32) -> u32 {
-    let mut buf = [0u8; 8];
-    let l = ascii_lo.to_le_bytes();
-    let h = ascii_hi.to_le_bytes();
-    buf[0] = l[0];
-    buf[1] = l[1];
-    buf[2] = l[2];
-    buf[3] = l[3];
-    buf[4] = h[0];
-    buf[5] = h[1];
-    buf[6] = h[2];
-    buf[7] = h[3];
-    if has_benchmark_canary(&buf, false) {
-        1
-    } else {
-        0
-    }
+    let w = (ascii_lo as u64) | ((ascii_hi as u64) << 32);
+    has_benchmark_canary(&w.to_le_bytes(), false) as u32
 }
 
 /// Evaluates `Bonsai-2-27B`-style Sylvester `FWHT-64 (>> 3)` + `ISCA` 2025 `Antisym-40 T-MAC` (`0` MULs) in `.wasm`.
@@ -292,22 +278,23 @@ pub extern "C" fn wasm_eval_benes_arc2_2layer8(
     let down_nz = (down_mask8 & 0xFF) as u64;
 
     // Layer-1: `feat0` = enclosed/bridged empty cell `(center == 0) && ((left & right) || (up & down))`
-    let mut feat0_lut = 0u64;
+    const FEAT0_LUT: u64 = {
+        let mut v = 0u64;
+        let mut m = 0usize;
+        while m < 64 {
+            if (m & 1) == 0 && (((m & 24) == 24) || ((m & 6) == 6)) {
+                v |= 1u64 << m;
+            }
+            m += 1;
+        }
+        v
+    };
     let mut color_luts = [0u64; 4];
     let fc = (fill_color & 0xF) as usize;
     let mut m = 0usize;
     while m < 64 {
-        let c0 = m & 1;
-        let u = (m >> 1) & 1;
-        let d = (m >> 2) & 1;
-        let l = (m >> 3) & 1;
-        let r = (m >> 4) & 1;
-        if c0 == 0 && ((l == 1 && r == 1) || (u == 1 && d == 1)) {
-            feat0_lut |= 1u64 << m;
-        }
         let c_in = m & 0xF;
-        let f0 = (m >> 4) & 1;
-        let c_out = if c_in == 0 && f0 == 1 { fc } else { c_in };
+        let c_out = if c_in == 0 && ((m >> 4) & 1) == 1 { fc } else { c_in };
         let mut bp = 0usize;
         while bp < 4 {
             if ((c_out >> bp) & 1) != 0 {
@@ -324,7 +311,7 @@ pub extern "C" fn wasm_eval_benes_arc2_2layer8(
         left_nz,
         right_nz,
         0,
-        &[feat0_lut, 0],
+        &[FEAT0_LUT, 0],
         &color_luts,
     );
     let mut out32 = 0u32;
@@ -361,21 +348,11 @@ pub extern "C" fn wasm_eval_arc3_reflex_step(
         0
     };
     // Deterministic 4-direction navigation LUT6: bits [1..0] = goal delta `(dx, dy)` -> GameAction 1..4
-    let mut act_masks = [0u64; 3];
-    let mut m = 0usize;
-    while m < 64 {
-        let act = ((m & 0x3) + 1) as u8; // 1=UP, 2=DOWN, 3=LEFT, 4=RIGHT
-        if (act & 1) != 0 {
-            act_masks[0] |= 1u64 << m;
-        }
-        if ((act >> 1) & 1) != 0 {
-            act_masks[1] |= 1u64 << m;
-        }
-        if ((act >> 2) & 1) != 0 {
-            act_masks[2] |= 1u64 << m;
-        }
-        m += 1;
-    }
+    let act_masks = [
+        0x5555_5555_5555_5555u64,
+        0x6666_6666_6666_6666u64,
+        0x8888_8888_8888_8888u64,
+    ];
     let exp_opt = if expected_sig >= 0 {
         Some((expected_sig & 0xFF) as u8)
     } else {
@@ -444,5 +421,37 @@ pub extern "C" fn wasm_eval_apex_horizon_gate(
             (3u32 << 24) | (violation_mask as u32)
         }
         ApexGateOutcome::WakeApexSolver => 0,
+    }
+}
+
+/// Executes the full `waiOS` `256 x 128` ternary matrix-vector integer program via `#![no_std]`
+/// `Antisym-40` zero-`MUL` `LUT6` table lookup + `BLAKE3("waios.tmac.v1")` inside the browser `.wasm` VM,
+/// paired with `HeteroMosaic-MoL` substrate routing (`Claim LA-50`).
+///   - `fault_row77 != 0`: injects the canonical row-77 single-weight fault (`0x4ac7c4fb` -> HALT!).
+///   - Returns big-endian `digest[0..4]` (`0xa541323b` when valid, `0x4ac7c4fb` when faulted) XORed in the
+///     lowest bit (`0` if `Halted`, `substrate_id` preserved via `wasm_heteromosaic_route` if `fault_row77 == 0`).
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_verify_waios_antisym40_digest32(
+    fault_row77: u32,
+    lut6_certified_and_batch: u32,
+) -> u32 {
+    use crate::waios_mosaic::{
+        WAIOS_REFERENCE_DIGEST, eval_waios_streaming_antisym40_digest,
+        select_heteromosaic_substrate,
+    };
+    let dig = eval_waios_streaming_antisym40_digest(fault_row77 != 0);
+    let prefix_be = u32::from_be_bytes([dig[0], dig[1], dig[2], dig[3]]);
+    let ok = dig == WAIOS_REFERENCE_DIGEST;
+    if !ok {
+        return prefix_be;
+    }
+    let cert = (lut6_certified_and_batch & 1) != 0;
+    let batch = ((lut6_certified_and_batch >> 8) & 0xFF) as u16;
+    let sub = select_heteromosaic_substrate(cert, batch, 128);
+    // When `lut6_certified_and_batch == 0`, return pure `0xa541323b`; otherwise encode `(1 << 24) | (sub << 16) | (prefix_be & 0xFFFF)`.
+    if lut6_certified_and_batch == 0 {
+        prefix_be
+    } else {
+        (1u32 << 24) | ((sub as u32) << 16) | (prefix_be & 0xFFFF)
     }
 }

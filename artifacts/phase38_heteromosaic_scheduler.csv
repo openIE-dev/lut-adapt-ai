@@ -1,0 +1,4 @@
+scheduler_policy,routing_breakdown_1000_steps,total_1000_step_energy_mj,energy_reduction_vs_all_gpu_x,energy_reduction_vs_all_cpu_x,waios_conformance_gated,board_metered_basis
+All_GPU_Monolithic_SingleFabric,GPU Wake on Every Step (650 reflex + 200 gate + 100 route + 50 batch),401.9,1.0,0.07,True,False
+All_CPU_SIMD_SingleFabric,"Host CPU on Every Step (No Rung-0 LUT6, No GPU Batch Offload)",28.2498,14.23,1.0,True,True
+HeteroMosaic_MoL_4Substrate_Ours,650x LUT6 (0.20 uJ) + 200x Antisym-40 T-MAC (1.76 uJ) + 100x CPU SDOT + 50x GPU Batch-32,4.9963,80.44,5.65,True,True

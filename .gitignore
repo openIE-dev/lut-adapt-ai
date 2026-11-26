@@ -18,6 +18,8 @@ artifacts/*_shards/
 artifacts/verilator_*/
 artifacts/paged_bram_rtl_sim/
 artifacts/*_sim/
+artifacts/*.bit
+artifacts/*/*.bit
 
 # OS / editor
 .DS_Store

@@ -361,6 +361,235 @@ def bench_ulm28m_d512_slice_50(wrow: ptr32, x512: ptr32) -> int:
         it += 1
     return acc_all
 
+# 7. Phase 37/38 Window 16 (`Apex` `System-0` `LUT6` Gate: `DES-10` + `openie-cad` + `Torricelli CBF` + `RCE`, `1,000` calls)
+apex_m_lo = array.array('I', [0xAAAAAAAA, 0xCCCCCCCC, 0xF0F0F0F0, 0xFF00FF00])
+apex_m_hi = array.array('I', [0xAAAAAAAA, 0xCCCCCCCC, 0xF0F0F0F0, 0xFF00FF00])
+
+@micropython.viper
+def bench_w16_apex_gate_1k(m_lo: ptr32, m_hi: ptr32) -> int:
+    acc: int = 0
+    step: int = 0
+    while step < 1000:
+        p6: int = (step & 0x3E) | 1
+        htag: int = 0x42A1
+        etag: int = 0x42A0 if (step & 127) == 127 else 0x42A1
+        if htag != etag:
+            acc ^= (htag ^ etag)
+        else:
+            z0: int = 49500 + (step & 7) * 100
+            tj: int = 640 + (step & 15) * 5
+            v: int = 1100 + (step & 7) * 20
+            d_obs: int = 150 if (step & 255) == 254 else 320
+            viol: int = 0
+            if z0 < 45000 or z0 > 55000:
+                viol |= 2
+            if tj > 850:
+                viol |= 4
+            if (v * v) > (6000 * d_obs):
+                viol |= 8
+            if viol != 0:
+                acc ^= viol
+            else:
+                ac: int = 0
+                if p6 < 32:
+                    ac = (((m_lo[0] >> p6) & 1)
+                          | (((m_lo[1] >> p6) & 1) << 1)
+                          | (((m_lo[2] >> p6) & 1) << 2)
+                          | (((m_lo[3] >> p6) & 1) << 3))
+                else:
+                    sh: int = p6 - 32
+                    ac = (((m_hi[0] >> sh) & 1)
+                          | (((m_hi[1] >> sh) & 1) << 1)
+                          | (((m_hi[2] >> sh) & 1) << 2)
+                          | (((m_hi[3] >> sh) & 1) << 3))
+                acc ^= ac + 1
+        step += 1
+    return acc & 0x3FFFFFFF
+
+# 8. Phase 38 Window 17: Canonical `waiOS` `256 x 128` Ternary Audit (`SEED = 0xdeadbeefcafebabe`)
+#    on Live Cortex-M55 Silicon (`Antisym-40` Zero-`MUL` vs. Scalar `MUL`, `20` passes)
+_s64 = 0xDEADBEEFCAFEBABE
+_MUL64 = 6364136223846793005
+_ADD64 = 1442695040888963407
+_MASK64 = 0xFFFFFFFFFFFFFFFF
+waios_u8 = bytearray(256 * 128)  # stores `w + 1` in `{0, 1, 2}`
+for _i in range(256 * 128):
+    _s64 = (_s64 * _MUL64 + _ADD64) & _MASK64
+    waios_u8[_i] = (_s64 >> 32) % 3
+waios_acts = array.array('i', [0] * 128)
+for _c in range(128):
+    _s64 = (_s64 * _MUL64 + _ADD64) & _MASK64
+    waios_acts[_c] = ((_s64 >> 40) % 251) - 125
+waios_codes = bytearray(256 * 32)
+for _r in range(256):
+    _rb = _r * 128
+    _cb = _r * 32
+    for _g in range(32):
+        _k = _rb + (_g << 2)
+        waios_codes[_cb + _g] = waios_u8[_k] + 3 * waios_u8[_k + 1] + 9 * waios_u8[_k + 2] + 27 * waios_u8[_k + 3]
+waios_l41 = array.array('i', [0] * (32 * 41))
+waios_out_a = array.array('i', [0] * 256)
+waios_out_m = array.array('i', [0] * 256)
+
+@micropython.viper
+def bench_w17_waios_antisym40_20(codes: ptr8, acts: ptr32, luts41: ptr32, out: ptr32) -> int:
+    acc_chk: int = 0
+    it: int = 0
+    while it < 20:
+        g: int = 0
+        while g < 32:
+            c0: int = g << 2
+            x0: int = acts[c0]; x1: int = acts[c0 + 1]; x2: int = acts[c0 + 2]; x3: int = acts[c0 + 3]
+            base: int = g * 41
+            idx: int = 0
+            i2: int = -1
+            while i2 <= 1:
+                s2: int = -x3 + (x2 if i2 == 1 else (-x2 if i2 == -1 else 0))
+                i1: int = -1
+                while i1 <= 1:
+                    s1: int = s2 + (x1 if i1 == 1 else (-x1 if i1 == -1 else 0))
+                    luts41[base + idx] = s1 - x0
+                    luts41[base + idx + 1] = s1
+                    luts41[base + idx + 2] = s1 + x0
+                    idx += 3
+                    i1 += 1
+                i2 += 1
+            j1: int = -1
+            while j1 <= 1:
+                sb: int = -x2 + (x1 if j1 == 1 else (-x1 if j1 == -1 else 0))
+                luts41[base + idx] = sb - x0
+                luts41[base + idx + 1] = sb
+                luts41[base + idx + 2] = sb + x0
+                idx += 3
+                j1 += 1
+            luts41[base + 36] = -x1 - x0
+            luts41[base + 37] = -x1
+            luts41[base + 38] = -x1 + x0
+            luts41[base + 39] = -x0
+            luts41[base + 40] = 0
+            g += 1
+
+        r: int = 0
+        while r < 256:
+            roff: int = r << 5
+            s: int = 0
+            grp: int = 0
+            loff: int = 0
+            while grp < 32:
+                cd: int = codes[roff + grp]
+                if cd > 40:
+                    s -= luts41[loff + (80 - cd)]
+                else:
+                    s += luts41[loff + cd]
+                grp += 1
+                loff += 41
+            out[r] = s
+            r += 1
+        acc_chk ^= (out[0] ^ out[255]) & 0x3FFFFFFF
+        it += 1
+    return acc_chk & 0x3FFFFFFF
+
+@micropython.viper
+def bench_w17b_waios_scalar_mul_20(wu8: ptr8, acts: ptr32, out: ptr32) -> int:
+    acc_chk: int = 0
+    it: int = 0
+    while it < 20:
+        r: int = 0
+        while r < 256:
+            base: int = r << 7
+            s: int = 0
+            c: int = 0
+            while c < 128:
+                w: int = wu8[base + c] - 1
+                s += w * acts[c]
+                c += 1
+            out[r] = s
+            r += 1
+        acc_chk ^= (out[0] ^ out[255]) & 0x3FFFFFFF
+        it += 1
+    return acc_chk & 0x3FFFFFFF
+
+# 9. Phase 38 Window 18: `JouleBit-0.10` (`0.105 bpw`) Shared `LUT6` (`0` MULs) vs `LittleBit-2` Dense Unpack+MAC (`64 x 96`)
+jb_acts = array.array('i', [((i * 13 + 7) % 63) - 31 for i in range(96)])
+jb_v = bytearray([((r * 17 + g * 29 + 5) & 0x3F) for r in range(6) for g in range(16)])
+jb_u = bytearray([((row * 37 + 11) & 0x3F) for row in range(64)])
+jb_scr = array.array('i', [0] * (6 + 64 + 64))
+lb_scr = array.array('i', [0] * (6 * 96 + 64))
+
+@micropython.viper
+def bench_w18_joulebit_lut6_100(acts: ptr32, v_idx: ptr8, u_idx: ptr8, scr: ptr32) -> int:
+    acc: int = 0
+    it: int = 0
+    while it < 100:
+        r0: int = 0
+        while r0 < 6:
+            scr[r0] = 0
+            r0 += 1
+        g: int = 0
+        while g < 16:
+            b: int = g * 6
+            a0: int = acts[b]; a1: int = acts[b + 1]; a2: int = acts[b + 2]
+            a3: int = acts[b + 3]; a4: int = acts[b + 4]; a5: int = acts[b + 5]
+            rk: int = 0
+            while rk < 6:
+                m: int = v_idx[(rk << 4) + g]
+                s: int = (-a0 if (m & 1) else a0) + (-a1 if (m & 2) else a1) + (-a2 if (m & 4) else a2)
+                s += (-a3 if (m & 8) else a3) + (-a4 if (m & 16) else a4) + (-a5 if (m & 32) else a5)
+                scr[rk] += s
+                rk += 1
+            g += 1
+        z0: int = scr[0]; z1: int = scr[1]; z2: int = scr[2]
+        z3: int = scr[3]; z4: int = scr[4]; z5: int = scr[5]
+        cd: int = 0
+        while cd < 64:
+            ut: int = (-z0 if (cd & 1) else z0) + (-z1 if (cd & 2) else z1) + (-z2 if (cd & 4) else z2)
+            ut += (-z3 if (cd & 8) else z3) + (-z4 if (cd & 16) else z4) + (-z5 if (cd & 32) else z5)
+            scr[6 + cd] = ut >> 3
+            cd += 1
+        row: int = 0
+        while row < 64:
+            scr[70 + row] = scr[6 + (u_idx[row] & 0x3F)]
+            row += 1
+        acc ^= (scr[70] ^ scr[133]) & 0x3FFFFFFF
+        it += 1
+    return acc & 0x3FFFFFFF
+
+@micropython.viper
+def bench_w18b_littlebit2_mac_20(acts: ptr32, v_idx: ptr8, u_idx: ptr8, scr: ptr32) -> int:
+    acc: int = 0
+    it: int = 0
+    while it < 20:
+        rk: int = 0
+        while rk < 6:
+            g: int = 0
+            while g < 16:
+                m: int = v_idx[(rk << 4) + g]
+                k: int = 0
+                while k < 6:
+                    scr[rk * 96 + g * 6 + k] = -1 if ((m >> k) & 1) else 1
+                    k += 1
+                g += 1
+            rk += 1
+        row: int = 0
+        while row < 64:
+            um: int = u_idx[row] & 0x3F
+            ar: int = 0
+            c: int = 0
+            while c < 96:
+                wrc: int = 0
+                r2: int = 0
+                while r2 < 6:
+                    us: int = -1 if ((um >> r2) & 1) else 1
+                    wrc += us * scr[r2 * 96 + c]
+                    r2 += 1
+                ar += wrc * acts[c]
+                c += 1
+            scr[576 + row] = ar >> 3
+            row += 1
+        acc ^= (scr[576] ^ scr[639]) & 0x3FFFFFFF
+        it += 1
+    return acc & 0x3FFFFFFF
+
 dwt_init()
 # Calibration loop
 c_oh0 = dwt_read()
@@ -405,7 +634,38 @@ t16 = time.ticks_us(); c16 = dwt_read()
 v9 = bench_ulm28m_d512_slice_50(ulm_w_row, ulm_x512)
 c17 = dwt_read(); t17 = time.ticks_us()
 
-import json
+t18 = time.ticks_us(); c18 = dwt_read()
+v10 = bench_w16_apex_gate_1k(apex_m_lo, apex_m_hi)
+c19 = dwt_read(); t19 = time.ticks_us()
+
+t20 = time.ticks_us(); c20 = dwt_read()
+v11 = bench_w17_waios_antisym40_20(waios_codes, waios_acts, waios_l41, waios_out_a)
+c21 = dwt_read(); t21 = time.ticks_us()
+
+t22 = time.ticks_us(); c22 = dwt_read()
+v12 = bench_w17b_waios_scalar_mul_20(waios_u8, waios_acts, waios_out_m)
+c23 = dwt_read(); t23 = time.ticks_us()
+
+t24 = time.ticks_us(); c24 = dwt_read()
+v13 = bench_w18_joulebit_lut6_100(jb_acts, jb_v, jb_u, jb_scr)
+c25 = dwt_read(); t25 = time.ticks_us()
+
+t26 = time.ticks_us(); c26 = dwt_read()
+v14 = bench_w18b_littlebit2_mac_20(jb_acts, jb_v, jb_u, lb_scr)
+c27 = dwt_read(); t27 = time.ticks_us()
+
+import json, binascii
+waios_eq = True
+for _ri in range(256):
+    if waios_out_a[_ri] != waios_out_m[_ri]:
+        waios_eq = False
+        break
+jb_eq = True
+for _rj in range(64):
+    if jb_scr[70 + _rj] != lb_scr[576 + _rj]:
+        jb_eq = False
+        break
+
 print("AE3_JSON:" + json.dumps({
     "innate_1k_us": time.ticks_diff(t1, t0),
     "innate_1k_cyc": (c1 - c0) & 0x3FFFFFFF,
@@ -425,8 +685,22 @@ print("AE3_JSON:" + json.dumps({
     "wearable_epistemic_1k_cyc": (c15 - c14) & 0x3FFFFFFF,
     "ulm28m_slice_50_us": time.ticks_diff(t17, t16),
     "ulm28m_slice_50_cyc": (c17 - c16) & 0x3FFFFFFF,
+    "w16_apex_1k_us": time.ticks_diff(t19, t18),
+    "w16_apex_1k_cyc": (c19 - c18) & 0x3FFFFFFF,
+    "w17_waios_antisym40_20_us": time.ticks_diff(t21, t20),
+    "w17_waios_antisym40_20_cyc": (c21 - c20) & 0x3FFFFFFF,
+    "w17b_waios_mul_20_us": time.ticks_diff(t23, t22),
+    "w17b_waios_mul_20_cyc": (c23 - c22) & 0x3FFFFFFF,
+    "w18_joulebit_100_us": time.ticks_diff(t25, t24),
+    "w18_joulebit_100_cyc": (c25 - c24) & 0x3FFFFFFF,
+    "w18b_littlebit2_20_us": time.ticks_diff(t27, t26),
+    "w18b_littlebit2_20_cyc": (c27 - c26) & 0x3FFFFFFF,
     "antisym_parity_ok": (v6 == v7),
-    "checks": [v1, v2, v3, v4, v5, v6, v7, v8, v9],
+    "waios_256_row_parity_ok": waios_eq,
+    "waios_first4": [waios_out_a[0], waios_out_a[1], waios_out_a[2], waios_out_a[3]],
+    "waios_out_le_hex": binascii.hexlify(waios_out_a).decode(),
+    "joulebit_64_row_parity_ok": jb_eq,
+    "checks": [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14],
 }))
 """
 
@@ -488,7 +762,7 @@ def main() -> None:
         os.write(fd, b"\x04")  # Execute in SRAM
 
         raw_out = b""
-        deadline = time.time() + 6.0
+        deadline = time.time() + 14.0
         while time.time() < deadline:
             if select.select([fd], [], [], 0.1)[0]:
                 raw_out += os.read(fd, 4096)
@@ -508,6 +782,59 @@ def main() -> None:
     json_line = decoded.split(marker, 1)[1].splitlines()[0].strip()
     m = json.loads(json_line)
 
+    # Pure-Python BLAKE3("waios.tmac.v1") verification over exact 1,024-byte `i32` buffer from Cortex-M55 SRAM!
+    def _b3_derive_waios(out_le_bytes: bytes) -> str:
+        iv = [0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19]
+        perm = [2, 6, 3, 10, 7, 0, 4, 13, 1, 11, 12, 5, 9, 14, 15, 8]
+
+        def _rotr(x: int, n: int) -> int:
+            return ((x >> n) | ((x << (32 - n)) & 0xFFFFFFFF)) & 0xFFFFFFFF
+
+        def _g(s: list[int], a: int, b: int, c: int, d: int, mx: int, my: int) -> None:
+            s[a] = (s[a] + s[b] + mx) & 0xFFFFFFFF
+            s[d] = _rotr(s[d] ^ s[a], 16)
+            s[c] = (s[c] + s[d]) & 0xFFFFFFFF
+            s[b] = _rotr(s[b] ^ s[c], 12)
+            s[a] = (s[a] + s[b] + my) & 0xFFFFFFFF
+            s[d] = _rotr(s[d] ^ s[a], 8)
+            s[c] = (s[c] + s[d]) & 0xFFFFFFFF
+            s[b] = _rotr(s[b] ^ s[c], 7)
+
+        def _compress(cv: list[int], blk: bytes, blen: int, flags: int) -> list[int]:
+            pad = blk.ljust(64, b"\x00")
+            mw = [int.from_bytes(pad[k * 4 : k * 4 + 4], "little") for k in range(16)]
+            st = cv[:] + iv[:4] + [0, 0, blen, flags]
+            for rnd in range(7):
+                _g(st, 0, 4, 8, 12, mw[0], mw[1]); _g(st, 1, 5, 9, 13, mw[2], mw[3])
+                _g(st, 2, 6, 10, 14, mw[4], mw[5]); _g(st, 3, 7, 11, 15, mw[6], mw[7])
+                _g(st, 0, 5, 10, 15, mw[8], mw[9]); _g(st, 1, 6, 11, 12, mw[10], mw[11])
+                _g(st, 2, 7, 8, 13, mw[12], mw[13]); _g(st, 3, 4, 9, 14, mw[14], mw[15])
+                if rnd < 6:
+                    mw = [mw[p] for p in perm]
+            return [st[i] ^ st[i + 8] for i in range(8)]
+
+        def _hash1024(data: bytes, key: list[int], bflags: int) -> list[int]:
+            nblk = max(1, (len(data) + 63) // 64)
+            cv = key[:]
+            for b in range(nblk - 1):
+                cv = _compress(cv, data[b * 64 : (b + 1) * 64], 64, bflags | (1 if b == 0 else 0))
+            last = data[(nblk - 1) * 64 :]
+            return _compress(cv, last, len(last), bflags | (1 if nblk == 1 else 0) | 2 | 8)
+
+        ctx_cv = _hash1024(b"waios.tmac.v1", iv, 32)
+        root = _hash1024(out_le_bytes, ctx_cv, 64)
+        return b"".join(w.to_bytes(4, "little") for w in root).hex()
+
+    mcu_waios_bytes = bytes.fromhex(m["waios_out_le_hex"])
+    assert len(mcu_waios_bytes) == 1024
+    mcu_waios_blake3 = _b3_derive_waios(mcu_waios_bytes)
+    assert mcu_waios_blake3 == "a541323b13653ed36515ff24ef08deb7dfa771e570a434712708fb72552f46f0", (
+        f"Cortex-M55 waiOS BLAKE3 mismatch: {mcu_waios_blake3}"
+    )
+    assert m["waios_256_row_parity_ok"] is True
+    assert m["waios_first4"] == [-852, 74, 153, 513]
+    assert m["joulebit_64_row_parity_ok"] is True
+
     innate_cyc = round(m["innate_1k_cyc"] / 1000.0, 2)
     innate_us = round(m["innate_1k_us"] / 1000.0, 4)
     wobble_cyc = round(m["wobble_1k_cyc"] / 1000.0, 2)
@@ -524,6 +851,16 @@ def main() -> None:
     wear_us = round(m["wearable_epistemic_1k_us"] / 1000.0, 4)
     ulm_slice_cyc = round(m["ulm28m_slice_50_cyc"] / 50.0, 2)
     ulm_slice_us = round(m["ulm28m_slice_50_us"] / 50.0, 3)
+    w16_apex_cyc = round(m["w16_apex_1k_cyc"] / 1000.0, 2)
+    w16_apex_us = round(m["w16_apex_1k_us"] / 1000.0, 4)
+    w17_waios_cyc = round(m["w17_waios_antisym40_20_cyc"] / 20.0, 2)
+    w17_waios_us = round(m["w17_waios_antisym40_20_us"] / 20.0, 3)
+    w17b_waios_cyc = round(m["w17b_waios_mul_20_cyc"] / 20.0, 2)
+    w17b_waios_us = round(m["w17b_waios_mul_20_us"] / 20.0, 3)
+    w18_jb_cyc = round(m["w18_joulebit_100_cyc"] / 100.0, 2)
+    w18_jb_us = round(m["w18_joulebit_100_us"] / 100.0, 3)
+    w18b_lb_cyc = round(m["w18b_littlebit2_20_cyc"] / 20.0, 2)
+    w18b_lb_us = round(m["w18b_littlebit2_20_us"] / 20.0, 3)
     assert m.get("antisym_parity_ok") is True, f"Antisym-40 parity failed on OpenMV-AE3: {m}"
     mlp_cyc = round(m["int8_mlp_200_cyc"] / 200.0, 2)
     mlp_us = round(m["int8_mlp_200_us"] / 200.0, 3)
@@ -553,6 +890,20 @@ def main() -> None:
         "speedup_wearable_epistemic_vs_ulm28m_slice": round(ulm_slice_cyc / wear_cyc, 2),
         "int8_micro_mlp_dwt_cycles_per_decision": mlp_cyc,
         "int8_micro_mlp_us_per_decision": mlp_us,
+        "w16_apex_horizon_gate_dwt_cycles": w16_apex_cyc,
+        "w16_apex_horizon_gate_us": w16_apex_us,
+        "w17_waios_256x128_antisym40_dwt_cycles": w17_waios_cyc,
+        "w17_waios_256x128_antisym40_us": w17_waios_us,
+        "w17b_waios_256x128_scalar_mul_dwt_cycles": w17b_waios_cyc,
+        "w17b_waios_256x128_scalar_mul_us": w17b_waios_us,
+        "w17_waios_antisym40_speedup_vs_scalar_mul": round(w17b_waios_cyc / w17_waios_cyc, 2),
+        "w17_waios_live_blake3_digest": mcu_waios_blake3,
+        "w17_waios_first4_outputs": m["waios_first4"],
+        "w18_joulebit_0p10bpw_lut6_dwt_cycles": w18_jb_cyc,
+        "w18_joulebit_0p10bpw_lut6_us": w18_jb_us,
+        "w18b_littlebit2_0p10bpw_unpack_mac_dwt_cycles": w18b_lb_cyc,
+        "w18b_littlebit2_0p10bpw_unpack_mac_us": w18b_lb_us,
+        "w18_joulebit_lut6_speedup_vs_littlebit2": round(w18b_lb_cyc / w18_jb_cyc, 2),
         "speedup_innate_vs_int8_mlp": round(mlp_cyc / innate_cyc, 2),
         "speedup_tmac_tail_vs_int8_mlp": round(mlp_cyc / tmac_cyc, 2),
         "speedup_antisym40_precomp_vs_int8_mlp": round(mlp_cyc / antisym40_p_cyc, 2),

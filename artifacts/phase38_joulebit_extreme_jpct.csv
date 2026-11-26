@@ -1,0 +1,7 @@
+system,mechanism,effective_bpw,qat_tokens_required,rel_frob_error,draft_top1_agreement_pct,accepted_bonus_tokens_alpha,final_greedy_parity_pct,draft_pass_energy_j,joules_per_correct_token_jpct,jpct_improvement_vs_unassisted_x,thor_tile_nj_measured
+1_Unassisted_Target_Sweep_1p75bpw,Dense/Ternary Target Sweep (No Drafter),1.75,0,0.0,100.0,0.0,100.0,0.0,2.95,1.0,45135.3
+2_LittleBit2_NoHadamard_0p105bpw_Standalone,"LittleBit-2 Unpack+MAC (No FWHT, Standalone)",0.1056,0,0.9029,64.06,0.0,64.06,0.2955,0.4613,6.395,61839.7
+3_LittleBit2_NoHadamard_0p105bpw_Speculative,LittleBit-2 Unpack+MAC Draft + Target Verify,0.1056,0,0.9029,64.06,1.482,100.0,1.182,1.6646,1.772,61839.7
+4_JouleBit_LUT6_0p105bpw_Speculative_Ours,FWHT-1024 + Shared-LUT6 (0 Binary MACs) + Target Verify,0.1056,0,0.74425,76.56,2.144,100.0,0.0382,0.9504,3.104,2000.25
+5_JouleBit_LUT6_0p225bpw_Speculative_Ours,FWHT-1024 + Shared-LUT6 (Rank-96) + Target Verify,0.2249,0,0.66743,82.42,2.525,100.0,0.0996,0.8651,3.41,5211.19
+6_JouleBit_LUT6_0p450bpw_Speculative_Ours,FWHT-1024 + Shared-LUT6 (Rank-214) + Target Verify,0.4498,0,0.59866,84.38,2.663,100.0,0.2153,0.8641,3.414,11264.59

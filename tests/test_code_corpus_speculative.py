@@ -68,7 +68,7 @@ def test_paged_benes_lut6_beats_pld_and_rest_on_real_unseen_repo_files() -> None
     rest = RESTCorpusRetrievalDrafter(draft_k=4)
     rest.build_datastore(train_files)
     lut_drafter = PagedBenesLUT6CodeDrafter(draft_k=4)
-    lut_drafter.compile_from_corpus(train_files, max_pages4=1000)
+    lut_drafter.compile_from_corpus(train_files, max_pages4=2048)
 
     # Verify hottest code LUT6 page compiles through 512x512 Beneš-Copy-Beneš network cleanly
     desired_480, bcb_cfg = lut_drafter.export_hottest_page_to_benes512()

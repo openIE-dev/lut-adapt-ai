@@ -117,6 +117,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.mathground_torricelli_cbf_forward_invariance", "Section 4.50", "MathGround Simplex Torricelli v^2<=2*aMax*dObs forward-reachable braking soundness"),
     ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.alphaevolve_mol_pareto_ratchet_monotone", "Section 4.49", "AlphaEvolve+MoL Pareto ratchet preserves C(z)=1 validity and monotonic joules"),
     ("ApexHarnessWalls", "LutAdapt.ApexHarnessWalls.apex_system0_horizon_amortization_bound", "Section 4.50", "H=256 System-0 LUT6 horizon reflex saves >=192*(cWake-c0) vs uncompiled solver"),
+    ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.arc3_iw2_relational_pair_unlocks_post_switch_corridor", "Section 4.51", "ARC-AGI-3 relational IW(2) unlocks post-switch corridor missed by IW(1)"),
+    ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.waios_antisym40_4trit_exact_equivalence", "Section 4.52", "waiOS 256x128 zero-MUL Antisym-40 algebraic equivalence across all 81 4-trit codes"),
+    ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.waios_digest_gate_halts_any_corrupted_fabric", "Section 4.52", "waiOS BLAKE3 + Ed25519 receipt gate halts any corrupted fabric output"),
+    ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.heteromosaic_min_joule_substrate_dominates_single_fabric", "Section 4.52", "HeteroMosaic cross-fabric scheduler strictly dominates single-fabric execution"),
+    ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.joulebit_0p10bpw_shared_lut6_eliminates_binary_macs", "Section 4.53", "JouleBit-0.10 (0.105 bpw) shared LUT6 table eliminates 6,144 dense binary MACs"),
+    ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.joulebit_jpct_cascade_strictly_beats_unassisted_sweep", "Section 4.53", "JouleBit-LUT6 Joules-Per-Correct-Token (JpCT) cascade strictly beats unassisted sweep"),
+    ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.deterministic_null_dominates_neural_on_decidable_specs", "Section 4.54", "Formal Deterministic Null Hypothesis dominates standalone neural on decidable specs"),
+    ("DeterministicNullWaios", "LutAdapt.DeterministicNullWaios.scholar_codifier_wave2_collapses_to_deterministic_null", "Section 4.54", "Scholar-Codifier rung projection collapses repeated neural calls to H0 energy"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

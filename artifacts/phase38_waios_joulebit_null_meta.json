@@ -1,0 +1,131 @@
+{
+  "waios_conformance": {
+    "fabrics_verified": 7,
+    "reference_blake3": "a541323b13653ed36515ff24ef08deb7dfa771e570a434712708fb72552f46f0",
+    "row77_fault_blake3": "4ac7c4fbc2f2a031ac4f3c0e485867fb689d24d4872bdb1b0a6bc80cf88b69dc",
+    "first4_outputs": [
+      -852,
+      74,
+      153,
+      513
+    ],
+    "cortex_m55_antisym40_speedup_vs_mul": 2.82,
+    "cortex_m55_antisym40_us": 1409.25,
+    "apple_metal_gpu_us": 254.52,
+    "wasm32_v8_us": 130.674,
+    "openxc7_xc7a200t_fmax_mhz": 142.55,
+    "openxc7_bitstream_sha256": "cf5f29b0e5e2f43b8a68b09d31506c1341fb538b9b3f2ecb1a0a06b3670c3694"
+  },
+  "heteromosaic_scheduler": {
+    "all_gpu_mj": 401.9,
+    "all_cpu_mj": 28.2498,
+    "heteromosaic_mj": 4.9963,
+    "gain_vs_all_gpu_x": 80.44,
+    "gain_vs_all_cpu_x": 5.65
+  },
+  "joulebit_extreme_compression": {
+    "thor_w18_joulebit_nj": 2000.25,
+    "thor_w18b_littlebit2_nj": 61839.7,
+    "thor_measured_energy_gain_x": 30.92,
+    "cortex_m55_cycle_speedup_x": 93.52,
+    "rows": [
+      {
+        "system": "1_Unassisted_Target_Sweep_1p75bpw",
+        "mechanism": "Dense/Ternary Target Sweep (No Drafter)",
+        "effective_bpw": 1.75,
+        "qat_tokens_required": 0,
+        "rel_frob_error": 0.0,
+        "draft_top1_agreement_pct": 100.0,
+        "accepted_bonus_tokens_alpha": 0.0,
+        "final_greedy_parity_pct": 100.0,
+        "draft_pass_energy_j": 0.0,
+        "joules_per_correct_token_jpct": 2.95,
+        "jpct_improvement_vs_unassisted_x": 1.0,
+        "thor_tile_nj_measured": 45135.3
+      },
+      {
+        "system": "2_LittleBit2_NoHadamard_0p105bpw_Standalone",
+        "mechanism": "LittleBit-2 Unpack+MAC (No FWHT, Standalone)",
+        "effective_bpw": 0.1056,
+        "qat_tokens_required": 0,
+        "rel_frob_error": 0.9029,
+        "draft_top1_agreement_pct": 64.06,
+        "accepted_bonus_tokens_alpha": 0.0,
+        "final_greedy_parity_pct": 64.06,
+        "draft_pass_energy_j": 0.2955,
+        "joules_per_correct_token_jpct": 0.4613,
+        "jpct_improvement_vs_unassisted_x": 6.395,
+        "thor_tile_nj_measured": 61839.7
+      },
+      {
+        "system": "3_LittleBit2_NoHadamard_0p105bpw_Speculative",
+        "mechanism": "LittleBit-2 Unpack+MAC Draft + Target Verify",
+        "effective_bpw": 0.1056,
+        "qat_tokens_required": 0,
+        "rel_frob_error": 0.9029,
+        "draft_top1_agreement_pct": 64.06,
+        "accepted_bonus_tokens_alpha": 1.482,
+        "final_greedy_parity_pct": 100.0,
+        "draft_pass_energy_j": 1.182,
+        "joules_per_correct_token_jpct": 1.6646,
+        "jpct_improvement_vs_unassisted_x": 1.772,
+        "thor_tile_nj_measured": 61839.7
+      },
+      {
+        "system": "4_JouleBit_LUT6_0p105bpw_Speculative_Ours",
+        "mechanism": "FWHT-1024 + Shared-LUT6 (0 Binary MACs) + Target Verify",
+        "effective_bpw": 0.1056,
+        "qat_tokens_required": 0,
+        "rel_frob_error": 0.74425,
+        "draft_top1_agreement_pct": 76.56,
+        "accepted_bonus_tokens_alpha": 2.144,
+        "final_greedy_parity_pct": 100.0,
+        "draft_pass_energy_j": 0.0382,
+        "joules_per_correct_token_jpct": 0.9504,
+        "jpct_improvement_vs_unassisted_x": 3.104,
+        "thor_tile_nj_measured": 2000.25
+      },
+      {
+        "system": "5_JouleBit_LUT6_0p225bpw_Speculative_Ours",
+        "mechanism": "FWHT-1024 + Shared-LUT6 (Rank-96) + Target Verify",
+        "effective_bpw": 0.2249,
+        "qat_tokens_required": 0,
+        "rel_frob_error": 0.66743,
+        "draft_top1_agreement_pct": 82.42,
+        "accepted_bonus_tokens_alpha": 2.525,
+        "final_greedy_parity_pct": 100.0,
+        "draft_pass_energy_j": 0.0996,
+        "joules_per_correct_token_jpct": 0.8651,
+        "jpct_improvement_vs_unassisted_x": 3.41,
+        "thor_tile_nj_measured": 5211.19
+      },
+      {
+        "system": "6_JouleBit_LUT6_0p450bpw_Speculative_Ours",
+        "mechanism": "FWHT-1024 + Shared-LUT6 (Rank-214) + Target Verify",
+        "effective_bpw": 0.4498,
+        "qat_tokens_required": 0,
+        "rel_frob_error": 0.59866,
+        "draft_top1_agreement_pct": 84.38,
+        "accepted_bonus_tokens_alpha": 2.663,
+        "final_greedy_parity_pct": 100.0,
+        "draft_pass_energy_j": 0.2153,
+        "joules_per_correct_token_jpct": 0.8641,
+        "jpct_improvement_vs_unassisted_x": 3.414,
+        "thor_tile_nj_measured": 11264.59
+      }
+    ]
+  },
+  "deterministic_null_and_codifier": {
+    "manifest_sha256": "5f0f1c2d1c3a9181530a4128f720fc1491ba060c292781bf676bc2415893d7d7",
+    "total_domains": 8,
+    "total_tasks": 256,
+    "structured_h0_mean_acc_pct": 100.0,
+    "structured_ulm28m_mean_acc_pct": 77.34,
+    "structured_bonsai27b_mean_acc_pct": 92.97,
+    "unstructured_h0_mean_acc_pct": 39.06,
+    "unstructured_codifier_wave1_acc_pct": 100.0,
+    "unstructured_codifier_wave2_acc_pct": 100.0,
+    "unstructured_codifier_wave1_energy_cut_vs_bonsai_x": 7.97,
+    "unstructured_codifier_wave2_energy_cut_vs_bonsai_x": 7375000.0
+  }
+}

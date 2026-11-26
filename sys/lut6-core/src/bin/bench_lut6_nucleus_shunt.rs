@@ -903,8 +903,125 @@ fn main() {
         },
     );
 
+    // Window 17: `waiOS` `256x128` Ternary Conformance (`Antisym-40` Zero-MUL vs. Scalar MUL, `a541323b...` verified)
+    let waios_audit = lut6_core::waios_mosaic::build_waios_packed_audit(false);
+    let mut waios_check_out = [0i32; lut6_core::waios_mosaic::WAIOS_ROWS];
+    lut6_core::waios_mosaic::eval_waios_256x128_antisym40(&waios_audit, &mut waios_check_out);
+    assert_eq!(
+        lut6_core::waios_mosaic::waios_digest_of_outputs(&waios_check_out),
+        lut6_core::waios_mosaic::WAIOS_REFERENCE_DIGEST,
+        "waiOS 256x128 Antisym-40 BLAKE3 digest mismatch!"
+    );
+    let mut waios_dense_w = [0i8; lut6_core::waios_mosaic::WAIOS_ROWS * lut6_core::waios_mosaic::WAIOS_COLS];
+    for r in 0..lut6_core::waios_mosaic::WAIOS_ROWS {
+        for g in 0..lut6_core::waios_mosaic::WAIOS_GROUPS4 {
+            let mut cd = waios_audit.codes4[r][g];
+            for k in 0..4 {
+                waios_dense_w[r * lut6_core::waios_mosaic::WAIOS_COLS + g * 4 + k] = (cd % 3) as i8 - 1;
+                cd /= 3;
+            }
+        }
+    }
+    let waios_iters = (scale_iters / 40).max(50_000);
+    let w17 = measure_window(
+        "Window17_WaiOS_256x128_Antisym40_ZeroMul",
+        waios_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; lut6_core::waios_mosaic::WAIOS_ROWS];
+            let mut acc = 0i32;
+            for _ in 0..waios_iters {
+                lut6_core::waios_mosaic::eval_waios_256x128_antisym40(
+                    black_box(&waios_audit),
+                    &mut out,
+                );
+                acc ^= out[0] ^ out[255];
+            }
+            black_box(acc);
+        },
+    );
+    let w17b = measure_window(
+        "Window17b_WaiOS_256x128_Scalar_MUL",
+        waios_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; lut6_core::waios_mosaic::WAIOS_ROWS];
+            let mut acc = 0i32;
+            for _ in 0..waios_iters {
+                lut6_core::waios_mosaic::eval_waios_256x128_scalar_mul(
+                    black_box(&waios_dense_w),
+                    black_box(&waios_audit.acts),
+                    &mut out,
+                );
+                acc ^= out[0] ^ out[255];
+            }
+            black_box(acc);
+        },
+    );
+
+    // Window 18: `JouleBit-0.10` (`0.105 bpw`) Shared-Table `LUT6` vs. `LittleBit-2` Runtime Unpack + Dense MAC (`64x96`)
+    let mut jb_acts = [0i16; 96];
+    for (idx, s) in jb_acts.iter_mut().enumerate() {
+        *s = ((idx as i16 * 13 + 7) % 63) - 31;
+    }
+    let mut jb_v = [[0u8; 16]; 6];
+    for r in 0..6 {
+        for g in 0..16 {
+            jb_v[r][g] = ((r * 17 + g * 29 + 5) & 0x3F) as u8;
+        }
+    }
+    let mut jb_u = [0u8; 64];
+    for (row, s) in jb_u.iter_mut().enumerate() {
+        *s = ((row * 37 + 11) & 0x3F) as u8;
+    }
+    let jb_iters = (scale_iters / 10).max(200_000);
+    let w18 = measure_window(
+        "Window18_JouleBit_0p10bpw_LUT6_SharedTable",
+        jb_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..jb_iters {
+                jb_acts[0] = ((step & 31) as i16) - 15;
+                lut6_core::waios_mosaic::eval_joulebit_0p10bpw_lut6_64x96(
+                    black_box(&jb_acts),
+                    black_box(&jb_v),
+                    black_box(&jb_u),
+                    &mut out,
+                );
+                acc ^= out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+    let w18b = measure_window(
+        "Window18b_LittleBit2_0p10bpw_DenseUnpack_MAC",
+        jb_iters / 4,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..(jb_iters / 4) {
+                jb_acts[0] = ((step & 31) as i16) - 15;
+                lut6_core::waios_mosaic::eval_littlebit2_0p10bpw_dense_unpack_64x96(
+                    black_box(&jb_acts),
+                    black_box(&jb_v),
+                    black_box(&jb_u),
+                    &mut out,
+                );
+                acc ^= out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {

@@ -9,9 +9,9 @@
   },
   "wasm32_lut6_core_module": {
     "wasm_path": "artifacts/wasm/lut6_core.wasm",
-    "wasm_bytes": 14208,
-    "wasm_kb": 13.88,
-    "wasm_sha256": "2a0c6cdf6d474d1d5e50a9a7bbef235014971c8a321ae24c448f525a0490d92b",
+    "wasm_bytes": 16179,
+    "wasm_kb": 15.8,
+    "wasm_sha256": "91c92543bdde7e3dceb573789f2cb7938b3b4974c35524db8f2bae74893a7201",
     "zero_external_crates": true,
     "v8_node_instantiation": {
       "crc0_hex": "0xd1cc025a",
@@ -41,7 +41,10 @@
       "arc3_brk": 48382171,
       "apex_hit": 16777221,
       "apex_trap": 33554433,
-      "apex_cbf": 50331660
+      "apex_cbf": 50331660,
+      "waios_ok_hex": "0xa541323b",
+      "waios_flt_hex": "0x4ac7c4fb",
+      "waios_gpu": 16986683
     }
   },
   "seu_ber_1pct_headline": {
