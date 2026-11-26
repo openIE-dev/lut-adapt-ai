@@ -1193,8 +1193,100 @@ fn main() {
         },
     );
 
+    // Window 21: 8-Bank `R-BFWS` (`32 KB` = `50%` watch SRAM) + `Enigma-SBox6` `LUT6` + `Vending-BALROG` `CBF` Shield + `JouleBit6` (`Claims LA-60..LA-63`)
+    let rbfws8_banks = [
+        [0x5555_5555_5555_5555u64, 0x6666_6666_6666_6666, 0],
+        [0xAAAA_AAAA_AAAA_AAAAu64, 0xCCCC_CCCC_CCCC_CCCC, 0],
+        [u64::MAX, 0, u64::MAX],
+        [0, u64::MAX, u64::MAX],
+        [u64::MAX, u64::MAX, 0],
+        [0, 0, u64::MAX],
+        [u64::MAX, u64::MAX, u64::MAX],
+        [u64::MAX, 0, 0],
+    ];
+    let rbfws8_certs = [
+        0x0000_0000_0000_00FFu64,
+        0x0000_0000_0000_FF00u64,
+        0x0000_0000_00FF_0000u64,
+        0x0000_0000_FF00_0000u64,
+        0x0000_00FF_0000_0000u64,
+        0x0000_FF00_0000_0000u64,
+        0x00FF_0000_0000_0000u64,
+        u64::MAX,
+    ];
+    let w21 = measure_window(
+        "Window21_RBFWS8Bank_EnigmaSBox6_Horizon1000_JouleBit6",
+        jb_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            let mut ep = 0u8;
+            for step in 0..jb_iters {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                let (r_rbfws, sbox_y, sh2) = lut6_core::enigma_horizon::eval_window21_rbfws8_enigma_horizon(
+                    (step & 0x3F) as u8,
+                    if (step & 127) == 63 { 3 } else { 0 },
+                    ep,
+                    ((step * 11) & 0x3F) as u8,
+                    ((step * 5 + 0x2A) & 0x3F) as u8,
+                    black_box(&rbfws8_banks),
+                    black_box(&rbfws8_certs),
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                if let lut6_core::enigma_horizon::Rbfws8BankOutcome::CertifiedAction {
+                    action_id,
+                    bank_id,
+                    next_epoch,
+                    ..
+                } = r_rbfws
+                {
+                    ep = next_epoch & 7;
+                    acc ^= ((action_id ^ bank_id ^ sbox_y ^ sh2) as i32) ^ out[0] ^ out[63];
+                }
+            }
+            black_box(acc);
+        },
+    );
+    let mut kv_hist64 = [[0i8; 16]; 64];
+    for t in 0..64 {
+        for d in 0..16 {
+            kv_hist64[t][d] = (((t * 19 + d * 11 + 3) % 31) as i8) - 15;
+        }
+    }
+    let mut query16 = [7i8; 16];
+    let w21b = measure_window(
+        "Window21b_KV64Context_PolyCipher_LittleBit2",
+        jb_iters / 4,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..(jb_iters / 4) {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                query16[0] = ((step & 15) as i8) - 7;
+                let tag = lut6_core::enigma_horizon::eval_window21b_kv64_cipher_littlebit2_baseline(
+                    black_box(&kv_hist64),
+                    black_box(&query16),
+                    ((step * 11) & 0x3F) as u8,
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                acc ^= (tag as i32) ^ out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {

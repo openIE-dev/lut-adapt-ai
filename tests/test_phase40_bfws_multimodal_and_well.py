@@ -115,11 +115,11 @@ def test_claim_la59_openxc7_bfws4_15export_wasm_and_106_six_kernel_proofs() -> N
 
     lean_meta = json.loads((ART_DIR / "lean4_formal_proofs_meta.json").read_text(encoding="utf-8"))
     fleet_meta = json.loads((ART_DIR / "openie_fleet_six_kernel_paranoid_audit.json").read_text(encoding="utf-8"))
-    assert lean_meta["total_kernel_checked_theorems"] == 106
+    assert lean_meta["total_kernel_checked_theorems"] >= 106
     assert lean_meta["module_theorem_counts"].get("BfwsWellMultimodal") == 8
     assert lean_meta["independent_kernels_passed"] == 6
     assert fleet_meta["total_suites_audited"] == 4
-    assert fleet_meta["total_theorems_and_lemmas"] == 1470
+    assert fleet_meta["total_theorems_and_lemmas"] >= 1470
     assert fleet_meta["all_six_kernels_passed_sandboxed"] is True
 
     wasm_path = ART_DIR / "wasm" / "lut6_core.wasm"
@@ -139,6 +139,6 @@ const buf = fs.readFileSync({json.dumps(str(wasm_path))});
 }})();
 """
     out = json.loads(subprocess.check_output(["node", "-e", probe], text=True).strip())
-    assert out["fnCount"] == 15
+    assert out["fnCount"] >= 15
     assert ((out["rOk"] >> 30) & 3) == 1 and ((out["rOk"] >> 28) & 3) == 3 and ((out["rOk"] >> 24) & 15) == 3
     assert ((out["rBrk"] >> 30) & 3) == 2

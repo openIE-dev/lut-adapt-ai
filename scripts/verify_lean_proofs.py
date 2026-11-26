@@ -141,6 +141,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.well_codifier_rung5_json_to_rung7_lut6_amortization", "Section 4.60", "Rung-5 JSON tool-call to Rung-7 Well-Codifier .lut6 amortization (>7.37Mx steady-state)"),
     ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.wasm_15export_16kb_budget_and_bfws4_pack_bijection", "Section 4.61", "Lossless 32-bit packing bijection for 15th lut6_core.wasm export inside <=16 KB"),
     ("BfwsWellMultimodal", "LutAdapt.BfwsWellMultimodal.openxc7_bfws4_well_zero_dsp_latency_and_bank_bound", "Section 4.61", "Zero-DSP48E1 XC7A200T 4-bank BFWS + Well-Codifier pipeline latency & bank < 4 bound"),
+    ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.persistent_reset_directed_graph_reaches_sink_escaped_goal", "Section 4.62", "Persistent-reset directed-graph jump escapes irreversible sinks without wiping world model"),
+    ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.palette_fair_round_robin_prevents_dominant_color_click_starvation", "Section 4.62", "Palette-fair round-robin object sampling prevents dominant-color tile starvation"),
+    ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.eight_bank_32kb_lut6_fits_watch_sram_50pct_and_eight_way_cascade", "Section 4.62", "8-bank 32 KB (4,096-LUT6) System-0 vault fits in 50% of 64 KB watch SRAM & 8-way cascade"),
+    ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.enigma_sbox6_lut6_bijection_and_roundtrip_inversion", "Section 4.63", "Exhaustive 64-minterm bijection & inverse roundtrip of nonlinear Enigma-SBox6 LUT6"),
+    ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.zerobench_cold_manual_verifier_blocks_pretrained_prior_hallucinations", "Section 4.63", "ZeroBench post-cutoff cold-manual + I/O gate blocks pretrained syntax hallucinations"),
+    ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.vending_balrog_horizon1000_solvency_and_stamina_cbf_invariance", "Section 4.64", "Inductive 1,000-step Vending-Bench + BALROG Simplex solvency & stamina CBF invariance"),
+    ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.wasm_16export_16kb_budget_and_rbfws8_enigma_pack_bijection", "Section 4.65", "Lossless 32-bit packing bijection for 16th lut6_core.wasm export inside <=16 KB"),
+    ("ResetBfwsEnigmaHorizon", "LutAdapt.ResetBfwsEnigmaHorizon.openxc7_rbfws8_enigma_zero_dsp_pipeline_and_bank8_bound", "Section 4.65", "Zero-DSP48E1 XC7A200T 8-bank R-BFWS + Enigma-SBox6 pipeline latency & bank < 8 bound"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

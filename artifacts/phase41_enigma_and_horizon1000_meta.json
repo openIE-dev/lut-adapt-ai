@@ -1,0 +1,59 @@
+{
+  "claims": [
+    "LA-61",
+    "LA-62",
+    "LA-63"
+  ],
+  "enigma_zerobench": {
+    "manifest_sha256": "b8cc038cb40894d7ab332e6d3b4c27e830001f10f2ffdc39c3b2a91582e87128",
+    "total_tasks": 24,
+    "enigma_tasks": 12,
+    "zerobench_tasks": 12,
+    "yosys_miter_verified_bitplanes": 144,
+    "yosys_miter_total_bitplanes": 144,
+    "raw_plaintext_or_prompt_persisted": 0,
+    "board_metered": false,
+    "measured_j": null
+  },
+  "vending_balrog_horizon1000": {
+    "episodes": 16,
+    "steps_per_episode": 1000,
+    "total_coupled_transitions": 16000,
+    "apex_vault_compiled_slots": 29,
+    "apex_system0_lut6_share_pct": 99.82,
+    "apex_speedup_vs_z3_x": 128.61,
+    "board_metered": false,
+    "measured_j": null
+  },
+  "wasm_16export": {
+    "wasm_bytes": 16219,
+    "wasm_kb": 15.84,
+    "under_16kb_limit": true,
+    "wasm_sha256": "5ca544195314c9c1462cea340879486d250224f00824aac243b179a2cd617405",
+    "wasm_sha12": "5ca544195314",
+    "export_count": 16,
+    "exports": [
+      "wasm_check_hle_canary8",
+      "wasm_crystal_crc32",
+      "wasm_eval_apex_horizon_gate",
+      "wasm_eval_arc3_reflex_step",
+      "wasm_eval_arc_lut6_cells8",
+      "wasm_eval_benes_arc2_2layer8",
+      "wasm_eval_bfws4_and_well_codifier",
+      "wasm_eval_bonsai_fwht64_antisym40",
+      "wasm_eval_operon_seed",
+      "wasm_eval_rbfws8_enigma_horizon",
+      "wasm_eval_siw2_and_joulebit6",
+      "wasm_eval_two_tier_skill",
+      "wasm_eval_wearable_epistemic",
+      "wasm_test_secded_bitflip",
+      "wasm_verify_waios_antisym40_digest32",
+      "wasm_walsh_high_harmonic_energy"
+    ],
+    "v8_rbfws8_enigma_hex": "0x7f130005",
+    "v8_breaker_hex": "0x82c40005",
+    "enigma_sbox6_roundtrip_verified": "64/64"
+  },
+  "board_metered": false,
+  "measured_j": null
+}

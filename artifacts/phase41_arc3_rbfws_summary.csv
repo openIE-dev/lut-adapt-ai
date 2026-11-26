@@ -1,0 +1,9 @@
+agent_kind,system,games_solved_16,levels_completed_16,total_levels_16,level_solve_pct_16,click_levels_16,mean_rhae_16,peak_rhae_16,games_solved_25,levels_completed_25,total_levels_25,level_solve_pct_25,click_levels_25,mean_rhae_25,peak_rhae_25,lut6_reflex_steps_25,crystallized_lut6_slots_25,breaker_trips_25,vault_bytes,watch_sram_64kb_share_pct,wall_ms,reported_j,board_metered,measured_j
+random,Random Action Baseline (Uniform Available Actions),2,2,113,1.77,2,0.0002,0.0022,3,3,183,1.64,3,0.0007,0.0142,0,0,0,0,0.0,8213.99,35.0929,False,
+world_model_bfs_cold,"Phase 36 FIFO Frontier-BFS Wave 1 (58x64 HUD, No IW)",4,5,113,4.42,2,0.0047,0.0385,4,5,183,2.73,2,0.003,0.0385,0,100,0,0,0.0,15742.23,88.9033,False,
+apex_siw2_cold,Phase 39 OpenIE-Apex SIW(2) + Landmark Benes-LUT6 Wave 1,7,9,113,7.96,6,0.2622,2.9227,10,12,183,6.56,9,0.344,3.5714,0,118,0,0,0.0,22448.41,180.6736,False,
+apex_siw2_lut6_wave2,Phase 39 OpenIE-Apex SIW(2) -> Two-Bank 8 KB System-0 LUT6 Wave 2,7,9,113,7.96,6,2.252,10.7143,10,12,183,6.56,9,1.8473,10.7143,118,118,0,8192,12.5,23831.47,197.5428,False,
+apex_bfws_cold,"Phase 40 OpenIE-Apex BFWS(R,M) + Dual-Subspace Benes-LUT6 Wave 1",8,10,113,8.85,7,0.2697,3.0826,11,13,183,7.1,10,0.3529,3.5714,0,136,0,0,0.0,23104.94,192.5918,False,
+apex_bfws_lut6_wave2,"Phase 40 OpenIE-Apex BFWS(R,M) -> Four-Bank 16 KB System-0 LUT6 Wave 2",8,11,113,9.73,7,2.4488,10.7143,11,14,183,7.65,10,1.9733,10.7143,136,155,0,16384,25.0,27986.05,218.5156,False,
+apex_rbfws_cold,"Phase 41 OpenIE-Apex R-BFWS(R,M) + Palette-Fair Cellular Wave 1 (Ours)",10,12,113,10.62,9,0.2797,3.0826,13,15,183,8.2,12,0.3688,3.5714,0,157,0,0,0.0,22900.59,193.2967,False,
+apex_rbfws_lut6_wave2,"Phase 41 OpenIE-Apex R-BFWS(R,M) -> Eight-Bank 32 KB System-0 LUT6 Wave 2 (Ours)",10,13,113,11.5,9,3.0441,10.7143,13,16,183,8.74,12,2.3543,10.7143,157,176,0,32768,50.0,28954.72,225.1088,False,

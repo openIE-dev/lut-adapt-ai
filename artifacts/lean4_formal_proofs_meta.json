@@ -1,6 +1,6 @@
 {
   "lean_version": "Lean (version 4.36.0, arm64-apple-darwin24.6.0, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)",
-  "total_kernel_checked_theorems": 106,
+  "total_kernel_checked_theorems": 114,
   "module_theorem_counts": {
     "Cascade": 7,
     "BenesCopy": 7,
@@ -15,10 +15,11 @@
     "ApexHarnessWalls": 8,
     "DeterministicNullWaios": 8,
     "SerializedIwJouleBit27B": 8,
-    "BfwsWellMultimodal": 8
+    "BfwsWellMultimodal": 8,
+    "ResetBfwsEnigmaHorizon": 8
   },
   "purely_constructive_zero_axiom_theorems": 18,
-  "choice_free_theorems": 73,
+  "choice_free_theorems": 78,
   "ofReduceBool_native_decide_count": 0,
   "opaque_declaration_count": 0,
   "nested_inductive_count": 0,
@@ -35,14 +36,14 @@
     "leanchecker --paranoid",
     "Lean v4.36.0 (default)"
   ],
-  "con_leche_verified_declarations": 58950,
-  "con_ron_verified_declarations": 58950,
-  "lean4lean_verified_declarations": 58952,
+  "con_leche_verified_declarations": 58980,
+  "con_ron_verified_declarations": 58980,
+  "lean4lean_verified_declarations": 58982,
   "paranoid_sandbox_mode": "trusted_local_repo_no_bwrap_on_darwin",
-  "clean_lake_build_ms": 4256.02,
-  "clean_lake_build_reported_j": 1.6113,
-  "paranoid_6kernel_check_ms": 149476.79,
-  "paranoid_6kernel_check_reported_j": 59.6071,
+  "clean_lake_build_ms": 5397.13,
+  "clean_lake_build_reported_j": 343.4519,
+  "paranoid_6kernel_check_ms": 169358.61,
+  "paranoid_6kernel_check_reported_j": 302.2627,
   "source_sha256": {
     "proofs/LutAdapt/ApexHarnessWalls.lean": "8b08043bd6579a20b824455a102cd37a98d172c0dba16d6d0a01a9c4ca0d0476",
     "proofs/LutAdapt/BenesCopy.lean": "be951544bddaa2ea1dc639bc735044e2b62848c7f377014650846e593ce92694",
@@ -54,11 +55,12 @@
     "proofs/LutAdapt/GlobalFrontiers.lean": "0c6b52f797f3abcd90c5e48800999a2b2abf6ff9cc3198a5ea41ce12fcebb21e",
     "proofs/LutAdapt/JointMinterm.lean": "2c0bd9eeb52e9d5ed3aea0dfe7e73379e3ee9fda8b2f78dcc64c6387be4919b1",
     "proofs/LutAdapt/NucleusCodon.lean": "386526a9974b185fbebb835ab0f275ac0da180440bbbaf6c8ed775ceafee9208",
+    "proofs/LutAdapt/ResetBfwsEnigmaHorizon.lean": "5d81753128c76f87eccc3f8cc60e42a1952dc4a2f7a68c8b3eb80c837a781998",
     "proofs/LutAdapt/SerializedIwJouleBit27B.lean": "62fcc8654346b0e07d186996f454eb4c9c833fee40ac506df399d7b593e6e262",
     "proofs/LutAdapt/TernaryHadamardArc.lean": "80cc5af79fbbd43313084e2086169b11076db19cbc62a3b293f745a3e77fe561",
     "proofs/LutAdapt/TernaryTmac.lean": "44517793934c641a6caffc667e8a88b5ccc362a8babcd990ee8ef0023b497d3e",
     "proofs/LutAdapt/WearableLastExam.lean": "932dd0ac863627b8861563dd45051e40eed1fa5beb31778b9cae2ddf691be887",
-    "proofs/LutAdapt.lean": "11d165afc8d169a961010b05d2c7bd2c9702ddb6eb6be36c6a23e472ebc10e78"
+    "proofs/LutAdapt.lean": "6f75ad27726800e174bb4ccd196d2e442588bd504a160e3726a45e3d12af2794"
   },
   "measured_j": null,
   "board_metered": false

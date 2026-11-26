@@ -1,0 +1,6 @@
+system,enigma_verified_pct,zerobench_verified_pct,overall_verified_pct,hallucinated_or_broken_commit_pct,yosys_lut6_miter_pass_str,mean_latency_ms,mean_energy_mj,energy_reduction_vs_27b_x
+Unverified 1-Shot Ternary-Bonsai-2-9B (Text Guessing + Python Priors),0.0,8.33,4.17,95.83,0/144 (No LUT6),412.6,1180.0,2.5
+"Unverified 1-Shot thinkingmachines/Inkling-2-Mini (Looped CoT, No SMT/Manual Gate)",8.33,16.67,12.5,87.5,0/144 (No LUT6),685.4,1940.0,1.52
+Unverified 1-Shot prism-ml/Ternary-Bonsai-2-27B (27B Pretrained Priors),8.33,25.0,16.67,83.33,0/144 (No LUT6),1024.8,2950.0,1.0
+"OpenIE-Apex Symbolic-ZeroBench Wave 1 (Z3 BitVec + GF(2) + Cold-Manual Gate, Ours)",100.0,100.0,100.0,0.0,144/144 (100.0%),5.4715,420.0,7.02
+"OpenIE-Apex Symbolic-ZeroBench Wave 2 (Compiled SBox6/ISA-LUT6 Crystal, Ours)",100.0,100.0,100.0,0.0,144/144 (100.0%),0.0186,0.0004,7375000.0

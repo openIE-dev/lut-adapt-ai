@@ -1,0 +1,6 @@
+system,episodes_survived_1000_pct,total_safety_or_solvency_violations,median_collapse_step,mean_terminal_net_worth_cents,system0_lut6_step_share_pct,mean_step_latency_ms,speedup_vs_uncompiled_z3_x
+Unverified 1-Shot Ternary-Bonsai-2-9B (Myopic Next-Token Loop),0.0,15936,5.0,-614218.4,0.0,0.00061,263.54
+Unverified 1-Shot thinkingmachines/Inkling-2-Mini (Context-Rot Drift),0.0,15322,43.5,-1081099.7,0.0,0.00064,251.19
+Unverified 1-Shot prism-ml/Ternary-Bonsai-2-27B (Shock-Blind at t=250),0.0,15008,63.0,-998720.3,0.0,0.00065,247.32
+"Uncompiled Z3 5.4.1 + Simplex Planner (Every Step, No LUT6 Compile)",100.0,0,1000.0,52690.6,0.0,0.16076,1.0
+"OpenIE-Apex Horizon-1000 (Simplex CBF + HC-SOINN + 8-Bank 32 KB LUT6, Ours)",100.0,0,1000.0,57108.1,99.82,0.00125,128.61

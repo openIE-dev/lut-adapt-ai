@@ -654,3 +654,89 @@ pub extern "C" fn wasm_eval_bfws4_and_well_codifier(
     };
     (status2 << 30) | (bank2 << 28) | (ep4 << 24) | (well8 << 16) | jb16
 }
+
+/// Export #16 (`Claims LA-60..LA-63`, `Theorem 113`): Evaluates the Eight-Bank (`32 KB` = `50.0%` watch SRAM)
+/// `R-BFWS(R, M)` cascade reflex + bijective `Enigma-SBox6` cryptographic `LUT6` substitution +
+/// `Vending-BALROG` `1,000`-step Simplex `CBF` `LUT6` shield + zero-`MUL` `JouleBit6 + FWHT-64` slab
+/// inside `#![no_std]` WebAssembly (`<= 16 KB` total `.wasm`).
+///   - `rbfws_enigma_shield`: `bits [5..0]=percept6`, `bits [11..6]=subgoal6`, `bits [14..12]=epoch3`,
+///     `bits [20..15]=cipher_in6`, `bits [26..21]=shield_addr6`, `bit 27=decrypt_mode`, `bit 28=force_breaker`
+///   - `act0_and_row`: `bits [15..0]=acts64[0] (i16)`, `bits [21..16]=row_idx (0..63)`
+///   - Returns `Theorem 113` `32`-bit bijection:
+///     `[31..30]=status2`, `[29..27]=bank3 (0..7)`, `[26..24]=next_epoch3 (0..7)`,
+///     `[23..18]=sbox6 (0..63)`, `[17..16]=shield2 (0..3)`, `[15..0]=jb_u16`.
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_rbfws8_enigma_horizon(
+    rbfws_enigma_shield: u32,
+    act0_and_row: u32,
+) -> u32 {
+    use crate::enigma_horizon::{
+        Rbfws8BankOutcome, eval_enigma_sbox6_inv_lut6, eval_enigma_sbox6_lut6,
+        eval_rbfws_eight_bank_lut6, eval_vending_balrog_shield2_lut6,
+    };
+    let percept6 = (rbfws_enigma_shield & 0x3F) as u8;
+    let subgoal6 = ((rbfws_enigma_shield >> 6) & 0x3F) as u8;
+    let epoch3 = ((rbfws_enigma_shield >> 12) & 0x07) as u8;
+    let cipher_in6 = ((rbfws_enigma_shield >> 15) & 0x3F) as u8;
+    let shield_addr6 = ((rbfws_enigma_shield >> 21) & 0x3F) as u8;
+    let actual_sig = if (rbfws_enigma_shield & (1u32 << 28)) != 0 {
+        0x33u8
+    } else {
+        0x5Au8
+    };
+
+    let banks = [
+        [0x5555_5555_5555_5555u64, 0x6666_6666_6666_6666u64, 0],
+        [0xAAAA_AAAA_AAAA_AAAAu64, 0xCCCC_CCCC_CCCC_CCCCu64, 0],
+        [u64::MAX, 0, u64::MAX],
+        [0, u64::MAX, u64::MAX],
+        [u64::MAX, u64::MAX, 0],
+        [0, 0, u64::MAX],
+        [u64::MAX, u64::MAX, u64::MAX],
+        [u64::MAX, 0, 0],
+    ];
+    let certs = [
+        0x0000_0000_0000_00FFu64,
+        0x0000_0000_0000_FF00u64,
+        0x0000_0000_00FF_0000u64,
+        0x0000_0000_FF00_0000u64,
+        0x0000_00FF_0000_0000u64,
+        0x0000_FF00_0000_0000u64,
+        0x00FF_0000_0000_0000u64,
+        u64::MAX,
+    ];
+    let rbfws = eval_rbfws_eight_bank_lut6(
+        percept6,
+        subgoal6,
+        epoch3,
+        Some(0x5A),
+        actual_sig,
+        !1u64,
+        &banks,
+        &certs,
+    );
+    let sbox6 = if (rbfws_enigma_shield & (1u32 << 27)) != 0 {
+        eval_enigma_sbox6_inv_lut6(cipher_in6)
+    } else {
+        eval_enigma_sbox6_lut6(cipher_in6)
+    } as u32;
+    let shield2 = eval_vending_balrog_shield2_lut6(shield_addr6) as u32;
+    let jb16 = wasm_shared_joulebit6_elem(
+        (act0_and_row & 0xFFFF) as u16 as i16,
+        ((act0_and_row >> 16) & 0x3F) as usize,
+    );
+    let (status2, bank3, ep3) = match rbfws {
+        Rbfws8BankOutcome::CertifiedAction {
+            bank_id,
+            next_epoch,
+            ..
+        } => (1u32, (bank_id & 7) as u32, (next_epoch & 7) as u32),
+        Rbfws8BankOutcome::MechanicShiftBreaker { next_epoch, .. } => {
+            (2u32, 0u32, (next_epoch & 7) as u32)
+        }
+        Rbfws8BankOutcome::WakeRbfwsPlanner { next_epoch, .. } => {
+            (0u32, 0u32, (next_epoch & 7) as u32)
+        }
+    };
+    (status2 << 30) | (bank3 << 27) | (ep3 << 24) | ((sbox6 & 0x3F) << 18) | ((shield2 & 3) << 16) | jb16
+}
