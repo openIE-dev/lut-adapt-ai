@@ -14,3 +14,4 @@ import LutAdapt.SerializedIwJouleBit27B
 import LutAdapt.BfwsWellMultimodal
 import LutAdapt.ResetBfwsEnigmaHorizon
 import LutAdapt.CausalBfwsTerminalSciCode
+import LutAdapt.MagnitudeTieredEngram

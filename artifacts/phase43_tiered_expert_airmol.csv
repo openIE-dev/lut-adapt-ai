@@ -1,0 +1,13 @@
+model_family,strategy,lookahead_tokens_k,vram_hit_pct,ram_linkmover_hit_pct,nvme_cold_fault_pct,thrash_evictions_prevented,nvme_mb_per_token,effective_tok_per_s,speedup_vs_airllm_x
+Qwen3.8-Flash-Next-180B-A6B,1_Tier_AirLLM_Full_Layer_NVMe,0,0.0,0.0,100.0,0,17694.72,0.4069,1.0
+Qwen3.8-Flash-Next-180B-A6B,2_Tier_Expert_AirLLM_Naive_LRU,0,54.01,15.81,30.18,0,104.3,62.19,152.84
+Qwen3.8-Flash-Next-180B-A6B,3_Tier_Magnitude_Reuse_1Step_Prefetch,1,54.01,24.03,21.96,10120,75.9,123.674,303.94
+Qwen3.8-Flash-Next-180B-A6B,4_Tiered_Expert_AirMoL_LUT6_Burst_K3,3,44.52,28.53,26.95,9997,58.32,439.721,1080.66
+DeepSeek-V4.1-Flash-552B-A16B,1_Tier_AirLLM_Full_Layer_NVMe,0,0.0,0.0,100.0,0,55296.0,0.1302,1.0
+DeepSeek-V4.1-Flash-552B-A16B,2_Tier_Expert_AirLLM_Naive_LRU,0,53.44,15.6,30.96,0,267.48,24.341,186.94
+DeepSeek-V4.1-Flash-552B-A16B,3_Tier_Magnitude_Reuse_1Step_Prefetch,1,53.44,24.1,22.46,7762,194.05,48.552,372.88
+DeepSeek-V4.1-Flash-552B-A16B,4_Tiered_Expert_AirMoL_LUT6_Burst_K3,3,45.74,27.7,26.56,7696,149.11,171.514,1317.23
+Nemotron-3-Nano-30B-A3B,1_Tier_AirLLM_Full_Layer_NVMe,0,0.0,0.0,100.0,0,1556.48,4.6258,1.0
+Nemotron-3-Nano-30B-A3B,2_Tier_Expert_AirLLM_Naive_LRU,0,64.48,19.21,16.31,0,11.9,485.588,104.97
+Nemotron-3-Nano-30B-A3B,3_Tier_Magnitude_Reuse_1Step_Prefetch,1,64.48,23.58,11.94,2200,8.71,941.419,203.51
+Nemotron-3-Nano-30B-A3B,4_Tiered_Expert_AirMoL_LUT6_Burst_K3,3,56.49,28.65,14.86,2152,6.5,3214.518,694.91

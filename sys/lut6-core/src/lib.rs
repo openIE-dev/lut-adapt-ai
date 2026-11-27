@@ -18,6 +18,7 @@ pub mod hadamard_bonsai;
 pub mod ratchet_demo;
 pub mod seu_resilience;
 pub mod siw_joulebit;
+pub mod tiered_engram;
 pub mod tmac_tail;
 pub mod waios_mosaic;
 pub mod wearable_epistemic;

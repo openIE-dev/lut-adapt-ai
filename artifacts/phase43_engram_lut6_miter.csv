@@ -1,0 +1,4 @@
+slice_group,slices_compiled,lut6_cells,minterms_verified,yosys_miter_mismatches,float_engram_flops_eliminated_per_tok,max_quantized_gate_abs_err
+ple.layers.0..7_token_map_2gram,8,48,3072,0,3648,0.1192
+ple.layers.8..15_qk_rms_signed_sqrt_gate,8,48,3072,0,3648,0.1192
+ple.layers.16..23_value_shift_residual,8,48,3072,0,3648,0.1192

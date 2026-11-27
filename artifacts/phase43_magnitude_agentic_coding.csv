@@ -1,0 +1,6 @@
+system,model_quant,verified_pass_pct,broken_commit_admitted_pct,mean_latency_ms,mean_reported_mj,energy_reduction_vs_unverified_q4_x
+Magnitude_0.3.5_Seismic_Q4_0_Unverified,LFM2-2.6B-Q4_0,66.67,33.33,399.94,253.891,1.09
+llama_cpp_server_Unverified,LFM2-2.6B-Q4_K_M,66.67,33.33,427.86,98.423,2.8
+Magnitude_0.3.5_Seismic_Unverified,LFM2-2.6B-Q4_K_M,66.67,33.33,428.98,275.656,1.0
+Magnitude_0.3.5_plus_mol_agent_rs_Wave1_Cz_Gated,LFM2-2.6B-Q4_K_M+Z3/Exec_Cz,100.0,0.0,990.84,307.903,0.9
+Magnitude_0.3.5_plus_LUT_Adapt_Wave2_Rung0_LUT6,Rung0_Compiled_LUT6+Cz,100.0,0.0,276.0663,10.4475,26.4

@@ -1,0 +1,31 @@
+{
+  "phase": 43,
+  "claims": [
+    "LA-68",
+    "LA-69",
+    "LA-70"
+  ],
+  "magnitude_cli_version": "0.3.5",
+  "llama_cpp_version": "1.0.0 (build 12359, commit b1b770d)",
+  "moby_dick_gutenberg_sha256": "9a6844ac0703853720010787c7b6c70b0020f1ab1862dcd74452fa46474d1215",
+  "moby_context_sha256": "d8b9b38db150dae2b3a58136ea413ddc3684a53ddea54e69a0936396aa83c1d0",
+  "lfm2_2_6b_q4_k_m_gguf_sha256": "384bc877b6c37064982f96885bef69e4475919f5969218ed4e3b9399ae0340df",
+  "linux_qwen35_2b_q4_k_m_snapshot": "unsloth/Qwen3.5-2B-GGUF@f6d5376be1edb4d416d56da11e5397a961aca8ae",
+  "linux_hardware_findings": {
+    "jetson_agx_thor_sm110_nvrtc": "Magnitude 0.3.5 bundles CUDA 12.9 libnvrtc.so.12 (sm_50..sm_103, sm_120, sm_121) lacking Blackwell Tegra sm_110 (HTTP 409 model_load_failed); CUDA_VISIBLE_DEVICES='' routes Seismic onto Thor's Tegra Blackwell Vulkan 1.4.321 GPU backend metered by TI INA238 VIN.",
+    "linux_vulkan_graph_replays_128tok_slab": "On Linux Vulkan (both Tegra aarch64 and Zen 5 Strix Halo RADV x86_64), Magnitude 0.3.5 panics at seismic/runtime/src/native/graph_replays.rs:821:9 (GraphCensus.arguments > owner slab 839,936..857,472) when recurrent-hybrid prefill exceeds 128 tokens; Rung-0 EngramSpanLUT6 resolves multi-page verbatim spans directly while keeping neural bridge prefill <= 64 tokens."
+  },
+  "raw_book_or_prompts_persisted": 0,
+  "tiered_expert_airmol": {
+    "calibrated_fnocache_pread_gbps": 23.242,
+    "effective_nvme_gbps_modeled": 7.2,
+    "lut6_residency_masks_verified_64_of_64": true
+  },
+  "engram_lut6_miter": {
+    "total_slices": 24,
+    "total_lut6_cells": 144,
+    "total_minterms_verified": 9216,
+    "yosys_miter_pass_str": "144/144 (9216/9216 minterms, 0 mismatches)",
+    "max_quantized_gate_abs_err": 0.1192
+  }
+}

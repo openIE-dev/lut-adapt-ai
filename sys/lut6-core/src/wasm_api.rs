@@ -478,69 +478,27 @@ pub extern "C" fn wasm_eval_siw2_and_joulebit6(
     percept_landmark_epoch: u32,
     act0_and_jb_row: u32,
 ) -> u32 {
-    use crate::siw_joulebit::{Siw2ReflexOutcome, eval_siw2_landmark_lut6};
-    let percept6 = (percept_landmark_epoch & 0x3F) as u8;
-    let landmark6 = ((percept_landmark_epoch >> 8) & 0x3F) as u8;
-    let epoch = ((percept_landmark_epoch >> 16) & 0x0F) as u8;
-    let actual_sig = ((percept_landmark_epoch >> 20) & 0xFF) as u8;
-    let exp_sig = if (percept_landmark_epoch & (1u32 << 28)) != 0 {
-        Some(0x42u8)
-    } else {
-        None
-    };
-
-    // Bank 0: pre-landmark navigation (`actions 1..4`), Bank 1: post-landmark interaction (`actions 5..7`)
-    let bank0 = [
-        0x5555_5555_5555_5555u64,
-        0x6666_6666_6666_6666u64,
-        0x0000_0000_0000_0000u64,
-    ];
-    let bank1 = [
-        0xAAAA_AAAA_AAAA_AAAAu64,
-        0xCCCC_CCCC_CCCC_CCCCu64,
-        0xFFFF_FFFF_FFFF_FFFFu64,
-    ];
-    // Any non-zero landmark bit (`landmark6 != 0`) triggers monotonic subgoal reset (`epoch < 8`)
-    let lm_mask = !1u64;
-    let siw_out = eval_siw2_landmark_lut6(
-        percept6,
-        landmark6,
-        epoch,
-        exp_sig,
-        actual_sig,
-        lm_mask,
-        &bank0,
-        &bank1,
-        u64::MAX,
-        u64::MAX,
-    );
-
+    let p = percept_landmark_epoch & 0x3F;
+    let lm_hit = ((percept_landmark_epoch >> 8) & 0x3F) != 0;
+    let epoch = (percept_landmark_epoch >> 16) & 0x0F;
+    let actual_sig = (percept_landmark_epoch >> 20) & 0xFF;
+    let lm_reset = (lm_hit && epoch < 8) as u32;
+    let next_ep = (epoch + lm_reset) & 0xF;
     let jb_u16 = wasm_shared_joulebit6_elem(act0_and_jb_row);
 
-    match siw_out {
-        Siw2ReflexOutcome::CertifiedAction {
-            action_id,
-            bank_id,
-            landmark_reset,
-            next_epoch,
-        } => {
-            (1u32 << 28)
-                | ((landmark_reset as u32) << 27)
-                | (((bank_id & 1) as u32) << 26)
-                | (((next_epoch & 0xF) as u32) << 20)
-                | (((action_id & 0xF) as u32) << 16)
-                | jb_u16
-        }
-        Siw2ReflexOutcome::MechanicShiftBreaker { xor_sig, next_epoch } => {
-            (2u32 << 28)
-                | (((next_epoch & 0xF) as u32) << 20)
-                | (((xor_sig & 0xF) as u32) << 16)
-                | jb_u16
-        }
-        Siw2ReflexOutcome::WakeSiw2Planner {
-            landmark_reset,
-            next_epoch,
-        } => ((landmark_reset as u32) << 27) | (((next_epoch & 0xF) as u32) << 20) | jb_u16,
+    if (percept_landmark_epoch & (1u32 << 28)) != 0 && actual_sig != 0x42 {
+        return (2u32 << 28) | (next_ep << 20) | (((0x42 ^ actual_sig) & 0xF) << 16) | jb_u16;
+    }
+    let bank_id = (next_ep != 0) as u32;
+    let code = if bank_id == 0 {
+        ((p ^ 1) & 1) | ((((p >> 1) ^ p) & 1) << 1)
+    } else {
+        4 | (p & 3)
+    };
+    if code == 0 {
+        (lm_reset << 27) | (next_ep << 20) | jb_u16
+    } else {
+        (1u32 << 28) | (lm_reset << 27) | (bank_id << 26) | (next_ep << 20) | (code << 16) | jb_u16
     }
 }
 
@@ -693,6 +651,43 @@ pub extern "C" fn wasm_eval_rbfws8_enigma_horizon(
     (status2 << 30) | ((bank3 & 7) << 27) | ((ep3 & 7) << 24) | ((sbox6 & 0x3F) << 18) | ((shield2 & 3) << 16) | jb16
 }
 
+#[inline(never)]
+fn wasm_shared_cbfws12_head(packed: u32) -> (u32, u32, u32, u32) {
+    let actual_sig = if (packed & (1u32 << 28)) != 0 {
+        0x33u8
+    } else {
+        0x5Au8
+    };
+    wasm_shared_nbank_cascade(
+        (packed & 0x3F) as u8,
+        ((packed >> 6) & 0x3F) as u8,
+        ((packed >> 12) & 0x0F) as u8,
+        Some(0x5A),
+        actual_sig,
+        11,
+        12,
+        12,
+    )
+}
+
+#[inline(never)]
+fn wasm_pack_cbfws12_pair2(
+    packed: u32,
+    pair_a2: u32,
+    pair_b2: u32,
+    act0_and_row: u32,
+) -> u32 {
+    let (status2, bank4, ep4, act2) = wasm_shared_cbfws12_head(packed);
+    let jb16 = wasm_shared_joulebit6_elem(act0_and_row);
+    (status2 << 30)
+        | ((bank4 & 0xF) << 26)
+        | ((ep4 & 0xF) << 22)
+        | ((pair_a2 & 3) << 20)
+        | ((pair_b2 & 3) << 18)
+        | ((act2 & 3) << 16)
+        | jb16
+}
+
 /// Export #17 (`Claims LA-64..LA-67`, `Theorem 121`): Evaluates the Twelve-Bank (`48 KB` = `75.0%` watch SRAM)
 /// `C-BFWS(R, M)` cascade reflex + `Terminal-Cybench` constant-time defensive `LUT6` guard +
 /// `FrontierMath-SciCode` symplectic/unitary conservation `LUT6` shield + zero-`MUL` `JouleBit6 + FWHT-64` slab
@@ -705,29 +700,22 @@ pub extern "C" fn wasm_eval_cbfws12_term_math(
     use crate::cbfws_term_math::{
         eval_cybench_terminal_guard2_lut6, eval_scicode_math_shield2_lut6,
     };
-    let actual_sig = if (cbfws_guard_sci & (1u32 << 28)) != 0 {
-        0x33u8
-    } else {
-        0x5Au8
-    };
-    let (status2, bank4, ep4, act2) = wasm_shared_nbank_cascade(
-        (cbfws_guard_sci & 0x3F) as u8,
-        ((cbfws_guard_sci >> 6) & 0x3F) as u8,
-        ((cbfws_guard_sci >> 12) & 0x0F) as u8,
-        Some(0x5A),
-        actual_sig,
-        11,
-        12,
-        12,
-    );
     let guard2 = eval_cybench_terminal_guard2_lut6(((cbfws_guard_sci >> 16) & 0x3F) as u8) as u32;
     let sci2 = eval_scicode_math_shield2_lut6(((cbfws_guard_sci >> 22) & 0x3F) as u8) as u32;
-    let jb16 = wasm_shared_joulebit6_elem(act0_and_row);
-    (status2 << 30)
-        | ((bank4 & 0xF) << 26)
-        | ((ep4 & 0xF) << 22)
-        | ((guard2 & 3) << 20)
-        | ((sci2 & 3) << 18)
-        | ((act2 & 3) << 16)
-        | jb16
+    wasm_pack_cbfws12_pair2(cbfws_guard_sci, guard2, sci2, act0_and_row)
+}
+
+/// Export #18 (`Claims LA-68..LA-71`, `Theorem 129`): Evaluates Three-Tier `VRAM -> RAM -> NVMe`
+/// `NameLedger + Reuse::expected_with` expert admission `LUT6` (`tier2`), `DeepSeek-V4.1-Flash`
+/// trailing $n$-gram conditional memory `Engram-LUT6` (`engram2`), Twelve-Bank `C-BFWS` `System-0`
+/// cascade, and zero-`MUL` `JouleBit6 + FWHT-64` slab inside `#![no_std]` WebAssembly (`<= 16 KB` total `.wasm`).
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_tiered_engram_lut6(
+    tiered_engram_cbfws: u32,
+    act0_and_row: u32,
+) -> u32 {
+    use crate::tiered_engram::{eval_engram_ngram_gate2_lut6, eval_tiered_residency_lut6};
+    let tier2 = eval_tiered_residency_lut6(((tiered_engram_cbfws >> 16) & 0x3F) as u8) as u32;
+    let engram2 = eval_engram_ngram_gate2_lut6(((tiered_engram_cbfws >> 22) & 0x3F) as u8) as u32;
+    wasm_pack_cbfws12_pair2(tiered_engram_cbfws, tier2, engram2, act0_and_row)
 }

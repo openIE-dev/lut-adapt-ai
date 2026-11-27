@@ -157,6 +157,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.frontiermath_pell_norm_multiplicativity_and_scicode_unitary_invariance", "Section 4.68", "FrontierMath D=61/109 Pell fundamental units & inductive SciCode conservation invariance"),
     ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.wasm_17export_16kb_budget_and_cbfws12_pack_bijection", "Section 4.69", "Lossless 32-bit packing bijection for 17th lut6_core.wasm export inside <=16 KB"),
     ("CausalBfwsTerminalSciCode", "LutAdapt.CausalBfwsTerminalSciCode.openxc7_cbfws12_cybench_zero_dsp_pipeline_and_bank12_bound", "Section 4.69", "Zero-DSP48E1 XC7A200T 12-bank C-BFWS + Cybench-Guard pipeline latency & bank < 12 bound"),
+    ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.three_tier_reuse_admission_strictly_reduces_misses", "Section 4.71", "3-tier VRAM/RAM/NVMe Reuse::expected_with admission strictly beats unconditional LRU"),
+    ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.multi_token_lut6_lookahead_hides_nvme_transfer_latency", "Section 4.71", "K-token LUT6 route lookahead coalesces duplicate experts & hides NVMe->RAM->VRAM latency"),
+    ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.prose_repeat_and_twist_span_lut6_exact_copy_dominance", "Section 4.70", "Moby-Dick repeat & twist Rung-0 Engram-LUT6 span + C_span exact copy & energy dominance"),
+    ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.unverified_quantized_agent_drift_vs_deterministic_gate_zero_broken", "Section 4.70", "Magnitude + mol-agent-rs deterministic C(z) gate guarantees 0 broken commits vs quantized drift"),
+    ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.engram_ngram_lut6_eliminates_rms_sqrt_flops_exact_64minterm", "Section 4.72", "DeepSeek-V4.1-Flash Engram-LUT6 exhaustive 64-minterm parity & 10,944 FLOP/tok elimination"),
+    ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.jpct_cascade_with_magnitude_seismic_rung_monotonicity", "Section 4.70", "Two-step JpCT cascade dominance: LUT-Adapt + Magnitude (Seismic) < Magnitude < llama.cpp"),
+    ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.wasm_18export_16kb_budget_and_tiered_engram_bijection", "Section 4.73", "Lossless 32-bit packing bijection for 18th lut6_core.wasm export in 16,332 B <= 16 KB"),
+    ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.openxc7_tiered_engram_zero_dsp_pipeline_bound", "Section 4.73", "Zero-DSP48E1 XC7A200T Tiered-AirMoL + Engram-LUT6 pipeline latency & bounded codes"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

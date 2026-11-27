@@ -1365,8 +1365,99 @@ fn main() {
         },
     );
 
+    // Window 23: Three-Tier `VRAM -> RAM -> NVMe` `NameLedger + Reuse` `LUT6` Admission + `DeepSeek-V4.1-Flash`
+    // Zero-`FLOP` `Engram-LUT6` Shift-Add Residual + `12`-Bank `C-BFWS` + `JouleBit6` (`Claims LA-69..LA-71`)
+    let mut engram_vals16 = [0i16; 16];
+    for (idx, slot) in engram_vals16.iter_mut().enumerate() {
+        *slot = ((idx as i16) * 9 - 60) * 2;
+    }
+    let w23 = measure_window(
+        "Window23_TieredAirMoL_EngramLUT6_JouleBit6",
+        jb_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            let mut ep = 0u8;
+            for step in 0..jb_iters {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                let (r_cbfws, tier2, eng2, eng_dig) =
+                    lut6_core::tiered_engram::eval_window23_tiered_engram_joulebit6(
+                        (step & 0x3F) as u8,
+                        if (step & 127) == 63 { 3 } else { 0 },
+                        ep,
+                        ((step * 5 + 34) & 0x3F) as u8,
+                        ((step * 7 + 55) & 0x3F) as u8,
+                        black_box(&engram_vals16),
+                        black_box(&cbfws12_banks),
+                        black_box(&cbfws12_certs),
+                        black_box(&jb6_acts),
+                        black_box(&jb6_v),
+                        black_box(&jb6_u),
+                        &mut out,
+                    );
+                if let lut6_core::cbfws_term_math::Cbfws12BankOutcome::CertifiedAction {
+                    action_id,
+                    bank_id,
+                    next_epoch,
+                    ..
+                } = r_cbfws
+                {
+                    ep = next_epoch % 12;
+                    acc ^= ((action_id ^ bank_id ^ tier2 ^ eng2) as i32)
+                        ^ eng_dig
+                        ^ out[0]
+                        ^ out[63];
+                }
+            }
+            black_box(acc);
+        },
+    );
+
+    let mut dir_reuse64 = [0u32; 64];
+    for (idx, r) in dir_reuse64.iter_mut().enumerate() {
+        *r = ((idx * 37 + 19) % 100) as u32 + 10;
+    }
+    let mut q64 = [0.25f32; 64];
+    let mut k64 = [0.35f32; 64];
+    let mut v64 = [0.50f32; 64];
+    for idx in 0..64 {
+        q64[idx] = ((idx as f32) - 31.5) * 0.0625;
+        k64[idx] = ((idx as f32) - 28.0) * 0.0750;
+        v64[idx] = ((idx as f32) - 32.0) * 0.1250;
+    }
+    let w23b = measure_window(
+        "Window23b_FloatEngram64_DirScan64_LittleBit2",
+        jb_iters / 4,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..(jb_iters / 4) {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                q64[0] = (((step & 15) as f32) - 7.5) * 0.125;
+                let tag =
+                    lut6_core::tiered_engram::eval_window23b_float_engram_scan_littlebit2_baseline(
+                        black_box(&dir_reuse64),
+                        ((step * 13) % 120) as u32,
+                        black_box(&q64),
+                        black_box(&k64),
+                        black_box(&v64),
+                        black_box(&jb6_acts),
+                        black_box(&jb6_v),
+                        black_box(&jb6_u),
+                        &mut out,
+                    );
+                acc ^= (tag as i32) ^ out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b, w23, w23b,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {
