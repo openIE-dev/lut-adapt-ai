@@ -1,0 +1,3 @@
+circuit_family,slices_compiled,lut6_cells,minterms_verified,yosys_miter_mismatches,software_ops_eliminated_per_call
+wrt_capillary_bijective_xml_stem_lut6,12,72,4608,0,9984
+statesmix_q12_online_ttt_signflip_lut6,12,72,4608,0,11520

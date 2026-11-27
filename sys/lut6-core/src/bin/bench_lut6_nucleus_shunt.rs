@@ -1625,8 +1625,94 @@ fn main() {
         },
     );
 
+    let mut ttt_acc6 = [24i16, -18, 120, -90, 6, -5];
+    let w26 = measure_window(
+        "Window26_Vault14_WRT_StateSMix_OnlineTTT_LUT6",
+        jb_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            let mut ep = 0u8;
+            for step in 0..jb_iters {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                // ~94% of online steps stay away from zero-crossing (`ttt_addr` = stationary or i16 step without slab rebuild),
+                // ~6% (`(step & 15) == 0`) trigger zero-crossing sign-flip `JouleBit6` slab evaluation!
+                let ttt_addr = if (step & 15) == 0 {
+                    0b01_1101u8
+                } else if (step & 3) == 0 {
+                    0b01_0101u8
+                } else {
+                    0b01_0001u8
+                };
+                let (r_v14, wrt2, ttt2, pq12, flp6) =
+                    lut6_core::ltcb_cm2_ttt::eval_window26_ltcb_cm2_statesmix_ttt_joulebit6(
+                        (step & 0x3F) as u8,
+                        if (step & 127) == 63 { 5 } else { 0 },
+                        ep,
+                        0b00_1101u8,
+                        ttt_addr,
+                        (((step & 7) as i16) - 4) * 4,
+                        &mut ttt_acc6,
+                        black_box(&vault14_banks),
+                        black_box(&vault14_certs),
+                        black_box(&jb6_acts),
+                        black_box(&jb6_v),
+                        black_box(&jb6_u),
+                        &mut out,
+                    );
+                if let lut6_core::mag_mcp_freetoken::Vault14BankOutcome::CertifiedAction {
+                    action_id,
+                    bank_id,
+                    next_epoch,
+                } = r_v14
+                {
+                    ep = next_epoch % 14;
+                    acc ^= ((action_id ^ bank_id ^ wrt2 ^ ttt2 ^ flp6) as i32)
+                        ^ (pq12 as i32)
+                        ^ out[0]
+                        ^ out[63];
+                }
+            }
+            black_box(acc);
+        },
+    );
+
+    let mut adam_w64 = [0.05f32; 64];
+    let mut adam_m64 = [0.001f32; 64];
+    let mut adam_v64 = [0.0004f32; 64];
+    let probs3 = [0.72f32, 0.81f32, 0.65f32];
+    let w26b = measure_window(
+        "Window26b_FloatOnlineAdamW_LogisticMix_UnpackMAC",
+        jb_iters / 4,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..(jb_iters / 4) {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                let gs = if (step & 1) == 0 { 0.125f32 } else { -0.125f32 };
+                let tag = lut6_core::ltcb_cm2_ttt::eval_window26b_float_online_adamw_mixer_littlebit2(
+                    &mut adam_w64,
+                    &mut adam_m64,
+                    &mut adam_v64,
+                    black_box(gs),
+                    black_box(&probs3),
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                acc ^= (tag as i32) ^ out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b, w23, w23b, w24, w24b, w25, w25b,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b, w23, w23b, w24, w24b, w25, w25b, w26, w26b,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {

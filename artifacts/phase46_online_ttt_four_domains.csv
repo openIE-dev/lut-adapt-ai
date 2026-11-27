@@ -1,0 +1,5 @@
+domain,stream_bytes,cold_first_1kb_bpb,warm_last_quarter_bpb,overall_online_ttt_bpb,regret_collapse_pct,total_online_steps,zero_crossing_slab_rebuilds,slab_rebuild_skip_pct,fp32_adamw_sign_desync_step,int16_ttt_cross_host_mismatches
+1_MediaWiki_XML_Structured,24576,5.7279,1.8788,2.2824,67.2,196608,21051,89.293,20,0
+2_Rust_Python_Source_Repo,24576,6.8305,3.9704,4.1771,41.87,196608,18521,90.58,20,0
+3_MCP_JSON_RPC_Agent_Trace,24576,5.2559,1.5979,1.8996,69.6,196608,21031,89.303,20,0
+4_SystemVerilog_FPGA_RTL,24576,5.418,2.8045,3.3373,48.24,196608,15384,92.175,20,0

@@ -181,6 +181,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("LtcbCompression", "LutAdapt.LtcbCompression.mol_ltcb_confidence_skip_energy_dominance", "Section 4.80", "Rung-0 LUT6 XML/span confidence skipping strictly cuts codec energy below 0-skip online neural loop"),
     ("LtcbCompression", "LutAdapt.LtcbCompression.wasm_20export_16kb_budget_and_ltcb_kraft_bijection", "Section 4.81", "Lossless 32-bit packing bijection for 20th lut6_core.wasm export inside <= 16 KB"),
     ("LtcbCompression", "LutAdapt.LtcbCompression.openxc7_ltcb_kraft_zero_dsp_pipeline_bound", "Section 4.81", "Zero-DSP48E1 XC7A200T LTCB-XML-Skip + Kraft-CDF + 14-bank pipeline latency & bounded codes"),
+    ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.wrt_capillary_bijective_escape_roundtrip", "Section 4.82", "Bijective 256-symbol WRT-Capillary 0xFE escape roundtrip & bounded 2-bit LUT6 gate"),
+    ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.statesmix_q12_convex_probability_bounds", "Section 4.82", "Exact 256-sum convex Q12 StateSMix weight conservation & 1 <= p_mix <= 4095 zero-lockup bound"),
+    ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.online_adamw_sign_flip_desync_vs_lockstep_ttt_lut6", "Section 4.83", "1-unit FP32 AdamW zero-crossing flips QPI1 Rademacher sign vs lockstep Online-TTT-LUT6 parity"),
+    ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.sparse_zero_crossing_slab_rebuild_dominance", "Section 4.83", "Zero-crossing sign-flip gating strictly cuts 6-col LUT6 slab rebuilds below dense per-step unpacking"),
+    ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.cm2_wrt_and_context_mix_payload_dominance", "Section 4.82", "Multiplicative WRT stream length + StateSMix bit-rate dominance (nWrt * bpbCm2 < nRaw * bpbV1)"),
+    ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.online_solomonoff_regret_amortization_bound", "Section 4.83", "Online Solomonoff warmup regret excess strictly bounded by nCold * rCold independent of nTotal"),
+    ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.wasm_21export_16kb_budget_and_cm2_ttt_bijection", "Section 4.85", "Lossless 32-bit packing bijection for 21st lut6_core.wasm export inside <= 16 KB"),
+    ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.openxc7_ltcb_cm2_ttt_zero_dsp_and_154_milestone", "Section 4.85", "Zero-DSP48E1 XC7A200T CM2+Online-TTT bounds & historic >150 (154 LutAdapt / 1,518 fleet) milestone"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

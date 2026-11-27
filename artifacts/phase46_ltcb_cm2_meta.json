@@ -1,0 +1,63 @@
+{
+  "phase": 46,
+  "claims": [
+    "LA-80",
+    "LA-81",
+    "LA-83"
+  ],
+  "enwik8_official_sha256": "2b49720ec4d78c3c9fabaee6e4179a5e997302b3a70029f30f2d582218c024a8",
+  "cross_arch_enwik8_cm2_archive_sha256_16": "5342cc0b24a603b0",
+  "cross_arch_hosts_bit_identical": [
+    "Apple_M5_Max_128GB_macOS_arm64",
+    "NVIDIA_Jetson_AGX_Thor_Tegra_aarch64",
+    "AMD_Ryzen_AI_Max_395_Zen5_Linux_x86_64"
+  ],
+  "enwik8_100mb_m5_max_cm2": {
+    "mode": "MLT2_WRT_StateSMix",
+    "arch": "aarch64",
+    "os": "macos",
+    "raw_bytes": 100000000,
+    "raw_sha256": "2b49720ec4d78c3c9fabaee6e4179a5e997302b3a70029f30f2d582218c024a8",
+    "compressed_payload_bytes": 26822386,
+    "archive_sha256": "5342cc0b24a603b051fa1715c4c2451dbf48f4b546f217338cad27e87c839f65",
+    "decoded_sha256": "2b49720ec4d78c3c9fabaee6e4179a5e997302b3a70029f30f2d582218c024a8",
+    "lossless_exact": true,
+    "self_binary_bytes": 486800,
+    "mahoney_total_bytes_with_rust_bin": 27309186,
+    "payload_bpb": 2.145791,
+    "mahoney_total_bpb_with_rust_bin": 2.184735,
+    "rung0_skip_bytes": 83072793,
+    "rung0_skip_pct": 83.073,
+    "compress_ms": 44923.723,
+    "decompress_ms": 1597.532,
+    "compress_mb_per_s": 2.226,
+    "decompress_mb_per_s": 62.597,
+    "float_desync_first_step": 7,
+    "float_cdf_seq": 597173,
+    "float_cdf_tree": 597172,
+    "adamw_sign_desync_step": 20,
+    "ttt_i16_mismatches": 0
+  },
+  "wasm_21export": {
+    "wasm_bytes": 15703,
+    "wasm_kb": 15.33,
+    "spare_bytes_under_16kb": 681,
+    "wasm_exports": 21,
+    "wasm_sha256_12": "06c5c0b781d6",
+    "wasm_sha256": "06c5c0b781d6f1c87e84b8ad2f5f70e472bae364450fb734fd91f5d389ee59a0"
+  },
+  "online_ttt_four_domains": {
+    "starter_prior_bytes": 0,
+    "seed_hex": "0x4C54434232303236",
+    "domains_evaluated": 4,
+    "mean_regret_collapse_pct": 56.73,
+    "mean_slab_rebuild_skip_pct": 90.338,
+    "total_cross_host_mismatches": 0
+  },
+  "cm2_ttt_yosys_miter": {
+    "total_slices": 24,
+    "total_lut6_cells": 144,
+    "total_minterms_verified": 9216,
+    "total_yosys_miter_mismatches": 0
+  }
+}

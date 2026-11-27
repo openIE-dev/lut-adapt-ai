@@ -213,7 +213,7 @@ theorem wasm_20export_16kb_budget_and_ltcb_kraft_bijection
     (st bk ep sk bkt ac jb wasmBytes : Nat)
     (hst : st < 4) (hbk : bk < 16) (hep : ep < 16)
     (hsk : sk < 4) (hbkt : bkt < 4) (hac : ac < 4) (hjb : jb < 65536)
-    (hWasm : wasmBytes ≤ 16384) :
+    (_hWasm : wasmBytes ≤ 16384) :
     packWasmLtcbKraft32 st bk ep sk bkt ac jb < 4294967296 ∧
     (packWasmLtcbKraft32 st bk ep sk bkt ac jb / 1073741824) % 4 = st ∧
     (packWasmLtcbKraft32 st bk ep sk bkt ac jb / 67108864) % 16 = bk ∧

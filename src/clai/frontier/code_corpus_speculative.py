@@ -60,6 +60,8 @@ def load_repo_code_splits(repo_root: Path = Path(".")) -> tuple[list[SourceCodeF
             continue
         if any(part in excluded_dirs for part in p.parts):
             continue
+        if p.name.startswith(("run_phase", "generate_phase", "test_phase", "run_openxc7")):
+            continue
         if p.name in {
             "code_corpus_speculative.py",
             "run_code_corpus_benchmark.py",
