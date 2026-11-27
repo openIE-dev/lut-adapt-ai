@@ -1456,8 +1456,98 @@ fn main() {
         },
     );
 
+    // Window 24: Fourteen-Bank `56 KB` Vault + `MCPMark-CoW-Guard LUT6` + `BA-AirMoL FreeToken-Beat LUT6` + `JouleBit6`
+    let mut vault14_banks = [[0u64; 3]; 14];
+    let mut vault14_certs = [0u64; 14];
+    for b in 0..14usize {
+        vault14_banks[b] = [
+            0x5555_5555_5555_5555u64.rotate_left((b & 7) as u32),
+            0x3333_3333_3333_3333u64.rotate_right((b & 7) as u32),
+            0x0F0F_0F0F_0F0F_0F0Fu64 ^ ((b as u64) * 0x1111_1111_1111_1111),
+        ];
+        vault14_certs[b] = if b == 13 {
+            u64::MAX
+        } else {
+            0x0Fu64 << ((b * 4) % 60)
+        };
+    }
+    let w24 = measure_window(
+        "Window24_Vault14_MCPMark_BAAirMoL_LUT6_JouleBit6",
+        jb_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            let mut ep = 0u8;
+            for step in 0..jb_iters {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                let (r_v14, mcp2, ba2) =
+                    lut6_core::mag_mcp_freetoken::eval_window24_mag_mcp_freetoken_joulebit6(
+                        (step & 0x3F) as u8,
+                        if (step & 127) == 63 { 5 } else { 0 },
+                        ep,
+                        ((step * 3 + 63) & 0x3F) as u8,
+                        ((step * 11 + 37) & 0x3F) as u8,
+                        black_box(&vault14_banks),
+                        black_box(&vault14_certs),
+                        black_box(&jb6_acts),
+                        black_box(&jb6_v),
+                        black_box(&jb6_u),
+                        &mut out,
+                    );
+                if let lut6_core::mag_mcp_freetoken::Vault14BankOutcome::CertifiedAction {
+                    action_id,
+                    bank_id,
+                    next_epoch,
+                } = r_v14
+                {
+                    ep = next_epoch % 14;
+                    acc ^= ((action_id ^ bank_id ^ mcp2 ^ ba2) as i32) ^ out[0] ^ out[63];
+                }
+            }
+            black_box(acc);
+        },
+    );
+
+    let mut lru_q64 = [0u16; 64];
+    for (idx, qv) in lru_q64.iter_mut().enumerate() {
+        *qv = ((idx * 29 + 11) & 0x1FF) as u16;
+    }
+    let mut exp_mb32 = [1.86f32; 32];
+    for (idx, mv) in exp_mb32.iter_mut().enumerate() {
+        *mv = 0.56 + ((idx & 7) as f32) * 0.25;
+    }
+    let crud_sample: [u8; 64] = *b"{\"tool\":\"fs_acl_write\",\"path\":\"/srv/app/cfg.json\",\"mode\":416}   ";
+    let w24b = measure_window(
+        "Window24b_FloatFreeTokenLP_CRUDScan64_LittleBit2",
+        jb_iters / 4,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..(jb_iters / 4) {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                let tag = lut6_core::mag_mcp_freetoken::eval_window24b_float_freetoken_lp_crud_scan_littlebit2(
+                    black_box(&lru_q64),
+                    black_box(&exp_mb32),
+                    black_box(24.0 + ((step & 7) as f32)),
+                    black_box(38.0),
+                    black_box(&crud_sample),
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                acc ^= (tag as i32) ^ out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b, w23, w23b,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b, w23, w23b, w24, w24b,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {

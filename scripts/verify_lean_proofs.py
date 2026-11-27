@@ -165,6 +165,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.jpct_cascade_with_magnitude_seismic_rung_monotonicity", "Section 4.70", "Two-step JpCT cascade dominance: LUT-Adapt + Magnitude (Seismic) < Magnitude < llama.cpp"),
     ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.wasm_18export_16kb_budget_and_tiered_engram_bijection", "Section 4.73", "Lossless 32-bit packing bijection for 18th lut6_core.wasm export in 16,332 B <= 16 KB"),
     ("MagnitudeTieredEngram", "LutAdapt.MagnitudeTieredEngram.openxc7_tiered_engram_zero_dsp_pipeline_bound", "Section 4.73", "Zero-DSP48E1 XC7A200T Tiered-AirMoL + Engram-LUT6 pipeline latency & bounded codes"),
+    ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.rust_magnitude_vulkan_prefill_window_prevents_slab_overflow", "Section 4.74", "Native Rust CogLoad-Filter + <=120-tok window eliminates Magnitude Seismic Vulkan >128-tok slab overflow"),
+    ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.mcpmark_cow_shadow_rollback_zero_compound_state_corruption", "Section 4.75", "MCPMark Copy-on-Write shadow CRUD LUT6 guard guarantees 0 compound live sandbox corruption"),
+    ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.mcpmark_idempotent_dedup_prevents_double_debit", "Section 4.75", "MCPMark idempotent replay dedup LUT6 preserves ACID balance & blocks double-debit"),
+    ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.ba_airmol_closed_form_coschedule_strictly_beats_static_ktransformers", "Section 4.76", "Bandwidth-adaptive CPU-SIMD + GPU-link co-execution strictly beats static KTransformers & pure link"),
+    ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.ba_airmol_k3_burst_and_reuse_strictly_beats_freetoken_k1_lru", "Section 4.76", "BA-Tiered-Expert-AirMoL K=3 burst + scan-resistant Reuse strictly beats FreeToken K=1 global LRU"),
+    ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.fourteen_bank_56kb_lut6_exact_64kb_watch_sram_partition", "Section 4.77", "14-bank 56 KB (87.5%) vault + 4 KB Nucleus + 4 KB stack = exact 65,536 B (64 KB) watch SRAM fit"),
+    ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.wasm_19export_16kb_budget_and_mag_mcp_freetoken_bijection", "Section 4.77", "Lossless 32-bit packing bijection for 19th lut6_core.wasm export in 15,521 B <= 16 KB (863 B spare)"),
+    ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.openxc7_mag_mcp_freetoken_zero_dsp_pipeline_bound", "Section 4.77", "Zero-DSP48E1 XC7A200T 14-bank + MCPMark-CoW + BA-AirMoL pipeline latency & bounded codes"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

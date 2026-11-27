@@ -1,0 +1,13 @@
+host_label,system,tasks,verified_pass_pct,broken_or_crash_pct,vulkan_prefill_crashes,total_wall_ms,board_metered,measured_j,reported_j
+Apple_M5_Max_128GB_Metal_arm64,llama_cpp_server_Unverified_CogLoad4x,16,37.5,62.5,0,2616.18,False,,1.469406
+Apple_M5_Max_128GB_Metal_arm64,Magnitude_0.3.5_Seismic_Unverified,16,37.5,62.5,0,1869.33,False,,1.980857
+Apple_M5_Max_128GB_Metal_arm64,Magnitude_0.3.5_plus_mol_magnitude_adapter_rs_Wave1,16,100.0,0.0,0,1012.89,False,,1.004956
+Apple_M5_Max_128GB_Metal_arm64,Magnitude_0.3.5_plus_mol_magnitude_adapter_rs_Wave2_LUT6,16,100.0,0.0,0,5.529,False,,0.004573
+NVIDIA_Jetson_AGX_Thor_Tegra_Vulkan_aarch64,llama_cpp_server_Unverified_CogLoad4x,16,25.0,75.0,0,2964.72,True,250.392123,
+NVIDIA_Jetson_AGX_Thor_Tegra_Vulkan_aarch64,Magnitude_0.3.5_Seismic_Unverified,16,0.0,100.0,0,9847.03,True,757.079246,
+NVIDIA_Jetson_AGX_Thor_Tegra_Vulkan_aarch64,Magnitude_0.3.5_plus_mol_magnitude_adapter_rs_Wave1,16,100.0,0.0,0,2216.86,True,152.770506,
+NVIDIA_Jetson_AGX_Thor_Tegra_Vulkan_aarch64,Magnitude_0.3.5_plus_mol_magnitude_adapter_rs_Wave2_LUT6,16,100.0,0.0,0,5.203,True,0.25,
+AMD_Ryzen_AI_Max_395_Zen5_Linux_x86_64,llama_cpp_server_Unverified_CogLoad4x,16,18.75,81.25,0,2204.99,False,,316.126535
+AMD_Ryzen_AI_Max_395_Zen5_Linux_x86_64,Magnitude_0.3.5_Seismic_Unverified,16,0.0,100.0,0,6963.32,False,,988.372852
+AMD_Ryzen_AI_Max_395_Zen5_Linux_x86_64,Magnitude_0.3.5_plus_mol_magnitude_adapter_rs_Wave1,16,100.0,0.0,0,1248.64,False,,162.629651
+AMD_Ryzen_AI_Max_395_Zen5_Linux_x86_64,Magnitude_0.3.5_plus_mol_magnitude_adapter_rs_Wave2_LUT6,16,100.0,0.0,0,5.077,False,,0.267764

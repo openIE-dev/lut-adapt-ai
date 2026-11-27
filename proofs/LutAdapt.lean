@@ -15,3 +15,4 @@ import LutAdapt.BfwsWellMultimodal
 import LutAdapt.ResetBfwsEnigmaHorizon
 import LutAdapt.CausalBfwsTerminalSciCode
 import LutAdapt.MagnitudeTieredEngram
+import LutAdapt.RustMagnitudeMcpFreeToken

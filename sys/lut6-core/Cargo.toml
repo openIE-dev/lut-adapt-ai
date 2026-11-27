@@ -16,6 +16,11 @@ name = "bench_lut6_nucleus_shunt"
 path = "src/bin/bench_lut6_nucleus_shunt.rs"
 required-features = ["std"]
 
+[[bin]]
+name = "mol_magnitude_adapter"
+path = "src/bin/mol_magnitude_adapter.rs"
+required-features = ["std"]
+
 [lints.rust]
 unsafe_op_in_unsafe_fn = "deny"
 unused_crate_dependencies = "warn"

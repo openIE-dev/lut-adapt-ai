@@ -1,0 +1,4 @@
+host_label,workflows,total_crud_tool_calls_per_wave,unguarded_verified_pct,unguarded_state_corrupted_pct,wave1_cow_verified_pct,wave1_state_corrupted_pct,wave1_cow_rollbacks_caught,wave1_wall_ms,wave1_board_metered,wave1_measured_j,wave1_reported_j,wave2_lut6_idemp_verified_pct,wave2_state_corrupted_pct,wave2_idemp_replays_deduped,wave2_wall_ms,wave2_board_metered,wave2_measured_j,wave2_reported_j,vulkan_prefill_guards_triggered
+Apple_M5_Max_128GB_Metal_arm64,24,72,25.0,75.0,100.0,0.0,18,30.488,False,,0.023411,100.0,0.0,576,24.594,False,,0.018281,272
+NVIDIA_Jetson_AGX_Thor_Tegra_Vulkan_aarch64,24,72,25.0,75.0,100.0,0.0,18,29.028,True,1.383993,,100.0,0.0,576,23.767,True,1.085822,,272
+AMD_Ryzen_AI_Max_395_Zen5_Linux_x86_64,24,72,25.0,75.0,100.0,0.0,18,28.636,False,,1.504606,100.0,0.0,576,22.816,False,,1.248295,272

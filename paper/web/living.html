@@ -799,6 +799,14 @@
           <img src="../figures/cbfws12-arc3-terminal-and-scicode.svg" alt="Phase 42 60.0% Supermajority (15/25) ARC-AGI-3 C-BFWS + 48 KB Vault, Terminal-Bench & Cybench-Defensive, FrontierMath & SciCode Window 22 Thor Shunt, and 122 Six-Kernel Proofs">
           <figcaption><strong>Figure 18.</strong> Phase 42 measurements (<code>Claims LA-19 [122 thms / 1,486 bwrap fleet], LA-64..LA-67</code>): (A) <code>60.00%</code> supermajority (<code>15/25</code> games, <code>18/183</code> levels, <code>2.5030</code> mean / <code>10.7143</code> peak <code>RHAE</code>) and <code>68.75%</code> matched-<code>16</code> (<code>11/16</code> games, <code>14/113</code> levels, <code>3.2177</code> <code>RHAE</code>) on official black-box <code>ARC-AGI-3</code> via Causal <code>C-BFWS(R,M) + Multi-Epoch Rollout RIW(2) + Twelve-Bank 48 KB System-0 LUT6</code> (<code>75.00%</code> watch <code>SRAM</code>, <code>0</code> breaker trips, unlocking <code>sk48</code> &amp; <code>ar25</code>); (B) <code>24</code>-task <code>Terminal-Bench &amp; Cybench-Defensive</code> (<code>100.0%</code> verified, <code>144/144</code> <code>Yosys</code> <code>abc -lut 6</code> miter, <code>0.0%</code> broken/vuln) &amp; <code>24</code>-task <code>FrontierMath &amp; SciCode</code> (<code>100.0%</code> verified, Pell <code>D = 109</code>, <code>&lt;= 1.63 × 10⁻⁴</code> drift); (C) <code>Window 22</code> cross-silicon telemetry (<code>3.314×</code> lower <code>Jetson AGX Thor</code> DC shunt <code>measured_j</code>, <code>3.322×</code> faster); and (D) zero-<code>DSP48E1</code> <code>100.55 MHz</code> <code>openXC7</code> <code>XC7A200T</code> <code>.bit</code> (<code>657</code> LUTs, <code>64/64</code> RTL parity), <code>15.98 KB</code> (<code>16,367 B</code>, <code>17</code> exports) <code>lut6_core.wasm</code>, and <code>122</code> six-kernel <code>Lean 4.36.0</code> proofs (<code>1,486</code> <code>bwrap</code> fleet, <code>59,008</code> verified decls).</figcaption>
         </figure>
+        <figure class="fig">
+          <img src="../figures/magnitude-tiered-airmol-and-engram-lut6.svg" alt="Phase 43 Live Magnitude 0.3.5 vs. llama.cpp vs. LUT-Adapt, Three-Tier Tiered-Expert-AirMoL, Engram-LUT6 Window 23 Thor Shunt, and 130 Six-Kernel Proofs">
+          <figcaption><strong>Figure 19.</strong> Phase 43 measurements (<code>Claims LA-19 [130 thms / 1,494 bwrap fleet], LA-68..LA-71</code>): live cross-fleet <code>Magnitude 0.3.5</code> vs. <code>llama.cpp</code> vs. <code>Magnitude + LUT-Adapt</code> (<code>53.55×</code> lower <code>Thor</code> <code>twist</code> <code>JpCT</code>), three-tier <code>Tiered-Expert-AirMoL</code>, zero-<code>FLOP</code> <code>Engram-LUT6</code> (<code>Window 23</code> <code>Thor</code> shunt <code>3.157×</code>), <code>100.74 MHz</code> <code>openXC7</code> <code>.bit</code>, and <code>130</code> six-kernel proofs.</figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="../figures/rust-magnitude-mcpmark-and-freetoken.svg" alt="Phase 44 Native Rust Magnitude Adapter, MCPMark Copy-on-Write CRUD, FreeToken-Beat BA-AirMoL, Window 24 Thor Shunt, and 138 Six-Kernel Proofs (1,502 Fleet)">
+          <figcaption><strong>Figure 20.</strong> Phase 44 measurements (<code>Claims LA-19 [138 thms / 1,502 bwrap fleet], LA-72..LA-75</code>): zero-Python native Rust <code>mol-magnitude-adapter</code> (<code>100%</code> <code>CogLoadBench</code> <code>4×</code>, <code>3,028.3×</code> <code>Thor</code> W2 energy cut), <code>24</code>-workflow stateful <code>MCPMark</code> Copy-on-Write CRUD (<code>0.00%</code> state corruption vs. <code>75.00%</code> unguarded), Bandwidth-Adaptive <code>BA-Tiered-Expert-AirMoL</code> (<code>4.00×–4.17×</code> &gt; <code>FreeToken</code>, <code>5.90×–6.00×</code> &gt; <code>KTransformers</code>, <code>3.330×</code> <code>Thor</code> <code>Window 24</code> <code>measured_j</code>), exact <code>64.00 KB</code> watch <code>SRAM</code> closure, <code>106.97 MHz</code> <code>openXC7</code> <code>.bit</code>, <code>15.16 KB</code> (<code>19</code>-export, <code>863 B</code> spare) <code>lut6_core.wasm</code>, and <code>138</code> six-kernel proofs (<code>1,502</code> fleet).</figcaption>
+        </figure>
       </section>
     </div>
   </main>
@@ -1009,7 +1017,7 @@
         .then(function(res){
           exportsObj = res.instance.exports;
           window.__lut6WasmExports = exportsObj;
-          chip.textContent = 'Live WASM VM Active (16,367 B · 17 Exports · 0 Crates)';
+          chip.textContent = 'Live WASM VM Active (15,521 B · 19 Exports · 863 B Spare · 0 Crates)';
           updateUI();
           if (window.__updateHleWasm) window.__updateHleWasm();
           if (window.__updateBonsaiWasm) window.__updateBonsaiWasm();

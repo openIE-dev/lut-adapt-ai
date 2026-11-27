@@ -62,7 +62,7 @@ pub extern "C" fn wasm_crystal_crc32(which: u32) -> u32 {
 #[unsafe(no_mangle)]
 pub extern "C" fn wasm_eval_operon_seed(input_lo: u32, input_hi: u32) -> u32 {
     let state = (input_lo as u64) | ((input_hi as u64) << 32);
-    wasm_get_crystal(0).eval_raw_unrolled4(state) as u32
+    wasm_get_crystal(0).eval_raw(state) as u32
 }
 
 /// Evaluates the Two-Tier `LUT6 + 672 B EntroMCU/T-MAC` crystal (`0x3b12a681`) in `.wasm`.
@@ -113,6 +113,16 @@ pub extern "C" fn wasm_walsh_high_harmonic_energy(mask_lo: u32, mask_hi: u32) ->
 ///   - `bits [23..16]`: Hamming syndrome (`0..127`)
 ///   - `bits [15..8]`:  Raw unguarded minterms corrupted (`0..64`)
 ///   - `bits [7..0]`:   Post-`SECDED`/Apoptosis corrupted minterms (`0` = zero silent corruption!)
+#[inline(never)]
+fn wasm_apply_flip(word: &mut u64, ecc: &mut u8, fb: i32) {
+    let u = fb as u32;
+    if u < 64 {
+        *word ^= 1u64 << u;
+    } else if u < 72 {
+        *ecc ^= 1u8 << (u - 64);
+    }
+}
+
 #[unsafe(no_mangle)]
 pub extern "C" fn wasm_test_secded_bitflip(
     mask_lo: u32,
@@ -121,30 +131,18 @@ pub extern "C" fn wasm_test_secded_bitflip(
     flip_b: i32,
 ) -> u32 {
     let orig = (mask_lo as u64) | ((mask_hi as u64) << 32);
-    let orig_ecc = encode_secded_72(orig);
-
     let mut word = orig;
-    let mut ecc = orig_ecc;
-    for fb in [flip_a, flip_b] {
-        if (0..64).contains(&fb) {
-            word ^= 1u64 << (fb as u32);
-        } else if (64..72).contains(&fb) {
-            ecc ^= 1u8 << ((fb - 64) as u32);
-        }
-    }
-    let raw_corrupted = (orig ^ word).count_ones() & 0xFF;
+    let mut ecc = encode_secded_72(orig);
+    wasm_apply_flip(&mut word, &mut ecc, flip_a);
+    wasm_apply_flip(&mut word, &mut ecc, flip_b);
+    let raw_corrupted = ((orig ^ word).count_ones() & 0xFF) << 8;
     match decode_secded_72(word, ecc) {
-        SecdedOutcome::Clean(recovered) => {
-            let post_err = (orig ^ recovered).count_ones() & 0xFF;
-            (raw_corrupted << 8) | post_err
-        }
+        SecdedOutcome::Clean(recovered) => raw_corrupted | ((orig ^ recovered).count_ones() & 0xFF),
         SecdedOutcome::CorrectedSingle { data, syndrome } => {
-            let post_err = (orig ^ data).count_ones() & 0xFF;
-            (1u32 << 24) | ((syndrome as u32) << 16) | (raw_corrupted << 8) | post_err
+            (1u32 << 24) | ((syndrome as u32) << 16) | raw_corrupted | ((orig ^ data).count_ones() & 0xFF)
         }
         SecdedOutcome::DetectedUncorrectable { syndrome } => {
-            // Triggers `0x3C` ApoptosisRollback to immutable ROM/MRAM seed (`orig`), so `0` silent corruption!
-            (2u32 << 24) | ((syndrome as u32) << 16) | (raw_corrupted << 8)
+            (2u32 << 24) | ((syndrome as u32) << 16) | raw_corrupted
         }
     }
 }
@@ -652,7 +650,7 @@ pub extern "C" fn wasm_eval_rbfws8_enigma_horizon(
 }
 
 #[inline(never)]
-fn wasm_shared_cbfws12_head(packed: u32) -> (u32, u32, u32, u32) {
+fn wasm_shared_nbank_head(packed: u32, max_ep: u8, n_banks: usize) -> (u32, u32, u32, u32) {
     let actual_sig = if (packed & (1u32 << 28)) != 0 {
         0x33u8
     } else {
@@ -664,58 +662,56 @@ fn wasm_shared_cbfws12_head(packed: u32) -> (u32, u32, u32, u32) {
         ((packed >> 12) & 0x0F) as u8,
         Some(0x5A),
         actual_sig,
-        11,
-        12,
-        12,
+        max_ep,
+        n_banks,
+        n_banks as u8,
     )
 }
 
 #[inline(never)]
-fn wasm_pack_cbfws12_pair2(
-    packed: u32,
-    pair_a2: u32,
-    pair_b2: u32,
-    act0_and_row: u32,
-) -> u32 {
-    let (status2, bank4, ep4, act2) = wasm_shared_cbfws12_head(packed);
+fn wasm_lut6_pair2(m0: u64, m1: u64, sh: u32) -> u32 {
+    let s = sh & 0x3F;
+    (((m0 >> s) & 1) as u32) | ((((m1 >> s) & 1) as u32) << 1)
+}
+
+#[inline(never)]
+fn wasm_pack_nbank_pair2(packed: u32, which: u32, act0_and_row: u32) -> u32 {
+    use crate::cbfws_term_math::{CYBENCH_TERM_GUARD2_MASKS, SCICODE_MATH_SHIELD2_MASKS};
+    use crate::mag_mcp_freetoken::{BA_AIRMOL_COSCHED2_MASKS, MCPMARK_COW_GUARD2_MASKS};
+    use crate::tiered_engram::{ENGRAM_GATE2_MASKS, TIERED_RESIDENCY2_MASKS};
+
+    let (max_ep, n_banks, m_a, m_b) = match which {
+        0 => (11u8, 12usize, &CYBENCH_TERM_GUARD2_MASKS, &SCICODE_MATH_SHIELD2_MASKS),
+        1 => (11u8, 12usize, &TIERED_RESIDENCY2_MASKS, &ENGRAM_GATE2_MASKS),
+        _ => (13u8, 14usize, &MCPMARK_COW_GUARD2_MASKS, &BA_AIRMOL_COSCHED2_MASKS),
+    };
+    let (status2, bank4, ep4, act2) = wasm_shared_nbank_head(packed, max_ep, n_banks);
+    let pair_a2 = wasm_lut6_pair2(m_a[0], m_a[1], packed >> 16);
+    let pair_b2 = wasm_lut6_pair2(m_b[0], m_b[1], packed >> 22);
     let jb16 = wasm_shared_joulebit6_elem(act0_and_row);
     (status2 << 30)
         | ((bank4 & 0xF) << 26)
         | ((ep4 & 0xF) << 22)
-        | ((pair_a2 & 3) << 20)
-        | ((pair_b2 & 3) << 18)
+        | (pair_a2 << 20)
+        | (pair_b2 << 18)
         | ((act2 & 3) << 16)
         | jb16
 }
 
-/// Export #17 (`Claims LA-64..LA-67`, `Theorem 121`): Evaluates the Twelve-Bank (`48 KB` = `75.0%` watch SRAM)
-/// `C-BFWS(R, M)` cascade reflex + `Terminal-Cybench` constant-time defensive `LUT6` guard +
-/// `FrontierMath-SciCode` symplectic/unitary conservation `LUT6` shield + zero-`MUL` `JouleBit6 + FWHT-64` slab
-/// inside `#![no_std]` WebAssembly (`<= 16 KB` total `.wasm`).
+/// Export #17 (`Claims LA-64..LA-67`, `Theorem 121`).
 #[unsafe(no_mangle)]
-pub extern "C" fn wasm_eval_cbfws12_term_math(
-    cbfws_guard_sci: u32,
-    act0_and_row: u32,
-) -> u32 {
-    use crate::cbfws_term_math::{
-        eval_cybench_terminal_guard2_lut6, eval_scicode_math_shield2_lut6,
-    };
-    let guard2 = eval_cybench_terminal_guard2_lut6(((cbfws_guard_sci >> 16) & 0x3F) as u8) as u32;
-    let sci2 = eval_scicode_math_shield2_lut6(((cbfws_guard_sci >> 22) & 0x3F) as u8) as u32;
-    wasm_pack_cbfws12_pair2(cbfws_guard_sci, guard2, sci2, act0_and_row)
+pub extern "C" fn wasm_eval_cbfws12_term_math(cbfws_guard_sci: u32, act0_and_row: u32) -> u32 {
+    wasm_pack_nbank_pair2(cbfws_guard_sci, 0, act0_and_row)
 }
 
-/// Export #18 (`Claims LA-68..LA-71`, `Theorem 129`): Evaluates Three-Tier `VRAM -> RAM -> NVMe`
-/// `NameLedger + Reuse::expected_with` expert admission `LUT6` (`tier2`), `DeepSeek-V4.1-Flash`
-/// trailing $n$-gram conditional memory `Engram-LUT6` (`engram2`), Twelve-Bank `C-BFWS` `System-0`
-/// cascade, and zero-`MUL` `JouleBit6 + FWHT-64` slab inside `#![no_std]` WebAssembly (`<= 16 KB` total `.wasm`).
+/// Export #18 (`Claims LA-68..LA-71`, `Theorem 129`).
 #[unsafe(no_mangle)]
-pub extern "C" fn wasm_eval_tiered_engram_lut6(
-    tiered_engram_cbfws: u32,
-    act0_and_row: u32,
-) -> u32 {
-    use crate::tiered_engram::{eval_engram_ngram_gate2_lut6, eval_tiered_residency_lut6};
-    let tier2 = eval_tiered_residency_lut6(((tiered_engram_cbfws >> 16) & 0x3F) as u8) as u32;
-    let engram2 = eval_engram_ngram_gate2_lut6(((tiered_engram_cbfws >> 22) & 0x3F) as u8) as u32;
-    wasm_pack_cbfws12_pair2(tiered_engram_cbfws, tier2, engram2, act0_and_row)
+pub extern "C" fn wasm_eval_tiered_engram_lut6(tiered_engram_cbfws: u32, act0_and_row: u32) -> u32 {
+    wasm_pack_nbank_pair2(tiered_engram_cbfws, 1, act0_and_row)
+}
+
+/// Export #19 (`Claims LA-72..LA-75`, `Theorem 137`).
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_mag_mcp_freetoken_lut6(mcp_ba_vault14: u32, act0_and_row: u32) -> u32 {
+    wasm_pack_nbank_pair2(mcp_ba_vault14, 2, act0_and_row)
 }

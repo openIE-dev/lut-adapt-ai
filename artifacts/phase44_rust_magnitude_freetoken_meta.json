@@ -1,0 +1,32 @@
+{
+  "phase": 44,
+  "claims": [
+    "LA-72",
+    "LA-73",
+    "LA-74"
+  ],
+  "native_rust_adapter_binary": "sys/lut6-core/src/bin/mol_magnitude_adapter.rs",
+  "protocols_served": [
+    "OpenAI /v1/chat/completions",
+    "Anthropic /v1/messages",
+    "MCP JSON-RPC 2.0 /mcp"
+  ],
+  "external_rust_crates": 0,
+  "wasm_19export_bytes": 15521,
+  "wasm_19export_spare_bytes": 863,
+  "ba_airmol_vs_freetoken": {
+    "calibrated_fnocache_pread_gbps": 20.415,
+    "calibrated_host_ram_simd_gbps": 32.086,
+    "effective_nvme_gbps": 7.2,
+    "effective_cpu_simd_gbps": 38.0,
+    "link_pcie_gbps": 32.0,
+    "closed_form_optimal_cpu_alpha": 0.5429,
+    "ba_airmol_lut6_verified_64_of_64": true
+  },
+  "mcpmark_ba_lut6_miter": {
+    "total_slices": 24,
+    "total_lut6_cells": 144,
+    "total_minterms_verified": 9216,
+    "total_yosys_miter_mismatches": 0
+  }
+}
