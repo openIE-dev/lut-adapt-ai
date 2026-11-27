@@ -1,0 +1,10 @@
+scheme,bits_per_weight,starter_prior_bytes,decompressor_plus_prior_bytes,reduction_vs_tufazip_qpi1_x,runtime_binary_macs_per_token,cross_silicon_bit_exact,mean_matrix_cosine_sim,mahoney_n_star_vs_gzip_mb
+0_Static_2B_Q4_LLMZip_Unamortized,4.5,1462000000,1465000000,0.00296,2600000000,False,1.0,5486.255
+1_tufazip_QPI1_Ternary2b_Ref,2.0139,8594837,8690125,0.5043,162531328,False,1.0,32.847
+2_tufazip_v2_QPI1_Uniform1_Official,1.0172,4334741,4430029,1.0,162531328,False,1.0,16.684
+3_waiOS_EntroMCU28_5Trit_ByteExact,1.617,6890799,6940820,1.2473,0,True,1.0,26.21
+4_waiOS_QPI1_6Col_LUT6_Slab_Lossless,1.0172,4334741,4384762,1.0103,0,True,1.0,16.512
+5_MoL_JouleBit_LUT6_Rank4_0p45bpw,0.4533,1931440,1981461,2.2443,0,True,0.3317,7.491
+6_MoL_JouleBit_LUT6_Rank2_0p22bpw,0.2284,973345,1023366,4.4534,0,True,0.2744,3.863
+7_MoL_JouleBit_LUT6_Rank1_0p11bpw,0.116,494510,544531,8.7657,0,True,0.2183,2.026
+8_MoL_LTCB_ZeroPrior_Lockstep_LUT6_WASM,0.0,0,15600,283.98,0,True,1.0,0.0

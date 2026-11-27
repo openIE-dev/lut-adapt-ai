@@ -1,0 +1,4 @@
+host_label,board_metered,w25_vault14_ltcb_skip_kraft_cdf_lut6_jb6_ns_per_op,w25b_float_tufazip_softmax_cdf64_unpack_mac_ns_per_op,latency_speedup_x,w25_measured_nj_per_op_vdd_cpu,w25b_measured_nj_per_op_vdd_cpu,w25_reported_nj_per_op,w25b_reported_nj_per_op,energy_reduction_x
+NVIDIA_Jetson_AGX_Thor_Tegra_aarch64,True,370.806,4870.345,13.134,10365.448928,138648.111402,,,13.376
+AMD_Ryzen_AI_Max_395_Zen5_Linux_x86_64,False,357.216,1569.91,4.395,,,46113.875,190802.5,4.138
+Apple_M3_Ultra_256GB_macOS_arm64,False,323.863,1408.365,4.349,,,1167.71613,6879.95206,5.892

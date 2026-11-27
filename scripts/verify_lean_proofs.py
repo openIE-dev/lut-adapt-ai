@@ -173,6 +173,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.fourteen_bank_56kb_lut6_exact_64kb_watch_sram_partition", "Section 4.77", "14-bank 56 KB (87.5%) vault + 4 KB Nucleus + 4 KB stack = exact 65,536 B (64 KB) watch SRAM fit"),
     ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.wasm_19export_16kb_budget_and_mag_mcp_freetoken_bijection", "Section 4.77", "Lossless 32-bit packing bijection for 19th lut6_core.wasm export in 15,521 B <= 16 KB (863 B spare)"),
     ("RustMagnitudeMcpFreeToken", "LutAdapt.RustMagnitudeMcpFreeToken.openxc7_mag_mcp_freetoken_zero_dsp_pipeline_bound", "Section 4.77", "Zero-DSP48E1 XC7A200T 14-bank + MCPMark-CoW + BA-AirMoL pipeline latency & bounded codes"),
+    ("LtcbCompression", "LutAdapt.LtcbCompression.mahoney_kolmogorov_total_size_threshold_iff", "Section 4.78", "Mahoney-Kolmogorov total-size threshold iff (8*(mHeavy-mLight) < n*(bpbLight-bpbHeavy), dual of Prop 1)"),
+    ("LtcbCompression", "LutAdapt.LtcbCompression.kraft_mcmillan_integer_cdf_partition_nonzero_floor", "Section 4.79", "Kraft-McMillan 2^24 integer CDF partition sum == 16,777,216 & freq >= 1 zero-lockup guarantee"),
+    ("LtcbCompression", "LutAdapt.LtcbCompression.float_ulp_cdf_perturbation_breaks_decoder_interval", "Section 4.78", "1-ULP floating-point CDF boundary perturbation breaks arithmetic decoding vs waiOS integer exactness"),
+    ("LtcbCompression", "LutAdapt.LtcbCompression.lockstep_prefix_lut6_vault_zero_side_channel_bits", "Section 4.79", "Lockstep prefix-driven .lut6 vault synchronization with 0 transmitted dictionary bits"),
+    ("LtcbCompression", "LutAdapt.LtcbCompression.qpi1_loop_untying_6col_lut6_and_entromcu_prior_cut", "Section 4.79", "tufazip QPI1 34,080,768 1-bit weights -> exact 5,680,128 6-col LUT6 slabs & 20% EntroMCU ternary cut"),
+    ("LtcbCompression", "LutAdapt.LtcbCompression.mol_ltcb_confidence_skip_energy_dominance", "Section 4.80", "Rung-0 LUT6 XML/span confidence skipping strictly cuts codec energy below 0-skip online neural loop"),
+    ("LtcbCompression", "LutAdapt.LtcbCompression.wasm_20export_16kb_budget_and_ltcb_kraft_bijection", "Section 4.81", "Lossless 32-bit packing bijection for 20th lut6_core.wasm export inside <= 16 KB"),
+    ("LtcbCompression", "LutAdapt.LtcbCompression.openxc7_ltcb_kraft_zero_dsp_pipeline_bound", "Section 4.81", "Zero-DSP48E1 XC7A200T LTCB-XML-Skip + Kraft-CDF + 14-bank pipeline latency & bounded codes"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

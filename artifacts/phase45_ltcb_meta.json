@@ -1,0 +1,66 @@
+{
+  "phase": 45,
+  "claims": [
+    "LA-76",
+    "LA-77",
+    "LA-79"
+  ],
+  "enwik8_official_sha256": "2b49720ec4d78c3c9fabaee6e4179a5e997302b3a70029f30f2d582218c024a8",
+  "cross_arch_enwik8_mltc_archive_sha256_16": "1096e659ef4f9098",
+  "cross_arch_hosts_bit_identical": [
+    "Apple_M5_Max_128GB_macOS_arm64",
+    "NVIDIA_Jetson_AGX_Thor_Tegra_aarch64",
+    "AMD_Ryzen_AI_Max_395_Zen5_Linux_x86_64"
+  ],
+  "enwik8_100mb_m5_max_mltc": {
+    "arch": "aarch64",
+    "os": "macos",
+    "raw_bytes": 100000000,
+    "raw_sha256": "2b49720ec4d78c3c9fabaee6e4179a5e997302b3a70029f30f2d582218c024a8",
+    "compressed_payload_bytes": 32749262,
+    "archive_sha256": "1096e659ef4f9098695952e84e2995d27c5a954d1fed920ed760712f7b2fe979",
+    "decoded_sha256": "2b49720ec4d78c3c9fabaee6e4179a5e997302b3a70029f30f2d582218c024a8",
+    "lossless_exact": true,
+    "self_binary_bytes": 434784,
+    "mahoney_total_bytes_with_rust_bin": 33184046,
+    "payload_bpb": 2.619941,
+    "mahoney_total_bpb_with_rust_bin": 2.654724,
+    "rung0_skip_bytes": 99431447,
+    "rung0_skip_pct": 99.431,
+    "compress_ms": 10005.61,
+    "decompress_ms": 1272.845,
+    "compress_mb_per_s": 9.994,
+    "decompress_mb_per_s": 78.564,
+    "float_desync_first_step": 7,
+    "float_cdf_seq": 597173,
+    "float_cdf_tree": 597172
+  },
+  "wasm_20export": {
+    "wasm_bytes": 15586,
+    "wasm_kb": 15.22,
+    "spare_bytes_under_16kb": 798,
+    "wasm_exports": 20,
+    "wasm_sha256_12": "dd5f24f3ad54",
+    "wasm_sha256": "dd5f24f3ad548925a427daa10605f262d6d978e2c2a5b1ed440b71b4fb83c579"
+  },
+  "qpi1_starter_prior_audit": {
+    "verified_against_real_tufazip_weights_bin": true,
+    "tufazip_v2_weights_sha256": "e94c089f8eb985a87307dca3a7702385fcaccd14d95743811f8788f7da24448d",
+    "qpi1_initialization_kind": "loop-untying",
+    "qpi1_source_layers": 2,
+    "qpi1_target_layers": 12,
+    "qpi1_rademacher_1bit_params": 34080768,
+    "qpi1_6col_lut6_slabs_exact": 5680128,
+    "qpi1_6col_lut6_remainder": 0,
+    "slab_bits_roundtrip_verified": 34080768,
+    "entromcu_vs_2bit_ternary_code_saving_pct": 20.0,
+    "joulebit_rank1_prior_reduction_x": 8.766,
+    "static_2b_llmzip_mahoney_crossover_mb": 5486.255
+  },
+  "ltcb_yosys_miter": {
+    "total_slices": 24,
+    "total_lut6_cells": 144,
+    "total_minterms_verified": 9216,
+    "total_yosys_miter_mismatches": 0
+  }
+}

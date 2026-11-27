@@ -677,13 +677,15 @@ fn wasm_lut6_pair2(m0: u64, m1: u64, sh: u32) -> u32 {
 #[inline(never)]
 fn wasm_pack_nbank_pair2(packed: u32, which: u32, act0_and_row: u32) -> u32 {
     use crate::cbfws_term_math::{CYBENCH_TERM_GUARD2_MASKS, SCICODE_MATH_SHIELD2_MASKS};
+    use crate::ltcb_codec::{LTCB_CDF_BUCKET2_MASKS, LTCB_XML_SKIP_GATE2_MASKS};
     use crate::mag_mcp_freetoken::{BA_AIRMOL_COSCHED2_MASKS, MCPMARK_COW_GUARD2_MASKS};
     use crate::tiered_engram::{ENGRAM_GATE2_MASKS, TIERED_RESIDENCY2_MASKS};
 
     let (max_ep, n_banks, m_a, m_b) = match which {
         0 => (11u8, 12usize, &CYBENCH_TERM_GUARD2_MASKS, &SCICODE_MATH_SHIELD2_MASKS),
         1 => (11u8, 12usize, &TIERED_RESIDENCY2_MASKS, &ENGRAM_GATE2_MASKS),
-        _ => (13u8, 14usize, &MCPMARK_COW_GUARD2_MASKS, &BA_AIRMOL_COSCHED2_MASKS),
+        2 => (13u8, 14usize, &MCPMARK_COW_GUARD2_MASKS, &BA_AIRMOL_COSCHED2_MASKS),
+        _ => (13u8, 14usize, &LTCB_XML_SKIP_GATE2_MASKS, &LTCB_CDF_BUCKET2_MASKS),
     };
     let (status2, bank4, ep4, act2) = wasm_shared_nbank_head(packed, max_ep, n_banks);
     let pair_a2 = wasm_lut6_pair2(m_a[0], m_a[1], packed >> 16);
@@ -714,4 +716,11 @@ pub extern "C" fn wasm_eval_tiered_engram_lut6(tiered_engram_cbfws: u32, act0_an
 #[unsafe(no_mangle)]
 pub extern "C" fn wasm_eval_mag_mcp_freetoken_lut6(mcp_ba_vault14: u32, act0_and_row: u32) -> u32 {
     wasm_pack_nbank_pair2(mcp_ba_vault14, 2, act0_and_row)
+}
+
+/// Export #20 (`Claims LA-76..LA-79`, `Theorem 145`): Self-contained `LTCB` MediaWiki-XML Skip +
+/// Kraft-McMillan `2^24` Integer-CDF Bucket + `14`-Bank Vault `LUT6` Evaluator.
+#[unsafe(no_mangle)]
+pub extern "C" fn wasm_eval_ltcb_kraft_lut6(ltcb_cdf_vault14: u32, act0_and_row: u32) -> u32 {
+    wasm_pack_nbank_pair2(ltcb_cdf_vault14, 3, act0_and_row)
 }

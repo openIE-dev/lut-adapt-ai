@@ -15,6 +15,7 @@ pub mod cbfws_term_math;
 pub mod enigma_horizon;
 pub mod generated_proof_vectors;
 pub mod hadamard_bonsai;
+pub mod ltcb_codec;
 pub mod mag_mcp_freetoken;
 pub mod ratchet_demo;
 pub mod seu_resilience;

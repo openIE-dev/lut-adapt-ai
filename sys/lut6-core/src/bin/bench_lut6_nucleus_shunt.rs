@@ -1546,8 +1546,87 @@ fn main() {
         },
     );
 
+    // Window 25: `MoL-LTCB` (`VAULT14` + `LTCB-XML-Skip LUT6` + `2^24` Kraft Integer CDF + `6`-Col `JouleBit6`)
+    let w25 = measure_window(
+        "Window25_Vault14_LTCBSkip_KraftCDF_LUT6_JouleBit6",
+        jb_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            let mut ep = 0u8;
+            for step in 0..jb_iters {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                // ~75% of Wikipedia XML stream hits Rung-0 XML/Span skip (`addr6` bits 0..2 nonzero), ~25% wakes `JouleBit6`
+                let ltcb_addr = if (step & 3) != 0 {
+                    0b00_0101u8
+                } else {
+                    0b00_0000u8
+                };
+                let (r_v14, skip2, bkt2, ktag) =
+                    lut6_core::ltcb_codec::eval_window25_ltcb_vault14_kraft_lut6_joulebit6(
+                        (step & 0x3F) as u8,
+                        if (step & 127) == 63 { 5 } else { 0 },
+                        ep,
+                        ltcb_addr,
+                        0b11_0111u8,
+                        (step & 0xFF) as u8,
+                        black_box(&vault14_banks),
+                        black_box(&vault14_certs),
+                        black_box(&jb6_acts),
+                        black_box(&jb6_v),
+                        black_box(&jb6_u),
+                        &mut out,
+                    );
+                if let lut6_core::mag_mcp_freetoken::Vault14BankOutcome::CertifiedAction {
+                    action_id,
+                    bank_id,
+                    next_epoch,
+                } = r_v14
+                {
+                    ep = next_epoch % 14;
+                    acc ^= ((action_id ^ bank_id ^ skip2 ^ bkt2) as i32)
+                        ^ (ktag as i32)
+                        ^ out[0]
+                        ^ out[63];
+                }
+            }
+            black_box(acc);
+        },
+    );
+
+    let mut logits64 = [0.0f32; 64];
+    for (idx, lv) in logits64.iter_mut().enumerate() {
+        *lv = ((idx as f32) - 31.5) * 0.11;
+    }
+    let w25b = measure_window(
+        "Window25b_FloatTufazipSoftmaxCDF64_UnpackMAC",
+        jb_iters / 4,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..(jb_iters / 4) {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                logits64[(step & 63) as usize] = (((step & 15) as f32) - 7.5) * 0.25;
+                let tag = lut6_core::ltcb_codec::eval_window25b_float_tufazip_softmax_cdf_littlebit2(
+                    black_box(&logits64),
+                    (step & 63) as usize,
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                acc ^= (tag as i32) ^ out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b, w23, w23b, w24, w24b,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b, w23, w23b, w24, w24b, w25, w25b,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {
