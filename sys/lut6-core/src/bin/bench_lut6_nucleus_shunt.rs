@@ -1711,8 +1711,102 @@ fn main() {
         },
     );
 
+    let mut cm3_acc6 = [18i16, -14, 96, -84, 5, -4];
+    let w27 = measure_window(
+        "Window27_Vault14_CM3LogOdds_MBFWS_LUT6_JouleBit6",
+        jb_iters,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            let mut ep = 0u8;
+            for step in 0..jb_iters {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                let cm3_addr = if (step & 15) == 0 {
+                    0b11_1101u8
+                } else if (step & 3) == 0 {
+                    0b00_1101u8
+                } else {
+                    0b01_0010u8
+                };
+                let modal_addr = if (step & 7) == 0 {
+                    0b00_0110u8
+                } else {
+                    0b01_0001u8
+                };
+                let (r_v14, cm3_m, mod_m, pq11, flp6) =
+                    lut6_core::ltcb_cm3_mbfws::eval_window27_cm3_logodds_mbfws_joulebit6(
+                        (step & 0x3F) as u8,
+                        if (step & 127) == 63 { 5 } else { 0 },
+                        ep,
+                        cm3_addr,
+                        modal_addr,
+                        (((step & 7) as i16) - 4) * 4,
+                        &mut cm3_acc6,
+                        black_box(&vault14_banks),
+                        black_box(&vault14_certs),
+                        black_box(&jb6_acts),
+                        black_box(&jb6_v),
+                        black_box(&jb6_u),
+                        &mut out,
+                    );
+                if let lut6_core::mag_mcp_freetoken::Vault14BankOutcome::CertifiedAction {
+                    action_id,
+                    bank_id,
+                    next_epoch,
+                } = r_v14
+                {
+                    ep = next_epoch % 14;
+                    acc ^= ((action_id ^ bank_id ^ cm3_m ^ mod_m ^ flp6) as i32)
+                        ^ (pq11 as i32)
+                        ^ out[0]
+                        ^ out[63];
+                }
+            }
+            black_box(acc);
+        },
+    );
+
+    let probs6 = [0.71f32, 0.83f32, 0.64f32, 0.88f32, 0.76f32, 0.59f32];
+    let mut mix_w6 = [0.18f32, 0.22f32, 0.16f32, 0.24f32, 0.12f32, 0.08f32];
+    let mut cand_coords64 = [(0i16, 0i16, 0u8); 64];
+    for (idx, c) in cand_coords64.iter_mut().enumerate() {
+        *c = (
+            ((idx * 7) & 63) as i16,
+            ((idx * 13 + 5) & 63) as i16,
+            ((idx * 3) & 7) as u8,
+        );
+    }
+    let w27b = measure_window(
+        "Window27b_FloatPAQLogOdds6_ModalScan64_UnpackMAC",
+        jb_iters / 4,
+        &shunts,
+        &rapl,
+        || {
+            let mut out = [0i32; 64];
+            let mut acc = 0i32;
+            for step in 0..(jb_iters / 4) {
+                jb6_acts[0] = ((step & 31) as i16) - 15;
+                let b_obs = if (step & 1) == 0 { 1.0f32 } else { 0.0f32 };
+                let tag = lut6_core::ltcb_cm3_mbfws::eval_window27b_float_paq_ln_exp_modal_scan_littlebit2(
+                    black_box(&probs6),
+                    &mut mix_w6,
+                    black_box(b_obs),
+                    black_box(&cand_coords64),
+                    black_box(&jb6_acts),
+                    black_box(&jb6_v),
+                    black_box(&jb6_u),
+                    &mut out,
+                );
+                acc ^= (tag as i32) ^ out[0] ^ out[63];
+            }
+            black_box(acc);
+        },
+    );
+
     let windows = [
-        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b, w23, w23b, w24, w24b, w25, w25b, w26, w26b,
+        w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w17b, w18, w18b, w19, w19b, w20, w20b, w21, w21b, w22, w22b, w23, w23b, w24, w24b, w25, w25b, w26, w26b, w27, w27b,
     ];
     let mut json_rows = Vec::new();
     for w in &windows {

@@ -189,6 +189,14 @@ THEOREM_CATALOG: list[tuple[str, str, str, str]] = [
     ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.online_solomonoff_regret_amortization_bound", "Section 4.83", "Online Solomonoff warmup regret excess strictly bounded by nCold * rCold independent of nTotal"),
     ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.wasm_21export_16kb_budget_and_cm2_ttt_bijection", "Section 4.85", "Lossless 32-bit packing bijection for 21st lut6_core.wasm export inside <= 16 KB"),
     ("LtcbCm2OnlineTtt", "LutAdapt.LtcbCm2OnlineTtt.openxc7_ltcb_cm2_ttt_zero_dsp_and_154_milestone", "Section 4.85", "Zero-DSP48E1 XC7A200T CM2+Online-TTT bounds & historic >150 (154 LutAdapt / 1,518 fleet) milestone"),
+    ("LtcbCm3Arc3Supermajority", "LutAdapt.LtcbCm3Arc3Supermajority.wrt2_two_tier_bijective_escape_roundtrip", "Section 4.86", "Two-tier WRT2-Capillary 0xFD/0xFE bijective escape roundtrip over arbitrary {0..255}^* streams"),
+    ("LtcbCm3Arc3Supermajority", "LutAdapt.LtcbCm3Arc3Supermajority.cm3_zero_dilution_cascade_and_logodds_gate_bounds", "Section 4.86", "Zero-dilution unseen-prior cascade fallback weight conservation & bounded CM3-LogOdds-Mix LUT6"),
+    ("LtcbCm3Arc3Supermajority", "LutAdapt.LtcbCm3Arc3Supermajority.cm3_match_shadow_order2_beats_xz6_dominance", "Section 4.86", "Strict Mahoney Ranked Total dominance of MoL-LTCB-CM3 + 16 KB WASM over xz -6 (LZMA2)"),
+    ("LtcbCm3Arc3Supermajority", "LutAdapt.LtcbCm3Arc3Supermajority.streaming_block_persistent_ram_bound_enwik9", "Section 4.86", "Bounded 128 MiB streaming block RAM with persistent StateSMix3 context tables on 1.00 GB enwik9"),
+    ("LtcbCm3Arc3Supermajority", "LutAdapt.LtcbCm3Arc3Supermajority.mbfws_modal_pick_place_and_avatar_switch_reduction", "Section 4.87", "M-BFWS-Modal-Switch LUT6 column-aligned 2-click macro pruning & containment-gated avatar switching"),
+    ("LtcbCm3Arc3Supermajority", "LutAdapt.LtcbCm3Arc3Supermajority.arc3_two_thirds_supermajority_17_of_25_closure", "Section 4.87", "Official black-box ARC-AGI-3 >2/3 supermajority (17/25 = 68.00%, 13/16 = 81.25%) in 56 KB 14-bank vault"),
+    ("LtcbCm3Arc3Supermajority", "LutAdapt.LtcbCm3Arc3Supermajority.wasm_22export_16kb_budget_and_cm3_mbfws_bijection", "Section 4.89", "Lossless 32-bit packing bijection for 22nd lut6_core.wasm export inside <= 16 KB"),
+    ("LtcbCm3Arc3Supermajority", "LutAdapt.LtcbCm3Arc3Supermajority.openxc7_cm3_mbfws_zero_dsp_and_162_milestone", "Section 4.89", "Zero-DSP48E1 XC7A200T CM3+M-BFWS bounds & 162 LutAdapt / 1,526 Linux bwrap fleet milestone"),
 ]
 
 # Standard 3 mathematical axioms of Lean 4 (all proved consistent in ZFC by con-leche);

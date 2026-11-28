@@ -1,6 +1,6 @@
 {
   "lean_version": "Lean (version 4.36.0, arm64-apple-darwin24.6.0, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)",
-  "total_kernel_checked_theorems": 154,
+  "total_kernel_checked_theorems": 162,
   "module_theorem_counts": {
     "Cascade": 7,
     "BenesCopy": 7,
@@ -21,10 +21,11 @@
     "MagnitudeTieredEngram": 8,
     "RustMagnitudeMcpFreeToken": 8,
     "LtcbCompression": 8,
-    "LtcbCm2OnlineTtt": 8
+    "LtcbCm2OnlineTtt": 8,
+    "LtcbCm3Arc3Supermajority": 8
   },
-  "purely_constructive_zero_axiom_theorems": 22,
-  "choice_free_theorems": 107,
+  "purely_constructive_zero_axiom_theorems": 23,
+  "choice_free_theorems": 113,
   "ofReduceBool_native_decide_count": 0,
   "opaque_declaration_count": 0,
   "nested_inductive_count": 0,
@@ -41,14 +42,14 @@
     "leanchecker --paranoid",
     "Lean v4.36.0 (default)"
   ],
-  "con_leche_verified_declarations": 59192,
-  "con_ron_verified_declarations": 59192,
-  "lean4lean_verified_declarations": 59194,
+  "con_leche_verified_declarations": 59237,
+  "con_ron_verified_declarations": 59237,
+  "lean4lean_verified_declarations": 59239,
   "paranoid_sandbox_mode": "trusted_local_repo_no_bwrap_on_darwin",
-  "clean_lake_build_ms": 6542.39,
-  "clean_lake_build_reported_j": 2.0525,
-  "paranoid_6kernel_check_ms": 245404.13,
-  "paranoid_6kernel_check_reported_j": 81.8989,
+  "clean_lake_build_ms": 4957.21,
+  "clean_lake_build_reported_j": 4.0945,
+  "paranoid_6kernel_check_ms": 161220.18,
+  "paranoid_6kernel_check_reported_j": 147.4633,
   "source_sha256": {
     "proofs/LutAdapt/ApexHarnessWalls.lean": "8b08043bd6579a20b824455a102cd37a98d172c0dba16d6d0a01a9c4ca0d0476",
     "proofs/LutAdapt/BenesCopy.lean": "be951544bddaa2ea1dc639bc735044e2b62848c7f377014650846e593ce92694",
@@ -61,6 +62,7 @@
     "proofs/LutAdapt/GlobalFrontiers.lean": "0c6b52f797f3abcd90c5e48800999a2b2abf6ff9cc3198a5ea41ce12fcebb21e",
     "proofs/LutAdapt/JointMinterm.lean": "2c0bd9eeb52e9d5ed3aea0dfe7e73379e3ee9fda8b2f78dcc64c6387be4919b1",
     "proofs/LutAdapt/LtcbCm2OnlineTtt.lean": "96876beeaa180cbd87d57669e7d0318bb3ac74d07cd32da398a99be925869e7b",
+    "proofs/LutAdapt/LtcbCm3Arc3Supermajority.lean": "29a9da9e4aa0fe1de90c2d20443f08ef30f1388e80fb4733da45c57c6eb07c94",
     "proofs/LutAdapt/LtcbCompression.lean": "b035cbd9338be1b7ee5b77c6e41c4b2d3246e358fa33241c9ee38d9df1cff4b5",
     "proofs/LutAdapt/MagnitudeTieredEngram.lean": "8693330a2ecffe807cf4d88a859573deaef055616b192770ed67c56af38ca948",
     "proofs/LutAdapt/NucleusCodon.lean": "386526a9974b185fbebb835ab0f275ac0da180440bbbaf6c8ed775ceafee9208",
@@ -70,7 +72,7 @@
     "proofs/LutAdapt/TernaryHadamardArc.lean": "80cc5af79fbbd43313084e2086169b11076db19cbc62a3b293f745a3e77fe561",
     "proofs/LutAdapt/TernaryTmac.lean": "44517793934c641a6caffc667e8a88b5ccc362a8babcd990ee8ef0023b497d3e",
     "proofs/LutAdapt/WearableLastExam.lean": "932dd0ac863627b8861563dd45051e40eed1fa5beb31778b9cae2ddf691be887",
-    "proofs/LutAdapt.lean": "1917ca6bd3ee50aafffbc516b42af478dac260a3c3a8c410c4996061ea4fa510"
+    "proofs/LutAdapt.lean": "47f776af5b68f7c155c9704d4e6a5dc30c73c06d0830a3118342a6beb7d43c25"
   },
   "measured_j": null,
   "board_metered": false

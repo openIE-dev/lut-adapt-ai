@@ -1,0 +1,51 @@
+agent_kind,system,game_id,modality,in_pinned16,total_levels,levels_completed,total_actions,official_rhae_score,lut6_reflex_steps,crystallized_lut6_slots,breaker_trips,elapsed_ms
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",tu93-0768757b,keyboard,True,9,2,1100,0.0345,0,28,0,637.85
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",cd82-fb555c5d,keyboard_click,True,6,1,1100,0.1538,0,5,0,349.882
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",ls20-9607627b,keyboard,True,7,1,1100,0.0051,0,13,0,462.384
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",lp85-305b61c3,click_only,True,8,1,1100,1.1012,0,5,0,947.906
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",vc33-5430563c,click_only,True,7,2,1100,3.0826,0,16,0,580.011
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",ft09-0d8bbf25,click_only,True,6,1,1100,0.0255,0,14,0,695.214
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",sb26-7fbdac44,click_modal,True,8,1,1100,2.7778,0,9,0,1272.623
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,1227.006
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",cn04-2fe56bfb,keyboard_click,True,6,0,1100,0.0,0,0,0,352.282
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",ka59-38d34dbb,keyboard_click,True,7,1,1100,0.0721,0,11,0,2068.31
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",su15-1944f8ab,click_modal,True,9,1,1100,0.0347,0,18,0,994.548
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",sk48-d8078629,keyboard_click,True,8,1,1100,0.0106,0,28,0,1410.253
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",m0r0-492f87ba,keyboard_click,True,6,1,1100,0.0124,0,17,0,522.334
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",r11l-495a7899,click_only,True,6,1,1100,0.0122,0,7,0,2024.277
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",sc25-635fd71a,keyboard_click,True,6,0,1100,0.0,0,0,0,1745.252
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",s5i5-18d95033,click_only,True,8,1,1100,0.0136,0,13,0,665.003
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",ar25-0c556536,keyboard_click,False,8,1,1100,0.013,0,55,0,879.51
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",bp35-0a0ad940,keyboard_click,False,9,0,1100,0.0,0,0,0,2313.86
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",dc22-fdcac232,keyboard_click,False,6,0,1100,0.0,0,0,0,474.593
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",g50t-5849a774,keyboard,False,7,0,1100,0.0,0,0,0,106.186
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",lf52-271a04aa,keyboard_click,False,10,1,1100,1.0555,0,8,0,619.293
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",re86-8af5384d,keyboard,False,8,0,1100,0.0,0,0,0,721.266
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",sp80-589a99af,keyboard_click,False,6,1,1100,0.0093,0,4,0,236.337
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",tn36-ef4dde99,click_only,False,7,1,1100,3.5714,0,9,0,2079.6
+apex_mbfws_cold,"Phase 47 OpenIE-Apex M-BFWS(R,M) + Modal Pick-Place & Avatar-Switch Wave 1 (Ours)",wa30-ee6fef47,keyboard,False,9,0,1100,0.0,0,0,0,363.486
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",tu93-0768757b,keyboard,True,9,3,1100,7.5943,28,47,0,360.16
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",cd82-fb555c5d,keyboard_click,True,6,1,1100,4.7619,5,5,0,349.16
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",ls20-9607627b,keyboard,True,7,1,1100,3.5714,13,13,0,417.434
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",lp85-305b61c3,click_only,True,8,1,1100,2.7778,5,5,0,974.065
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",vc33-5430563c,click_only,True,7,2,1100,10.7143,16,16,0,606.628
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",ft09-0d8bbf25,click_only,True,6,1,1100,4.7619,14,14,0,290.972
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",sb26-7fbdac44,click_modal,True,8,1,1100,2.7778,9,9,0,1359.444
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",tr87-cd924810,keyboard,True,6,0,1100,0.0,0,0,0,1216.062
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",cn04-2fe56bfb,keyboard_click,True,6,0,1100,0.0,0,0,0,367.146
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",ka59-38d34dbb,keyboard_click,True,7,1,1100,3.5714,11,11,0,2043.485
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",su15-1944f8ab,click_modal,True,9,1,1100,2.2222,18,18,0,1251.398
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",sk48-d8078629,keyboard_click,True,8,1,1100,2.7778,28,28,0,1208.156
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",m0r0-492f87ba,keyboard_click,True,6,1,1100,4.7619,17,17,0,702.819
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",r11l-495a7899,click_only,True,6,1,1100,4.7619,7,7,0,5161.79
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",sc25-635fd71a,keyboard_click,True,6,0,1100,0.0,0,0,0,1762.338
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",s5i5-18d95033,click_only,True,8,1,1100,2.7778,13,13,0,863.327
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",ar25-0c556536,keyboard_click,False,8,1,1100,0.9403,55,55,0,945.692
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",bp35-0a0ad940,keyboard_click,False,9,0,1100,0.0,0,0,0,2440.15
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",dc22-fdcac232,keyboard_click,False,6,0,1100,0.0,0,0,0,538.256
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",g50t-5849a774,keyboard,False,7,0,1100,0.0,0,0,0,114.488
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",lf52-271a04aa,keyboard_click,False,10,1,1100,1.8182,8,8,0,733.407
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",re86-8af5384d,keyboard,False,8,0,1100,0.0,0,0,0,772.691
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",sp80-589a99af,keyboard_click,False,6,1,1100,4.7619,4,4,0,454.462
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",tn36-ef4dde99,click_only,False,7,1,1100,3.5714,9,9,0,2129.443
+apex_mbfws_lut6_wave2,"Phase 47 OpenIE-Apex M-BFWS(R,M) -> Fourteen-Bank 56 KB System-0 LUT6 Wave 2 (Ours)",wa30-ee6fef47,keyboard,False,9,0,1100,0.0,0,0,0,373.511
